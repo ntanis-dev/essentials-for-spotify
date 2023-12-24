@@ -3,7 +3,15 @@ import logger from './library/logger'
 import connector from './library/connector'
 import actions from './library/actions'
 
-connector.setup('6c63d804d24c433d97128decba728e4b', 'ea144e9bb55b4fcaba380709ced20afc')
+streamDeck.client.getGlobalSettings().then(settings => {
+	if (settings.clientId && settings.clientSecret && settings.refreshToken) {
+		logger.info('Setting up from global settings.')
+		connector.setup(settings.clientId, settings.clientSecret, settings.refreshToken)
+	} else {
+		logger.info('No global settings found.')
+		connector.setup()
+	}
+})
 
 actions.register()
 streamDeck.connect()
