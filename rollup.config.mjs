@@ -1,17 +1,15 @@
 import commonjs from "@rollup/plugin-commonjs";
+import typescript from "@rollup/plugin-typescript";
 import nodeResolve from "@rollup/plugin-node-resolve";
 import terser from "@rollup/plugin-terser";
-import typescript from "@rollup/plugin-typescript";
+import json from "@rollup/plugin-json";
 import path from "node:path";
 import url from "node:url";
 
 const isWatching = !!process.env.ROLLUP_WATCH;
 
-/**
- * @type {import('rollup').RollupOptions}
- */
 const config = {
-	input: "src/plugin.ts",
+	input: "src/plugin.js",
 	output: {
 		file: "com.ntanis.spotify-essentials.sdPlugin/bin/plugin.js",
 		sourcemap: isWatching,
@@ -21,13 +19,14 @@ const config = {
 	},
 	plugins: [
 		typescript({
-			mapRoot: isWatching ? "./" : undefined
+			mapRoot: isWatching ? "./" : undefined,
 		}),
 		nodeResolve({
 			browser: false,
 			exportConditions: ["node"],
 			preferBuiltins: true
 		}),
+		json(),
 		commonjs(),
 		!isWatching && terser(),
 		{

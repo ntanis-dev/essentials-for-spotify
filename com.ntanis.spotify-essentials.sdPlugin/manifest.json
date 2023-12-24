@@ -4,16 +4,49 @@
 	"Author": "Ntanis",
 	"Actions": [
 		{
-			"Name": "Counter Yo",
-			"UUID": "com.ntanis.spotify-essentials.increment",
-			"Icon": "imgs/actions/counter/icon",
-			"Tooltip": "Displays a count, which increments by two on press.",
+			"Name": "Play",
+			"UUID": "com.ntanis.spotify-essentials.play-button",
+			"Icon": "imgs/actions/play/icon",
+			"Tooltip": "Resumes the current song.",
 			"Controllers": [
 				"Keypad"
 			],
 			"States": [
 				{
-					"Image": "imgs/actions/counter/key",
+					"Image": "imgs/actions/play/key",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+
+		{
+			"Name": "Pause",
+			"UUID": "com.ntanis.spotify-essentials.pause-button",
+			"Icon": "imgs/actions/pause/icon",
+			"Tooltip": "Pause the current song.",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/pause/key",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		
+		{
+			"Name": "Setup",
+			"UUID": "com.ntanis.spotify-essentials.setup-button",
+			"Icon": "imgs/actions/setup/icon",
+			"Tooltip": "Setup the Spotify integration.",
+			"UserTitleEnabled": false,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "imgs/actions/setup/key",
 					"TitleAlignment": "middle"
 				}
 			]
