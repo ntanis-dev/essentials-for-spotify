@@ -8,6 +8,7 @@
 			"UUID": "com.ntanis.spotify-essentials.play-pause-button",
 			"Icon": "images/actions/play-pause",
 			"Tooltip": "Toggles between playing and pausing the current song.",
+			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
 			],
@@ -29,6 +30,7 @@
 			"UUID": "com.ntanis.spotify-essentials.previous-song-button",
 			"Icon": "images/actions/previous",
 			"Tooltip": "Skips to the previous song.",
+			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
 			],
@@ -45,6 +47,7 @@
 			"UUID": "com.ntanis.spotify-essentials.next-song-button",
 			"Icon": "images/actions/next",
 			"Tooltip": "Advances to the next song.",
+			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
 			],
@@ -61,6 +64,7 @@
 			"UUID": "com.ntanis.spotify-essentials.shuffle-button",
 			"Icon": "images/actions/shuffle",
 			"Tooltip": "Activates or deactivates shuffle play.",
+			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
 			],
@@ -82,6 +86,7 @@
 			"UUID": "com.ntanis.spotify-essentials.loop-context-button",
 			"Icon": "images/actions/loop-context",
 			"Tooltip": "Repeats the current playlist or album.",
+			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
 			],
@@ -103,6 +108,7 @@
 			"UUID": "com.ntanis.spotify-essentials.loop-song-button",
 			"Icon": "images/actions/loop-song",
 			"Tooltip": "Repeats the current song.",
+			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
 			],
@@ -124,6 +130,7 @@
 			"UUID": "com.ntanis.spotify-essentials.like-unlike-button",
 			"Icon": "images/actions/like-unlike",
 			"Tooltip": "Adds the current song to your liked songs or removes it if already liked.",
+			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
 			],
@@ -145,6 +152,7 @@
 			"UUID": "com.ntanis.spotify-essentials.volume-up-button",
 			"Icon": "images/actions/volume-up",
 			"Tooltip": "Increases the playback volume.",
+			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
 			],
@@ -161,6 +169,7 @@
 			"UUID": "com.ntanis.spotify-essentials.volume-down-button",
 			"Icon": "images/actions/volume-down",
 			"Tooltip": "Decreases the playback volume.",
+			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
 			],
@@ -177,6 +186,7 @@
 			"UUID": "com.ntanis.spotify-essentials.volume-mute-unmute-button",
 			"Icon": "images/actions/volume-mute-unmute",
 			"Tooltip": "Toggles between muting and unmuting the volume.",
+			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
 			],

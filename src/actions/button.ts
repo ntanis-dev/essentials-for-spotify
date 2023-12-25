@@ -1,11 +1,8 @@
-import streamDeck, { KeyDownEvent, SingletonAction, WillAppearEvent } from '@elgato/streamdeck'
+import { KeyDownEvent, SingletonAction, WillAppearEvent } from '@elgato/streamdeck'
 import connector from './../library/connector.js'
 import helpers from './../library/helpers.js'
-import logger from './../library/logger.js'
 
 export class Button extends SingletonAction {
-	#baseIcon: (string | null) = null
-
 	constructor() {
 		super()
 	}
@@ -19,23 +16,18 @@ export class Button extends SingletonAction {
 		}
 	}
 
-	getManifestIcon(action: any) {
-		return streamDeck.manifest.Actions.filter((a: any) => a.UUID == action.manifestId)[0]?.Icon || null
-	}
-
 	onWillAppear(ev: WillAppearEvent<any>) {
-		this.#baseIcon = this.getManifestIcon(ev.action)
-		// return ev.action.setTitle('Hi!')
+		
 	}
 
 	async onKeyDown(ev: KeyDownEvent<any>) {
 		if (!connector.ready())
-			await this.flashImage(ev.action, `${this.#baseIcon}-no-setup`, 500, 3)
-		else if (!await this.onKeyAction())
-			await this.flashImage(ev.action, `${this.#baseIcon}-network-error`, 500, 3)
+			await this.flashImage(ev.action, 'images/states/setup-error', 1000, 1)
+		else if (!await this.onButtonKeyDown())
+			await this.flashImage(ev.action, 'images/states/api-error', 1000, 1)
 	}
 
-	async onKeyAction(): Promise<boolean> {
+	async onButtonKeyDown(): Promise<boolean> {
 		throw new Error('Method not implemented.')
 	}
 }
