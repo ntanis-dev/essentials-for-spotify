@@ -6,19 +6,19 @@
 		{
 			"Name": "Play / Pause",
 			"UUID": "com.ntanis.spotify-essentials.play-pause-button",
-			"Icon": "images/keys/play-pause",
-			"Tooltip": "",
+			"Icon": "images/actions/play-pause",
+			"Tooltip": "Toggles between playing and pausing the current song.",
 			"Controllers": [
 				"Keypad"
 			],
 			"States": [
 				{
-					"Image": "images/buttons/play",
+					"Image": "images/states/play",
 					"TitleAlignment": "middle"
 				},
 				
 				{
-					"Image": "images/buttons/pause",
+					"Image": "images/states/pause",
 					"TitleAlignment": "middle"
 				}
 			]
@@ -27,14 +27,14 @@
 		{
 			"Name": "Previous Song",
 			"UUID": "com.ntanis.spotify-essentials.previous-song-button",
-			"Icon": "images/keys/previous",
-			"Tooltip": "",
+			"Icon": "images/actions/previous",
+			"Tooltip": "Skips to the previous song.",
 			"Controllers": [
 				"Keypad"
 			],
 			"States": [
 				{
-					"Image": "images/buttons/previous",
+					"Image": "images/states/previous",
 					"TitleAlignment": "middle"
 				}
 			]
@@ -43,14 +43,14 @@
 		{
 			"Name": "Next Song",
 			"UUID": "com.ntanis.spotify-essentials.next-song-button",
-			"Icon": "images/keys/next",
-			"Tooltip": "",
+			"Icon": "images/actions/next",
+			"Tooltip": "Advances to the next song.",
 			"Controllers": [
 				"Keypad"
 			],
 			"States": [
 				{
-					"Image": "images/buttons/next",
+					"Image": "images/states/next",
 					"TitleAlignment": "middle"
 				}
 			]
@@ -59,19 +59,19 @@
 		{
 			"Name": "Shuffle",
 			"UUID": "com.ntanis.spotify-essentials.shuffle-button",
-			"Icon": "images/keys/shuffle",
-			"Tooltip": "",
+			"Icon": "images/actions/shuffle",
+			"Tooltip": "Activates or deactivates shuffle play.",
 			"Controllers": [
 				"Keypad"
 			],
 			"States": [
 				{
-					"Image": "images/buttons/shuffle-inactive",
+					"Image": "images/states/shuffle-inactive",
 					"TitleAlignment": "middle"
 				},
 				
 				{
-					"Image": "images/buttons/shuffle-active",
+					"Image": "images/states/shuffle-active",
 					"TitleAlignment": "middle"
 				}
 			]
@@ -80,61 +80,61 @@
 		{
 			"Name": "Loop Context",
 			"UUID": "com.ntanis.spotify-essentials.loop-context-button",
-			"Icon": "images/keys/loop-context",
-			"Tooltip": "",
+			"Icon": "images/actions/loop-context",
+			"Tooltip": "Repeats the current playlist or album.",
 			"Controllers": [
 				"Keypad"
 			],
 			"States": [
 				{
-					"Image": "images/buttons/loop-inactive",
+					"Image": "images/states/loop-inactive",
 					"TitleAlignment": "middle"
 				},
 				
 				{
-					"Image": "images/buttons/loop-active",
+					"Image": "images/states/loop-active",
 					"TitleAlignment": "middle"
 				}
 			]
 		},
 		
 		{
-			"Name": "Loop Track",
-			"UUID": "com.ntanis.spotify-essentials.loop-track-button",
-			"Icon": "images/keys/loop-track",
-			"Tooltip": "",
+			"Name": "Loop Song",
+			"UUID": "com.ntanis.spotify-essentials.loop-song-button",
+			"Icon": "images/actions/loop-song",
+			"Tooltip": "Repeats the current song.",
 			"Controllers": [
 				"Keypad"
 			],
 			"States": [
 				{
-					"Image": "images/buttons/loop-inactive",
+					"Image": "images/states/loop-inactive",
 					"TitleAlignment": "middle"
 				},
 				
 				{
-					"Image": "images/buttons/loop-one",
+					"Image": "images/states/loop-one",
 					"TitleAlignment": "middle"
 				}
 			]
 		},
 		
 		{
-			"Name": "Like / Unlike Song",
+			"Name": "Like / Unlike",
 			"UUID": "com.ntanis.spotify-essentials.like-unlike-button",
-			"Icon": "images/keys/like-unlike",
-			"Tooltip": "",
+			"Icon": "images/actions/like-unlike",
+			"Tooltip": "Adds the current song to your liked songs or removes it if already liked.",
 			"Controllers": [
 				"Keypad"
 			],
 			"States": [
 				{
-					"Image": "images/buttons/like",
+					"Image": "images/states/like",
 					"TitleAlignment": "middle"
 				},
 				
 				{
-					"Image": "images/buttons/unlike",
+					"Image": "images/states/unlike",
 					"TitleAlignment": "middle"
 				}
 			]
@@ -143,14 +143,14 @@
 		{
 			"Name": "Volume Up",
 			"UUID": "com.ntanis.spotify-essentials.volume-up-button",
-			"Icon": "images/keys/volume-up",
-			"Tooltip": "",
+			"Icon": "images/actions/volume-up",
+			"Tooltip": "Increases the playback volume.",
 			"Controllers": [
 				"Keypad"
 			],
 			"States": [
 				{
-					"Image": "images/buttons/volume-up",
+					"Image": "images/states/volume-up",
 					"TitleAlignment": "middle"
 				}
 			]
@@ -159,14 +159,14 @@
 		{
 			"Name": "Volume Down",
 			"UUID": "com.ntanis.spotify-essentials.volume-down-button",
-			"Icon": "images/keys/volume-down",
-			"Tooltip": "",
+			"Icon": "images/actions/volume-down",
+			"Tooltip": "Decreases the playback volume.",
 			"Controllers": [
 				"Keypad"
 			],
 			"States": [
 				{
-					"Image": "images/buttons/volume-down",
+					"Image": "images/states/volume-down",
 					"TitleAlignment": "middle"
 				}
 			]
@@ -175,29 +175,29 @@
 		{
 			"Name": "Volume Mute / Unmute",
 			"UUID": "com.ntanis.spotify-essentials.volume-mute-unmute-button",
-			"Icon": "images/keys/volume-mute-unmute",
-			"Tooltip": "",
+			"Icon": "images/actions/volume-mute-unmute",
+			"Tooltip": "Toggles between muting and unmuting the volume.",
 			"Controllers": [
 				"Keypad"
 			],
 			"States": [
 				{
-					"Image": "images/buttons/volume-mute",
+					"Image": "images/states/volume-mute",
 					"TitleAlignment": "middle"
 				},
 				
 				{
-					"Image": "images/buttons/volume-unmute",
+					"Image": "images/states/volume-unmute",
 					"TitleAlignment": "middle"
 				}
 			]
 		}
 	],
 	"Category": "Spotify Essentials",
-	"CategoryIcon": "imgs/plugin/category-icon",
+	"CategoryIcon": "images/plugin/category",
 	"CodePath": "bin/plugin.js",
 	"Description": "Effortlessly control your Spotify through your Elgato Stream Deck.",
-	"Icon": "imgs/plugin/marketplace",
+	"Icon": "images/plugin/marketplace",
 	"SDKVersion": 2,
 	"Software": {
 		"MinimumVersion": "6.4"
