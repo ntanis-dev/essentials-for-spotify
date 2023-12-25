@@ -11,8 +11,8 @@ export default class LikeUnlikeButton extends Button {
 		wrapper.on('likedStateChanged', this.#onLikedStateChanged.bind(this))
 	}
 
-	#onLikedStateChanged(liked: boolean, pending: boolean = false) {
-		for (const context of this.contexts)
+	#onLikedStateChanged(liked: boolean, pending: boolean = false, contexts = this.contexts) {
+		for (const context of contexts)
 			setImmediate(async () => {
 				if (pending)
 					await streamDeck.client.setImage(context, 'images/states/pending')
@@ -25,7 +25,7 @@ export default class LikeUnlikeButton extends Button {
 
 	onWillAppear(ev: WillAppearEvent<any>): void {
 		super.onWillAppear(ev)
-		this.#onLikedStateChanged(wrapper.song)
+		this.#onLikedStateChanged(wrapper.song, false, [ev.action.id])
 	}
 
 	async onButtonKeyDown() {

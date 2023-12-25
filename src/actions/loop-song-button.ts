@@ -10,14 +10,14 @@ export default class LoopSongButton extends Button {
 		wrapper.on('repeatStateChanged', this.#onRepeatStateChanged.bind(this))
 	}
 
-	#onRepeatStateChanged(state: string) {
-		for (const context of this.contexts)
+	#onRepeatStateChanged(state: string, contexts = this.contexts) {
+		for (const context of contexts)
 			setImmediate(async () => await streamDeck.client.setState(context, state === 'track' ? 1 : 0).catch(e => logger.error(`Failed to set state for "${this.manifestId}".`, e)))
 	}
 
 	onWillAppear(ev: WillAppearEvent<any>): void {
 		super.onWillAppear(ev)
-		this.#onRepeatStateChanged(wrapper.repeatState)
+		this.#onRepeatStateChanged(wrapper.repeatState, [ev.action.id])
 	}
 
 	async onButtonKeyDown() {

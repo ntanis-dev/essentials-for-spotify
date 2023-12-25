@@ -10,14 +10,14 @@ export default class ShuffleButton extends Button {
 		wrapper.on('shuffleStateChanged', this.#onShuffleStateChanged.bind(this))
 	}
 
-	#onShuffleStateChanged(state: boolean) {
-		for (const context of this.contexts)
+	#onShuffleStateChanged(state: boolean, contexts = this.contexts) {
+		for (const context of contexts)
 			setImmediate(async () => await streamDeck.client.setState(context, state ? 1 : 0).catch(e => logger.error(`Failed to set state for "${this.manifestId}".`, e)))
 	}
 
 	onWillAppear(ev: WillAppearEvent<any>): void {
 		super.onWillAppear(ev)
-		this.#onShuffleStateChanged(wrapper.shuffleState)
+		this.#onShuffleStateChanged(wrapper.shuffleState, [ev.action.id])
 	}
 
 	async onButtonKeyDown() {

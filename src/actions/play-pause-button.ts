@@ -10,14 +10,14 @@ export default class PlayPauseButton extends Button {
 		wrapper.on('playbackStateChanged', this.#onPlaybackStateChanged.bind(this))
 	}
 
-	#onPlaybackStateChanged(state: boolean) {
-		for (const context of this.contexts)
+	#onPlaybackStateChanged(state: boolean, contexts = this.contexts) {
+		for (const context of contexts)
 			setImmediate(async () => await streamDeck.client.setState(context, state ? 1 : 0).catch(e => logger.error(`Failed to set state for "${this.manifestId}".`, e)))
 	}
 
 	onWillAppear(ev: WillAppearEvent<any>): void {
 		super.onWillAppear(ev)
-		this.#onPlaybackStateChanged(wrapper.playing)
+		this.#onPlaybackStateChanged(wrapper.playing, [ev.action.id])
 	}
 
 	async onButtonKeyDown() {

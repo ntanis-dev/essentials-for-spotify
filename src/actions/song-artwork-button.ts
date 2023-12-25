@@ -13,8 +13,8 @@ export default class SongArtworkButton extends Button {
 		logger.info(`Action "${this.manifestId}" registered.`)
 	}
 
-	async #onSongChanged(song: any, pending: boolean = false) {
-		for (const context of this.contexts)
+	async #onSongChanged(song: any, pending: boolean = false, contexts = this.contexts) {
+		for (const context of contexts)
 			setImmediate(async () => {
 				const url = song && song.item.album.images.length > 0 ? song.item.album.images[0].url : null
 
@@ -37,6 +37,6 @@ export default class SongArtworkButton extends Button {
 
 	onWillAppear(ev: WillAppearEvent<any>): void {
 		super.onWillAppear(ev)
-		this.#onSongChanged(wrapper.song)
+		this.#onSongChanged(wrapper.song, false, [ev.action.id])
 	}
 }
