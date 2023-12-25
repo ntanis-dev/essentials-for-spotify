@@ -5,6 +5,6 @@ import { Button } from './button.js'
 @action({ UUID: 'com.ntanis.spotify-essentials.next-song-button' })
 export default class NextSongButton extends Button {
 	async onButtonKeyDown() {
-		return wrapper.resumePlayback()
+		return wrapper.nextSong()
 	}
 }

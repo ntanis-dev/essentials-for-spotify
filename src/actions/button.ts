@@ -3,6 +3,8 @@ import connector from './../library/connector.js'
 import helpers from './../library/helpers.js'
 
 export class Button extends SingletonAction {
+	context: string | null = null
+
 	constructor() {
 		super()
 	}
@@ -17,11 +19,11 @@ export class Button extends SingletonAction {
 	}
 
 	onWillAppear(ev: WillAppearEvent<any>) {
-		
+		this.context = ev.action.id
 	}
 
 	async onKeyDown(ev: KeyDownEvent<any>) {
-		if (!connector.ready())
+		if (!connector.setup)
 			await this.flashImage(ev.action, 'images/states/setup-error', 1000, 1)
 		else if (!await this.onButtonKeyDown())
 			await this.flashImage(ev.action, 'images/states/api-error', 1000, 1)

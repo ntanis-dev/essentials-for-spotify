@@ -1,13 +1,17 @@
 import streamDeck from '@elgato/streamdeck'
 import express from 'express'
 import logger from './logger.js'
+import EventEmitter from 'events'
 
 const DEFAULT_SCOPES = [
 	'user-read-playback-state',
-	'user-modify-playback-state'	
+	'user-modify-playback-state'
 ]
 
-class Connector {
+const EMPTY_RESPONSE = Symbol('EMPTY_RESPONSE')
+const NOT_FOUND_RESPONSE = Symbol('NOT_FOUND_RESPONSE')
+
+class Connector extends EventEmitter {
 	#accessToken = null
 	#refreshToken = null
 	#clientId = null
@@ -16,6 +20,11 @@ class Connector {
 	#port = null
 	#server = null
 	#setup = false
+
+	#setSetup(state) {
+		this.#setup = state
+		this.emit('setupStateChanged', state)
+	}
 
 	async #refreshAccessToken() {
 		try {
@@ -51,7 +60,7 @@ class Connector {
 		if (!this.#setup)
 			return
 
-		this.#setup = false
+		this.#setSetup(false)
 		this.#accessToken = null
 		this.#refreshToken = null
 
@@ -96,11 +105,13 @@ class Connector {
 				})
 			}
 
+			if (response.status === 204)
+				return EMPTY_RESPONSE
+			else if (response.status === 404)
+				return NOT_FOUND_RESPONSE
+
 			if (!response.ok)
 				throw new Error(`HTTP error during Spotify API call! Status: ${response.status}`)
-
-			if (response.status === 204)
-				return null
 
 			return response.json()
 		} catch (e) {
@@ -108,7 +119,7 @@ class Connector {
 		}
 	}
 
-	ready() {
+	get setup() {
 		return this.#setup
 	}
 
@@ -175,7 +186,7 @@ class Connector {
 
 				this.#refreshToken = data.refresh_token
 				this.#accessToken = data.access_token
-				this.#setup = true
+				this.#setSetup(true)
 
 				streamDeck.client.setGlobalSettings({
 					clientId: this.#clientId,
@@ -209,7 +220,7 @@ class Connector {
 
 		if (this.#refreshToken) {
 			this.#refreshAccessToken().then(() => {
-				this.#setup = true
+				this.#setSetup(true)
 			}).catch(e => logger.error(`Error refreshing access token during setup: ${e}`))
 		} else
 			this.#server = this.#app.listen(port, () => logger.info(`Setup server is now listening @ http://localhost:${port}`))
@@ -217,3 +228,4 @@ class Connector {
 }
 
 export default new Connector()
+export { EMPTY_RESPONSE, NOT_FOUND_RESPONSE }
