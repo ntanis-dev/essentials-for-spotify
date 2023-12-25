@@ -209,6 +209,7 @@
 			"Icon": "images/actions/song-artwork",
 			"Tooltip": "Displays the artwork of the current song.",
 			"DisableAutomaticStates": true,
+			"UserTitleEnabled": false,
 			"Controllers": [
 				"Keypad"
 			],
