@@ -22,24 +22,30 @@ export default class SongArtworkButton extends Button {
 			timeout: null,
 
 			title: {
-				render: '',
-				frame: 0,
-				totalFrames: 0
+				render: `${title}${' '.repeat(constants.TITLE_MARQUEE_SPACING)}`,
+				frame: null,
+				totalFrames: null
 			},
 
 			artists: {
-				render: '',
-				frame: 0,
-				totalFrames: 0
+				render: `${artists}${' '.repeat(constants.TITLE_MARQUEE_SPACING)}`,
+				frame: null,
+				totalFrames: null
 			}
 		}
 
 		marqueeData.timeout = setTimeout(async () => {
-			marqueeData.title.render = `${title}${' '.repeat(constants.TITLE_MARQUEE_SPACING)}`
-			marqueeData.artists.render = `${artists}${' '.repeat(constants.TITLE_MARQUEE_SPACING)}`
-	
-			marqueeData.title.totalFrames = marqueeData.title.render.length
-			marqueeData.artists.totalFrames = marqueeData.artists.render.length
+			if (marqueeData.title.frame === null)
+				marqueeData.title.frame = (title.length / 2) + constants.TITLE_MARQUEE_SPACING
+
+			if (marqueeData.artists.frame === null)
+				marqueeData.artists.frame = (artists.length / 2) + constants.TITLE_MARQUEE_SPACING
+			
+			if (marqueeData.title.totalFrames === null)
+				marqueeData.title.totalFrames = marqueeData.title.render.length
+
+			if (marqueeData.artists.totalFrames === null)
+				marqueeData.artists.totalFrames = marqueeData.artists.render.length
 
 			await streamDeck.client.setTitle(context, `${title.length > constants.TITLE_MARQUEE_SPACING ? `${marqueeData.title.render.slice(marqueeData.title.frame)}${marqueeData.title.render.slice(0, marqueeData.title.frame)}` : title}\n${artists.length > constants.TITLE_MARQUEE_SPACING ? `${marqueeData.artists.render.slice(marqueeData.artists.frame)}${marqueeData.artists.render.slice(0, marqueeData.artists.frame)}` : artists}`)
 
@@ -53,7 +59,7 @@ export default class SongArtworkButton extends Button {
 				marqueeData.artists.frame = 0
 
 			marqueeData.timeout = setTimeout(() => this.#marqueeTitle(title, artists, context), constants.TITLE_MARQUEE_INTERVAL)
-		}, constants.TITLE_MARQUEE_INTERVAL)
+		}, constants.TITLE_MARQUEE_INTERVAL_INITIAL)
 
 		this.#marquees[context] = marqueeData
 	}
