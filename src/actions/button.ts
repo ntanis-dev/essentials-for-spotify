@@ -1,10 +1,10 @@
-import { KeyDownEvent, SingletonAction, WillAppearEvent } from '@elgato/streamdeck'
+import { KeyDownEvent, SingletonAction, WillAppearEvent, WillDisappearEvent } from '@elgato/streamdeck'
 import connector from './../library/connector.js'
 import helpers from './../library/helpers.js'
 import logger from './../library/logger.js'
 
 export class Button extends SingletonAction {
-	context: string | null = null
+	contexts: Array<string> = []
 
 	constructor() {
 		super()
@@ -19,8 +19,12 @@ export class Button extends SingletonAction {
 		}
 	}
 
-	onWillAppear(ev: WillAppearEvent<any>) {
-		this.context = ev.action.id
+	onWillAppear(ev: WillAppearEvent<any>): void {
+		this.contexts.push(ev.action.id)
+	}
+
+	onWillDisappear(ev: WillDisappearEvent<any>): void {
+		this.contexts.splice(this.contexts.indexOf(ev.action.id), 1)
 	}
 
 	async onKeyDown(ev: KeyDownEvent<any>) {

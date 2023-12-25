@@ -11,9 +11,16 @@ export default class LikeUnlikeButton extends Button {
 		wrapper.on('likedStateChanged', this.#onLikedStateChanged.bind(this))
 	}
 
-	#onLikedStateChanged(liked: boolean) {
-		if (this.context)
-			streamDeck.client.setState(this.context, liked ? 1 : 0).catch(e => logger.error(`Failed to set state for "${this.manifestId}".`, e))
+	#onLikedStateChanged(liked: boolean, pending: boolean = false) {
+		for (const context of this.contexts)
+			setImmediate(async () => {
+				if (pending)
+					await streamDeck.client.setImage(context, 'images/states/pending')
+				else {
+					await streamDeck.client.setImage(context)
+					await streamDeck.client.setState(context, liked ? 1 : 0).catch(e => logger.error(`Failed to set state for "${this.manifestId}".`, e))
+				}
+			})
 	}
 
 	onWillAppear(ev: WillAppearEvent<any>): void {

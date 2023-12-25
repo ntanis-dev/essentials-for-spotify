@@ -14,6 +14,7 @@ class Wrapper extends EventEmitter {
 	#lastSong = null
 	#lastDevices = []
 	#lastPlaybackStateUpdate = null
+	#songChangeForceUpdatePlaybackStateTimeout = null
 	#updatePlaybackStateStatus = 'idle'
 
 	constructor() {
@@ -105,7 +106,7 @@ class Wrapper extends EventEmitter {
 			this.emit('songChanged', song, pending)
 
 		if (likedChanged)
-			this.emit('likedStateChanged', song?.liked)
+			this.emit('likedStateChanged', song?.liked, pending)
 	}
 
 	#onConnectorSetup() {
@@ -120,7 +121,7 @@ class Wrapper extends EventEmitter {
 		if (this.#updatePlaybackStateStatus === 'skip' && (!force)) {
 			this.#updatePlaybackStateStatus = 'idle'
 			return
-		} else if (this.#updatePlaybackStateStatus === 'updating')
+		} else if (this.#updatePlaybackStateStatus === 'updating' || this.#updatePlaybackStateStatus === 'pause')
 			return
 
 		if (this.#lastPlaybackStateUpdate && (Date.now() - this.#lastPlaybackStateUpdate < constants.INTERVAL_UPDATE_PLAYBACK_STATE) && (!force))
@@ -151,6 +152,7 @@ class Wrapper extends EventEmitter {
 			return {}
 		} finally {
 			this.#updatePlaybackStateStatus = 'idle'
+			this.#lastPlaybackStateUpdate = Date.now()
 		}
 	}
 
@@ -175,6 +177,8 @@ class Wrapper extends EventEmitter {
 	}
 
 	async resumePlayback(deviceId = this.#lastDevice) {
+		this.#updatePlaybackStateStatus = 'pause'
+
 		try {
 			const response = await connector.callSpotifyApi(`me/player/play${deviceId ? `?device_id=${deviceId}` : ''}`, {
 				method: 'PUT'
@@ -189,10 +193,15 @@ class Wrapper extends EventEmitter {
 		} catch (e) {
 			logger.error(e)
 			return false
+		} finally {
+			this.#updatePlaybackStateStatus = 'idle'
+			this.#lastPlaybackStateUpdate = Date.now()
 		}
 	}
 
 	async pausePlayback(deviceId = this.#lastDevice) {
+		this.#updatePlaybackStateStatus = 'pause'
+
 		try {
 			const response = await connector.callSpotifyApi(`me/player/pause${deviceId ? `?device_id=${deviceId}` : ''}`, {
 				method: 'PUT'
@@ -207,10 +216,15 @@ class Wrapper extends EventEmitter {
 		} catch (e) {
 			logger.error(e)
 			return false
+		} finally {
+			this.#updatePlaybackStateStatus = 'idle'
+			this.#lastPlaybackStateUpdate = Date.now()
 		}
 	}
 
 	async nextSong(deviceId = this.#lastDevice) {
+		this.#updatePlaybackStateStatus = 'pause'
+
 		try {
 			const response = await connector.callSpotifyApi(`me/player/next${deviceId ? `?device_id=${deviceId}` : ''}`, {
 				method: 'POST'
@@ -219,19 +233,24 @@ class Wrapper extends EventEmitter {
 			if (response === constants.API_NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
 				return this.nextSong(this.#lastDevices[0].id)
 
-			this.#setLastSong(null, true)
+			clearTimeout(this.#songChangeForceUpdatePlaybackStateTimeout)
 
-			await helpers.sleep(constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
-			await this.#updatePlaybackState(true)
+			this.#setLastSong(null, true)
+			this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(async () => await this.#updatePlaybackState(true), constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
 			
 			return true
 		} catch (e) {
 			logger.error(e)
 			return false
+		} finally {
+			this.#updatePlaybackStateStatus = 'idle'
+			this.#lastPlaybackStateUpdate = Date.now()
 		}
 	}
 
 	async previousSong(deviceId = this.#lastDevice) {
+		this.#updatePlaybackStateStatus = 'pause'
+
 		try {
 			const response = await connector.callSpotifyApi(`me/player/previous${deviceId ? `?device_id=${deviceId}` : ''}`, {
 				method: 'POST'
@@ -240,19 +259,24 @@ class Wrapper extends EventEmitter {
 			if (response === constants.API_NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
 				return this.previousSong(this.#lastDevices[0].id)
 
-			this.#setLastSong(null, true)
+			clearTimeout(this.#songChangeForceUpdatePlaybackStateTimeout)
 
-			await helpers.sleep(constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
-			await this.#updatePlaybackState(true)
+			this.#setLastSong(null, true)
+			this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(async () => await this.#updatePlaybackState(true), constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
 
 			return true
 		} catch (e) {
 			logger.error(e)
 			return false
+		} finally {
+			this.#updatePlaybackStateStatus = 'idle'
+			this.#lastPlaybackStateUpdate = Date.now()
 		}
 	}
 
 	async turnOnShuffle(deviceId = this.#lastDevice) {
+		this.#updatePlaybackStateStatus = 'pause'
+
 		try {
 			const response = await connector.callSpotifyApi(`me/player/shuffle?state=true${deviceId ? `&device_id=${deviceId}` : ''}`, {
 				method: 'PUT'
@@ -267,10 +291,15 @@ class Wrapper extends EventEmitter {
 		} catch (e) {
 			logger.error(e)
 			return false
+		} finally {
+			this.#updatePlaybackStateStatus = 'idle'
+			this.#lastPlaybackStateUpdate = Date.now()
 		}
 	}
 
 	async turnOffShuffle(deviceId = this.#lastDevice) {
+		this.#updatePlaybackStateStatus = 'pause'
+
 		try {
 			const response = await connector.callSpotifyApi(`me/player/shuffle?state=false${deviceId ? `&device_id=${deviceId}` : ''}`, {
 				method: 'PUT'
@@ -285,10 +314,15 @@ class Wrapper extends EventEmitter {
 		} catch (e) {
 			logger.error(e)
 			return false
+		} finally {
+			this.#updatePlaybackStateStatus = 'idle'
+			this.#lastPlaybackStateUpdate = Date.now()
 		}
 	}
 
 	async turnOnContextRepeat(deviceId = this.#lastDevice) {
+		this.#updatePlaybackStateStatus = 'pause'
+
 		try {
 			const response = await connector.callSpotifyApi(`me/player/repeat?state=context${deviceId ? `&device_id=${deviceId}` : ''}`, {
 				method: 'PUT'
@@ -303,10 +337,15 @@ class Wrapper extends EventEmitter {
 		} catch (e) {
 			logger.error(e)
 			return false
+		} finally {
+			this.#updatePlaybackStateStatus = 'idle'
+			this.#lastPlaybackStateUpdate = Date.now()
 		}
 	}
 
 	async turnOnTrackRepeat(deviceId = this.#lastDevice) {
+		this.#updatePlaybackStateStatus = 'pause'
+
 		try {
 			const response = await connector.callSpotifyApi(`me/player/repeat?state=track${deviceId ? `&device_id=${deviceId}` : ''}`, {
 				method: 'PUT'
@@ -321,10 +360,15 @@ class Wrapper extends EventEmitter {
 		} catch (e) {
 			logger.error(e)
 			return false
+		} finally {
+			this.#updatePlaybackStateStatus = 'idle'
+			this.#lastPlaybackStateUpdate = Date.now()
 		}
 	}
 
 	async turnOffRepeat(deviceId = this.#lastDevice) {
+		this.#updatePlaybackStateStatus = 'pause'
+
 		try {
 			const response = await connector.callSpotifyApi(`me/player/repeat?state=off${deviceId ? `&device_id=${deviceId}` : ''}`, {
 				method: 'PUT'
@@ -339,10 +383,15 @@ class Wrapper extends EventEmitter {
 		} catch (e) {
 			logger.error(e)
 			return false
+		} finally {
+			this.#updatePlaybackStateStatus = 'idle'
+			this.#lastPlaybackStateUpdate = Date.now()
 		}
 	}
 
 	async setPlaybackVolume(volumePercent, deviceId = this.#lastDevice) {
+		this.#updatePlaybackStateStatus = 'pause'
+
 		try {
 			volumePercent = Math.max(0, Math.min(100, volumePercent))
 
@@ -359,29 +408,44 @@ class Wrapper extends EventEmitter {
 		} catch (e) {
 			logger.error(e)
 			return false
+		} finally {
+			this.#updatePlaybackStateStatus = 'idle'
+			this.#lastPlaybackStateUpdate = Date.now()
 		}
 	}
 
 	async muteVolume(deviceId = this.#lastDevice) {
+		this.#updatePlaybackStateStatus = 'pause'
+
 		try {
 			this.#setMuted(this.#lastVolumePercent)
 			return this.setPlaybackVolume(0, deviceId)
 		} catch (e) {
 			logger.error(e)
 			return false
+		} finally {
+			this.#updatePlaybackStateStatus = 'idle'
+			this.#lastPlaybackStateUpdate = Date.now()
 		}
 	}
 
 	async unmuteVolume(deviceId = this.#lastDevice) {
+		this.#updatePlaybackStateStatus = 'pause'
+
 		try {
 			return this.setPlaybackVolume(this.#lastMuted, deviceId)
 		} catch (e) {
 			logger.error(e)
 			return false
+		} finally {
+			this.#updatePlaybackStateStatus = 'idle'
+			this.#lastPlaybackStateUpdate = Date.now()
 		}
 	}
 
 	async likeLastSong() {
+		this.#updatePlaybackStateStatus = 'pause'
+
 		try {
 			if (!this.#lastSong)
 				throw new Error('Tried to like last song, but no song is playing.')
@@ -399,10 +463,15 @@ class Wrapper extends EventEmitter {
 		} catch (e) {
 			logger.error(e)
 			return false
+		} finally {
+			this.#updatePlaybackStateStatus = 'idle'
+			this.#lastPlaybackStateUpdate = Date.now()
 		}
 	}
 
 	async unlikeLastSong() {
+		this.#updatePlaybackStateStatus = 'pause'
+
 		try {
 			if (!this.#lastSong)
 				throw new Error('Tried to unlike last song, but no song is playing.')
@@ -420,6 +489,8 @@ class Wrapper extends EventEmitter {
 		} catch (e) {
 			logger.error(e)
 			return false
+		} finally {
+			this.#updatePlaybackStateStatus = 'idle'	
 		}
 	}
 

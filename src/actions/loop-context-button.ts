@@ -11,8 +11,8 @@ export default class LoopContextButton extends Button {
 	}
 
 	#onRepeatStateChanged(state: string) {
-		if (this.context)
-			streamDeck.client.setState(this.context, state === 'context' ? 1 : 0).catch(e => logger.error(`Failed to set state for "${this.manifestId}".`, e))
+		for (const context of this.contexts)
+			setImmediate(async () => await streamDeck.client.setState(context, state === 'context' ? 1 : 0).catch(e => logger.error(`Failed to set state for "${this.manifestId}".`, e)))
 	}
 
 	onWillAppear(ev: WillAppearEvent<any>): void {
