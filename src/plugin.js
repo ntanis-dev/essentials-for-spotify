@@ -9,14 +9,14 @@ streamDeck.connect().then(() => {
 	streamDeck.client.getGlobalSettings().then(settings => {
 		if (settings.clientId && settings.clientSecret && settings.refreshToken) {
 			logger.info('Setting up from global settings.')
-			connector.setup(settings.clientId, settings.clientSecret, settings.refreshToken)
+			connector.startSetup(settings.clientId, settings.clientSecret, settings.refreshToken)
 		} else {
 			logger.info('No global settings found.')
-			connector.setup()
+			connector.startSetup()
 		}
 	}).catch(e => {
 		logger.error(`Error while loading global settings: ${e}`)
-		connector.setup()
+		connector.startSetup()
 	})
 	
 	actions.register()

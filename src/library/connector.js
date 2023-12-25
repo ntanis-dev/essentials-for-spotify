@@ -5,7 +5,8 @@ import EventEmitter from 'events'
 
 const DEFAULT_SCOPES = [
 	'user-read-playback-state',
-	'user-modify-playback-state'
+	'user-modify-playback-state',
+	'user-library-modify'
 ]
 
 const EMPTY_RESPONSE = Symbol('EMPTY_RESPONSE')
@@ -78,7 +79,9 @@ class Connector extends EventEmitter {
 
 	async callSpotifyApi(path, options = {}) {
 		if (!this.#setup)
-			throw new Error('Tried to call Spotify API without a finished setup.')
+			throw new Error(`Tried to call Spotify API before setup! Path: "${path}"`)
+
+		const method = options.method || 'UNK'
 
 		try {
 			let response = await fetch(`https://api.spotify.com/v1/${path}`, {
@@ -105,6 +108,8 @@ class Connector extends EventEmitter {
 				})
 			}
 
+			logger.trace(`Spotify API call "${method}" to "${path}" returned status ${response.status}.`)
+
 			if (response.status === 204)
 				return EMPTY_RESPONSE
 			else if (response.status === 404)
@@ -113,17 +118,20 @@ class Connector extends EventEmitter {
 			if (!response.ok)
 				throw new Error(`HTTP error during Spotify API call! Status: ${response.status}`)
 
-			return response.json()
+			if (response.headers.get('content-type')?.includes('application/json'))
+				return response.json()
+			else
+				return response.text()
 		} catch (e) {
 			throw e
 		}
 	}
 
-	get setup() {
+	get set() {
 		return this.#setup
 	}
 
-	setup(clientId = null, clientSecret = null, refreshToken = null, port = 4202) {
+	startSetup(clientId = null, clientSecret = null, refreshToken = null, port = 4202) {
 		if (this.#app)
 			throw new Error('Tried to setup connector twice.')
 

@@ -1,6 +1,7 @@
 import { KeyDownEvent, SingletonAction, WillAppearEvent } from '@elgato/streamdeck'
 import connector from './../library/connector.js'
 import helpers from './../library/helpers.js'
+import logger from './../library/logger.js'
 
 export class Button extends SingletonAction {
 	context: string | null = null
@@ -23,7 +24,7 @@ export class Button extends SingletonAction {
 	}
 
 	async onKeyDown(ev: KeyDownEvent<any>) {
-		if (!connector.setup)
+		if (!connector.set)
 			await this.flashImage(ev.action, 'images/states/setup-error', 1000, 1)
 		else if (!await this.onButtonKeyDown())
 			await this.flashImage(ev.action, 'images/states/api-error', 1000, 1)
