@@ -81,7 +81,7 @@ class Connector {
 				}
 			})
 
-			if (response.status === 401 && (!refresh)) {
+			if (response.status === 401) {
 				logger.info('Access token expired!')
 
 				await this.#refreshAccessToken()
@@ -106,6 +106,10 @@ class Connector {
 		} catch (e) {
 			throw e
 		}
+	}
+
+	ready() {
+		return this.#setup
 	}
 
 	setup(clientId = null, clientSecret = null, refreshToken = null, port = 4202) {
