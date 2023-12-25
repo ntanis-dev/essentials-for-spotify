@@ -1,16 +1,8 @@
 import streamDeck from '@elgato/streamdeck'
 import express from 'express'
-import logger from './logger.js'
+import constants from './constants'
+import logger from './logger'
 import EventEmitter from 'events'
-
-const DEFAULT_SCOPES = [
-	'user-read-playback-state',
-	'user-modify-playback-state',
-	'user-library-modify'
-]
-
-const EMPTY_RESPONSE = Symbol('EMPTY_RESPONSE')
-const NOT_FOUND_RESPONSE = Symbol('NOT_FOUND_RESPONSE')
 
 class Connector extends EventEmitter {
 	#accessToken = null
@@ -81,7 +73,7 @@ class Connector extends EventEmitter {
 		if (!this.#setup)
 			throw new Error(`Tried to call Spotify API before setup! Path: "${path}"`)
 
-		const method = options.method || 'UNK'
+		const method = options.method || 'GET'
 
 		try {
 			let response = await fetch(`https://api.spotify.com/v1/${path}`, {
@@ -111,9 +103,9 @@ class Connector extends EventEmitter {
 			logger.trace(`Spotify API call "${method}" to "${path}" returned status ${response.status}.`)
 
 			if (response.status === 204)
-				return EMPTY_RESPONSE
+				return constants.API_EMPTY_RESPONSE
 			else if (response.status === 404)
-				return NOT_FOUND_RESPONSE
+				return constants.API_NOT_FOUND_RESPONSE
 
 			if (!response.ok)
 				throw new Error(`HTTP error during Spotify API call! Status: ${response.status}`)
@@ -167,7 +159,7 @@ class Connector extends EventEmitter {
 			}
 
 			if (!code) {
-				res.redirect(`https://accounts.spotify.com/authorize?response_type=code&client_id=${this.#clientId}&scope=${encodeURIComponent(DEFAULT_SCOPES.join(' '))}&redirect_uri=${encodeURIComponent(`http://localhost:${this.#port}`)}`);
+				res.redirect(`https://accounts.spotify.com/authorize?response_type=code&client_id=${this.#clientId}&scope=${encodeURIComponent(constants.CONNECTOR_DEFAULT_SCOPES.join(' '))}&redirect_uri=${encodeURIComponent(`http://localhost:${this.#port}`)}`);
 				return
 			}
 
@@ -236,4 +228,3 @@ class Connector extends EventEmitter {
 }
 
 export default new Connector()
-export { EMPTY_RESPONSE, NOT_FOUND_RESPONSE }

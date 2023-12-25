@@ -1,6 +1,8 @@
 import { EventEmitter } from 'events'
-import connector, { NOT_FOUND_RESPONSE } from './connector'
+import connector from './connector'
+import constants from './constants'
 import logger from './logger'
+import helpers from './helpers'
 
 class Wrapper extends EventEmitter {
 	#lastMuted = false
@@ -11,6 +13,8 @@ class Wrapper extends EventEmitter {
 	#lastDevice = null
 	#lastSong = null
 	#lastDevices = []
+	#lastPlaybackStateUpdate = null
+	#updatePlaybackStateStatus = 'idle'
 
 	constructor() {
 		super()
@@ -20,37 +24,65 @@ class Wrapper extends EventEmitter {
 				this.#onConnectorSetup()
 		})
 
-		if (connector.setup)
+		if (connector.set)
 			this.#onConnectorSetup()
+
+		setInterval(() => {
+			if (!connector.set)
+				return
+
+			this.#updatePlaybackState().then(response => {}).catch(e => logger.error(`Failed to update playback state on interval: ${e}`))
+		}, constants.INTERVAL_CHECK_UPDATE_PLAYBACK_STATE)
 	}
 
 	#setPlaying(playing) {
+		if (this.#lastPlaying === playing)
+			return
+
+		this.#updatePlaybackStateStatus = 'skip'
 		this.#lastPlaying = playing
 		this.emit('playbackStateChanged', playing)
 	}
 
 	#setRepeatState(repeatState) {
+		if (this.#lastRepeatState === repeatState)
+			return
+
+		this.#updatePlaybackStateStatus = 'skip'
 		this.#lastRepeatState = repeatState
 		this.emit('repeatStateChanged', repeatState)
 	}
 
 	#setShuffleState(shuffleState) {
+		if (this.#lastShuffleState === shuffleState)
+			return
+
+		this.#updatePlaybackStateStatus = 'skip'
 		this.#lastShuffleState = shuffleState
 		this.emit('shuffleStateChanged', shuffleState)
 	}
 
 	#setVolumePercent(volumePercent) {
+		if (this.#lastVolumePercent === volumePercent)
+			return
+
+		this.#updatePlaybackStateStatus = 'skip'
 		this.#lastVolumePercent = volumePercent
 
 		if (this.#lastVolumePercent > 0)
 			this.#setMuted(false)
 		else if (this.#lastVolumePercent === 0 && this.#lastMuted === false)
-			this.#setMuted(50)
+			this.#setMuted(constants.VOLUME_PERCENT_MUTE_RESTORE)
 
 		this.emit('volumePercentChanged', volumePercent)
 	}
 
 	#setMuted(volumePercent) {
+		if (this.#lastMuted === volumePercent)
+			return
+
+		this.#updatePlaybackStateStatus = 'skip'
+
 		if (volumePercent === false)
 			this.#lastMuted = false
 		else
@@ -59,19 +91,87 @@ class Wrapper extends EventEmitter {
 		this.emit('mutedStateChanged', this.#lastMuted !== false)
 	}
 
-	#setLastSong(song) {
-		logger.info(`Song changed to "${song?.item.id}".`)
+	#setLastSong(song, pending = false) {
+		const songChanged = this.#lastSong?.item?.id !== song?.item?.id
+		const likedChanged = this.#lastSong?.liked !== song?.liked
 
+		if ((!songChanged) && (!likedChanged))
+			return
+
+		this.#updatePlaybackStateStatus = 'skip'
 		this.#lastSong = song
-		this.emit('songChanged', song)
+
+		if (songChanged)
+			this.emit('songChanged', song, pending)
+
+		if (likedChanged)
+			this.emit('likedStateChanged', song?.liked)
 	}
 
 	#onConnectorSetup() {
-		this.updatePlaybackState().then(response => {}).catch(e => logger.error(`Failed to update playback state on setup: ${e}`))
+		this.#updatePlaybackState().then(response => {}).catch(e => logger.error(`Failed to update playback state on setup: ${e}`))
 
-		this.getDevices().then(response => {
+		this.#getDevices().then(response => {
 			this.#lastDevices = response
 		}).catch(e => logger.error(`Failed to get devices on setup: ${e}`))
+	}
+	
+	async #updatePlaybackState(force = false) {
+		if (this.#updatePlaybackStateStatus === 'skip' && (!force)) {
+			this.#updatePlaybackStateStatus = 'idle'
+			return
+		} else if (this.#updatePlaybackStateStatus === 'updating')
+			return
+
+		if (this.#lastPlaybackStateUpdate && (Date.now() - this.#lastPlaybackStateUpdate < constants.INTERVAL_UPDATE_PLAYBACK_STATE) && (!force))
+			return
+
+		this.#lastPlaybackStateUpdate = Date.now()
+		this.#updatePlaybackStateStatus = 'updating'
+
+		try {
+			let response = await connector.callSpotifyApi('me/player')
+
+			if (response === constants.API_EMPTY_RESPONSE)
+				response = undefined
+
+			this.#setPlaying(response?.is_playing || false)
+			this.#setRepeatState(response?.repeat_state || 'off')
+			this.#setShuffleState(response?.shuffle_state || false)
+			this.#setVolumePercent(typeof(response?.device.volume_percent) !== 'number' ? 100 : response.device.volume_percent)
+
+			this.#setLastSong(response?.item ? {
+				item: response.item,
+				liked: await this.#getSongIdIsLiked(response.item.id)
+			} : null)
+
+			this.#lastDevice = response?.device.id || null
+		} catch (e) {
+			logger.error(e)
+			return {}
+		} finally {
+			this.#updatePlaybackStateStatus = 'idle'
+		}
+	}
+
+	async #getSongIdIsLiked(id) {
+		try {
+			const response = await connector.callSpotifyApi(`me/tracks/contains?ids=${id}`)
+			return response[0]
+		} catch (e) {
+			logger.error(e)
+			return false
+		}
+	}
+
+	async #getDevices() {
+		try {
+			const response = await connector.callSpotifyApi('me/player/devices')
+			return response.devices
+		} catch (e) {
+			logger.error(e)
+			return []
+		}
 	}
 
 	async resumePlayback(deviceId = this.#lastDevice) {
@@ -80,7 +180,7 @@ class Wrapper extends EventEmitter {
 				method: 'PUT'
 			})
 
-			if (response === NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
+			if (response === constants.API_NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
 				return this.resumePlayback(this.#lastDevices[0].id)
 
 			this.#setPlaying(true)
@@ -98,7 +198,7 @@ class Wrapper extends EventEmitter {
 				method: 'PUT'
 			})
 
-			if (response === NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
+			if (response === constants.API_NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
 				return this.pausePlayback(this.#lastDevices[0].id)
 
 			this.#setPlaying(false)
@@ -116,9 +216,14 @@ class Wrapper extends EventEmitter {
 				method: 'POST'
 			})
 
-			if (response === NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
+			if (response === constants.API_NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
 				return this.nextSong(this.#lastDevices[0].id)
 
+			this.#setLastSong(null, true)
+
+			await helpers.sleep(constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
+			await this.#updatePlaybackState(true)
+			
 			return true
 		} catch (e) {
 			logger.error(e)
@@ -132,8 +237,13 @@ class Wrapper extends EventEmitter {
 				method: 'POST'
 			})
 
-			if (response === NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
+			if (response === constants.API_NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
 				return this.previousSong(this.#lastDevices[0].id)
+
+			this.#setLastSong(null, true)
+
+			await helpers.sleep(constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
+			await this.#updatePlaybackState(true)
 
 			return true
 		} catch (e) {
@@ -148,7 +258,7 @@ class Wrapper extends EventEmitter {
 				method: 'PUT'
 			})
 
-			if (response === NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
+			if (response === constants.API_NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
 				return this.turnOnShuffle(this.#lastDevices[0].id)
 
 			this.#setShuffleState(true)
@@ -166,7 +276,7 @@ class Wrapper extends EventEmitter {
 				method: 'PUT'
 			})
 
-			if (response === NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
+			if (response === constants.API_NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
 				return this.turnOffShuffle(this.#lastDevices[0].id)
 
 			this.#setShuffleState(false)
@@ -184,7 +294,7 @@ class Wrapper extends EventEmitter {
 				method: 'PUT'
 			})
 
-			if (response === NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
+			if (response === constants.API_NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
 				return this.turnOnContextRepeat(this.#lastDevices[0].id)
 
 			this.#setRepeatState('context')
@@ -202,7 +312,7 @@ class Wrapper extends EventEmitter {
 				method: 'PUT'
 			})
 
-			if (response === NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
+			if (response === constants.API_NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
 				return this.turnOnTrackRepeat(this.#lastDevices[0].id)
 
 			this.#setRepeatState('track')
@@ -220,7 +330,7 @@ class Wrapper extends EventEmitter {
 				method: 'PUT'
 			})
 
-			if (response === NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
+			if (response === constants.API_NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
 				return this.turnOffRepeat(this.#lastDevices[0].id)
 
 			this.#setRepeatState('off')
@@ -240,7 +350,7 @@ class Wrapper extends EventEmitter {
 				method: 'PUT'
 			})
 
-			if (response === NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
+			if (response === constants.API_NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
 				return this.setPlaybackVolume(volumePercent, this.#lastDevices[0].id)
 
 			this.#setVolumePercent(volumePercent)
@@ -310,47 +420,6 @@ class Wrapper extends EventEmitter {
 		} catch (e) {
 			logger.error(e)
 			return false
-		}
-	}
-
-	async getSongIdIsLiked(id) {
-		try {
-			const response = await connector.callSpotifyApi(`me/tracks/contains?ids=${id}`)
-			return response[0]
-		} catch (e) {
-			logger.error(e)
-			return false
-		}
-	}
-
-	async getDevices() {
-		try {
-			const response = await connector.callSpotifyApi('me/player/devices')
-			return response.devices
-		} catch (e) {
-			logger.error(e)
-			return []
-		}
-	}
-
-	async updatePlaybackState() {
-		try {
-			const response = await connector.callSpotifyApi('me/player')
-			
-			this.#setPlaying(response.is_playing || false)
-			this.#setRepeatState(response.repeat_state || 'off')
-			this.#setShuffleState(response.shuffle_state || false)
-			this.#setVolumePercent(response?.device.volume_percent === undefined ? 100 : response.device.volume_percent)
-
-			this.#setLastSong(response.item ? {
-				item: response.item,
-				liked: await this.getSongIdIsLiked(response.item.id)
-			} : null)
-
-			this.#lastDevice = response?.device.id || null
-		} catch (e) {
-			logger.error(e)
-			return {}
 		}
 	}
 

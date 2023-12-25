@@ -201,6 +201,23 @@
 					"TitleAlignment": "middle"
 				}
 			]
+		},
+		
+		{
+			"Name": "Song Artwork",
+			"UUID": "com.ntanis.spotify-essentials.song-artwork-button",
+			"Icon": "images/actions/song-artwork",
+			"Tooltip": "Displays the artwork of the current song.",
+			"DisableAutomaticStates": true,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/song-artwork",
+					"TitleAlignment": "middle"
+				}
+			]
 		}
 	],
 	"Category": "Spotify Essentials",

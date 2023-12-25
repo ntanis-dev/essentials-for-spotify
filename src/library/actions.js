@@ -11,6 +11,7 @@ import LikeUnlikeButton from './../actions/like-unlike-button'
 import VolumeUpButton from './../actions/volume-up-button'
 import VolumeDownButton from './../actions/volume-down-button'
 import VolumeMuteUnmuteButton from './../actions/volume-mute-unmute-button'
+import SongArtworkButton from './../actions/song-artwork-button'
 
 const register = () => {
 	streamDeck.actions.registerAction(new PlayPauseButton())
@@ -23,6 +24,7 @@ const register = () => {
 	streamDeck.actions.registerAction(new VolumeUpButton())
 	streamDeck.actions.registerAction(new VolumeDownButton())
 	streamDeck.actions.registerAction(new VolumeMuteUnmuteButton())
+	streamDeck.actions.registerAction(new SongArtworkButton())
 	logger.info('Registered actions.')
 }
 

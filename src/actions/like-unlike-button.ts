@@ -8,17 +8,17 @@ import { Button } from './button.js'
 export default class LikeUnlikeButton extends Button {
 	constructor() {
 		super()
-		wrapper.on('songChanged', this.#onSongChanged.bind(this))
+		wrapper.on('likedStateChanged', this.#onLikedStateChanged.bind(this))
 	}
 
-	#onSongChanged(song: any) {
+	#onLikedStateChanged(liked: boolean) {
 		if (this.context)
-			streamDeck.client.setState(this.context, song && song.liked ? 1 : 0).catch(e => logger.error(`Failed to set state for "${this.manifestId}".`, e))
+			streamDeck.client.setState(this.context, liked ? 1 : 0).catch(e => logger.error(`Failed to set state for "${this.manifestId}".`, e))
 	}
 
 	onWillAppear(ev: WillAppearEvent<any>): void {
 		super.onWillAppear(ev)
-		this.#onSongChanged(wrapper.song)
+		this.#onLikedStateChanged(wrapper.song)
 	}
 
 	async onButtonKeyDown() {
