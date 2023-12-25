@@ -4,49 +4,190 @@
 	"Author": "Ntanis",
 	"Actions": [
 		{
-			"Name": "Play",
-			"UUID": "com.ntanis.spotify-essentials.play-button",
-			"Icon": "imgs/actions/play/icon",
-			"Tooltip": "Resumes the current song.",
+			"Name": "Play / Pause",
+			"UUID": "com.ntanis.spotify-essentials.play-pause-button",
+			"Icon": "images/keys/play-pause",
+			"Tooltip": "",
 			"Controllers": [
 				"Keypad"
 			],
 			"States": [
 				{
-					"Image": "imgs/actions/play/key",
+					"Image": "images/buttons/play",
 					"TitleAlignment": "middle"
-				}
-			]
-		},
-
-		{
-			"Name": "Pause",
-			"UUID": "com.ntanis.spotify-essentials.pause-button",
-			"Icon": "imgs/actions/pause/icon",
-			"Tooltip": "Pause the current song.",
-			"Controllers": [
-				"Keypad"
-			],
-			"States": [
+				},
+				
 				{
-					"Image": "imgs/actions/pause/key",
+					"Image": "images/buttons/pause",
 					"TitleAlignment": "middle"
 				}
 			]
 		},
 		
 		{
-			"Name": "Setup",
-			"UUID": "com.ntanis.spotify-essentials.setup-button",
-			"Icon": "imgs/actions/setup/icon",
-			"Tooltip": "Setup the Spotify integration.",
-			"UserTitleEnabled": false,
+			"Name": "Previous Song",
+			"UUID": "com.ntanis.spotify-essentials.previous-song-button",
+			"Icon": "images/keys/previous",
+			"Tooltip": "",
 			"Controllers": [
 				"Keypad"
 			],
 			"States": [
 				{
-					"Image": "imgs/actions/setup/key",
+					"Image": "images/buttons/previous",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		
+		{
+			"Name": "Next Song",
+			"UUID": "com.ntanis.spotify-essentials.next-song-button",
+			"Icon": "images/keys/next",
+			"Tooltip": "",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/buttons/next",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		
+		{
+			"Name": "Shuffle",
+			"UUID": "com.ntanis.spotify-essentials.shuffle-button",
+			"Icon": "images/keys/shuffle",
+			"Tooltip": "",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/buttons/shuffle-inactive",
+					"TitleAlignment": "middle"
+				},
+				
+				{
+					"Image": "images/buttons/shuffle-active",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		
+		{
+			"Name": "Loop Context",
+			"UUID": "com.ntanis.spotify-essentials.loop-context-button",
+			"Icon": "images/keys/loop-context",
+			"Tooltip": "",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/buttons/loop-inactive",
+					"TitleAlignment": "middle"
+				},
+				
+				{
+					"Image": "images/buttons/loop-active",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		
+		{
+			"Name": "Loop Track",
+			"UUID": "com.ntanis.spotify-essentials.loop-track-button",
+			"Icon": "images/keys/loop-track",
+			"Tooltip": "",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/buttons/loop-inactive",
+					"TitleAlignment": "middle"
+				},
+				
+				{
+					"Image": "images/buttons/loop-one",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		
+		{
+			"Name": "Like / Unlike Song",
+			"UUID": "com.ntanis.spotify-essentials.like-unlike-button",
+			"Icon": "images/keys/like-unlike",
+			"Tooltip": "",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/buttons/like",
+					"TitleAlignment": "middle"
+				},
+				
+				{
+					"Image": "images/buttons/unlike",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		
+		{
+			"Name": "Volume Up",
+			"UUID": "com.ntanis.spotify-essentials.volume-up-button",
+			"Icon": "images/keys/volume-up",
+			"Tooltip": "",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/buttons/volume-up",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		
+		{
+			"Name": "Volume Down",
+			"UUID": "com.ntanis.spotify-essentials.volume-down-button",
+			"Icon": "images/keys/volume-down",
+			"Tooltip": "",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/buttons/volume-down",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		
+		{
+			"Name": "Volume Mute / Unmute",
+			"UUID": "com.ntanis.spotify-essentials.volume-mute-unmute-button",
+			"Icon": "images/keys/volume-mute-unmute",
+			"Tooltip": "",
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/buttons/volume-mute",
+					"TitleAlignment": "middle"
+				},
+				
+				{
+					"Image": "images/buttons/volume-unmute",
 					"TitleAlignment": "middle"
 				}
 			]
