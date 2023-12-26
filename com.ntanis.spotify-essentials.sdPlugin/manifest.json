@@ -114,12 +114,12 @@
 			],
 			"States": [
 				{
-					"Image": "images/states/loop-inactive",
+					"Image": "images/states/loop-one-inactive",
 					"TitleAlignment": "middle"
 				},
 				
 				{
-					"Image": "images/states/loop-one",
+					"Image": "images/states/loop-one-active",
 					"TitleAlignment": "middle"
 				}
 			]
