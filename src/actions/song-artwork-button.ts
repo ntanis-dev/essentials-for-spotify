@@ -48,6 +48,8 @@ export default class SongArtworkButton extends Button {
 			}
 		}
 
+		this.#marquees[context] = marqueeData
+
 		if (marqueeData.title.frame === null)
 			marqueeData.title.frame = (title.length / 2) + constants.TITLE_MARQUEE_SPACING
 
@@ -75,8 +77,6 @@ export default class SongArtworkButton extends Button {
 			marqueeData.artists.frame = 0
 
 		marqueeData.timeout = setTimeout(() => this.#marqueeTitle(id, title, artists, context), isInitial ? constants.TITLE_MARQUEE_INTERVAL_INITIAL : constants.TITLE_MARQUEE_INTERVAL)
-
-		this.#marquees[context] = marqueeData
 	}
 
 	async #resumeMarquee(context: string) {
