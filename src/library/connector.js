@@ -1,7 +1,6 @@
 import streamDeck from '@elgato/streamdeck'
 import express from 'express'
 import constants from './constants'
-import logger from './logger'
 import EventEmitter from 'events'
 
 class Connector extends EventEmitter {
@@ -38,9 +37,7 @@ class Connector extends EventEmitter {
 			if (!response.ok)
 				throw new Error(`HTTP error during refresh access token! Status: ${response.status}`)
 
-			const data = await response.json()
-
-			this.#accessToken = data.access_token
+			this.#accessToken = (await response.json()).access_token
 		} catch (e) {
 			this.#invalidateSetup()
 			throw e
@@ -103,10 +100,6 @@ class Connector extends EventEmitter {
 			return response.json()
 		else
 			return response.text()
-	}
-
-	get set() {
-		return this.#setup
 	}
 
 	async startSetup(clientId = null, clientSecret = null, refreshToken = null, port = 4202) {
@@ -205,6 +198,10 @@ class Connector extends EventEmitter {
 			this.#setSetup(true)
 		} else
 			this.#server = this.#app.listen(port)
+	}
+
+	get set() {
+		return this.#setup
 	}
 }
 

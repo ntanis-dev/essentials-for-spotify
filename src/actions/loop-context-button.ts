@@ -14,15 +14,15 @@ export default class LoopContextButton extends Button {
 			setImmediate(async () => await streamDeck.client.setState(context, state === 'context' ? 1 : 0))
 	}
 
-	onWillAppear(ev: WillAppearEvent<any>): void {
-		super.onWillAppear(ev)
-		this.#onRepeatStateChanged(wrapper.repeatState, [ev.action.id])
-	}
-
 	async onButtonKeyDown() {
 		if (wrapper.repeatState === 'context')
 			return wrapper.turnOffRepeat()
 		else
 			return wrapper.turnOnContextRepeat()
+	}
+
+	onWillAppear(ev: WillAppearEvent<any>): void {
+		super.onWillAppear(ev)
+		this.#onRepeatStateChanged(wrapper.repeatState, [ev.action.id])
 	}
 }

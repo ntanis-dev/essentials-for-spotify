@@ -1,5 +1,5 @@
 
-import streamDeck, { action, WillAppearEvent, WillDisappearEvent } from '@elgato/streamdeck'
+import streamDeck, { action, WillAppearEvent } from '@elgato/streamdeck'
 import wrapper from './../library/wrapper.js'
 import { Button } from './button.js'
 
@@ -22,11 +22,6 @@ export default class LikeUnlikeButton extends Button {
 			})
 	}
 
-	onWillAppear(ev: WillAppearEvent<any>): void {
-		super.onWillAppear(ev)
-		this.#onLikedStateChanged(wrapper.song?.liked, false, [ev.action.id])
-	}
-
 	async onButtonKeyDown() {
 		if (wrapper.song) {
 			if (wrapper.song.liked)
@@ -34,5 +29,10 @@ export default class LikeUnlikeButton extends Button {
 			else
 				return wrapper.likeLastSong()
 		}
+	}
+
+	onWillAppear(ev: WillAppearEvent<any>): void {
+		super.onWillAppear(ev)
+		this.#onLikedStateChanged(wrapper.song?.liked, false, [ev.action.id])
 	}
 }

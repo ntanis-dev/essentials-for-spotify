@@ -15,15 +15,15 @@ export default class VolumeMuteUnmuteButton extends Button {
 			setImmediate(async () => await streamDeck.client.setState(context, state ? 1 : 0))
 	}
 
-	onWillAppear(ev: WillAppearEvent<any>): void {
-		super.onWillAppear(ev)
-		this.#onMutedStateChanged(wrapper.muted, [ev.action.id])
-	}
-
 	async onButtonKeyDown() {
 		if (wrapper.muted)
 			return wrapper.unmuteVolume()
 		else
 			return wrapper.muteVolume()
+	}
+
+	onWillAppear(ev: WillAppearEvent<any>): void {
+		super.onWillAppear(ev)
+		this.#onMutedStateChanged(wrapper.muted, [ev.action.id])
 	}
 }

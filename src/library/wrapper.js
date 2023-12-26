@@ -35,6 +35,62 @@ class Wrapper extends EventEmitter {
 		}, constants.INTERVAL_CHECK_UPDATE_PLAYBACK_STATE)
 	}
 
+	async #wrapCall(fn) {
+		this.#updatePlaybackStateStatus = 'pause'
+
+		try {
+			return await fn()
+		} catch (e) {
+			logger.error(`An error occured while responding to a wrapper call: "${e}".`)
+			return false
+		} finally {
+			this.#updatePlaybackStateStatus = 'idle'
+			this.#lastPlaybackStateUpdate = Date.now()
+		}
+	}
+
+	#updatePlaybackState(force = false) {
+		if (this.#updatePlaybackStateStatus === 'skip' && (!force)) {
+			this.#updatePlaybackStateStatus = 'idle'
+			return
+		} else if (this.#updatePlaybackStateStatus === 'updating' || this.#updatePlaybackStateStatus === 'pause')
+			return
+
+		if (this.#lastPlaybackStateUpdate && (Date.now() - this.#lastPlaybackStateUpdate < constants.INTERVAL_UPDATE_PLAYBACK_STATE) && (!force))
+			return
+
+		this.#lastPlaybackStateUpdate = Date.now()
+		this.#updatePlaybackStateStatus = 'updating'
+
+		try {
+			;(async () => {
+				let response = await connector.callSpotifyApi('me/player')
+
+				if (response === constants.API_EMPTY_RESPONSE)
+					response = undefined
+	
+				this.#setPlaying(response?.is_playing || false)
+				this.#setRepeatState(response?.repeat_state || 'off')
+				this.#setShuffleState(response?.shuffle_state || false)
+				this.#setVolumePercent(typeof(response?.device.volume_percent) !== 'number' ? 100 : response.device.volume_percent)
+	
+				this.#setSong(response?.item ? {
+					item: response.item,
+					liked: (await connector.callSpotifyApi(`me/tracks/contains?ids=${response.item.id}`))[0]
+				} : null)
+	
+				this.#setDevices(response?.device.id || null, (await connector.callSpotifyApi('me/player/devices')).devices)
+			}) ().catch(e => {
+				throw e
+			})
+		} catch (e) {
+			logger.error(`An error occured while updating playback state: "${e}".`)
+		} finally {
+			this.#updatePlaybackStateStatus = 'idle'
+			this.#lastPlaybackStateUpdate = Date.now()
+		}
+	}
+
 	#setPlaying(playing) {
 		if (this.#lastPlaying === playing)
 			return
@@ -123,59 +179,18 @@ class Wrapper extends EventEmitter {
 		this.emit('devicesChanged', devices)
 	}
 
-	async #updatePlaybackState(force = false) {
-		if (this.#updatePlaybackStateStatus === 'skip' && (!force)) {
-			this.#updatePlaybackStateStatus = 'idle'
-			return
-		} else if (this.#updatePlaybackStateStatus === 'updating' || this.#updatePlaybackStateStatus === 'pause')
-			return
+	#onSongChangeExpected() {
+		clearTimeout(this.#songChangeForceUpdatePlaybackStateTimeout)
 
-		if (this.#lastPlaybackStateUpdate && (Date.now() - this.#lastPlaybackStateUpdate < constants.INTERVAL_UPDATE_PLAYBACK_STATE) && (!force))
-			return
+		this.#setSong(null, true)
 
-		this.#lastPlaybackStateUpdate = Date.now()
-		this.#updatePlaybackStateStatus = 'updating'
-
-		try {
-			let response = await connector.callSpotifyApi('me/player')
-
-			if (response === constants.API_EMPTY_RESPONSE)
-				response = undefined
-
-			this.#setPlaying(response?.is_playing || false)
-			this.#setRepeatState(response?.repeat_state || 'off')
-			this.#setShuffleState(response?.shuffle_state || false)
-			this.#setVolumePercent(typeof(response?.device.volume_percent) !== 'number' ? 100 : response.device.volume_percent)
-
-			this.#setSong(response?.item ? {
-				item: response.item,
-				liked: (await connector.callSpotifyApi(`me/tracks/contains?ids=${response.item.id}`))[0]
-			} : null)
-
-			this.#setDevices(response?.device.id || null, (await connector.callSpotifyApi('me/player/devices')).devices)
-		} catch (e) {
-			return {}
-		} finally {
-			this.#updatePlaybackStateStatus = 'idle'
-			this.#lastPlaybackStateUpdate = Date.now()
-		}
-	}
-
-	async #callPlaybackApi(fn) {
-		this.#updatePlaybackStateStatus = 'pause'
-
-		try {
-			return await fn()
-		} catch (e) {
-			return false
-		} finally {
-			this.#updatePlaybackStateStatus = 'idle'
-			this.#lastPlaybackStateUpdate = Date.now()
-		}
+		this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(async () => {
+			await this.#updatePlaybackState(true)
+		}, constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
 	}
 
 	async resumePlayback(deviceId = this.#lastDevice) {
-		return this.#callPlaybackApi(async () => {
+		return this.#wrapCall(async () => {
 			const response = await connector.callSpotifyApi(`me/player/play${deviceId ? `?device_id=${deviceId}` : ''}`, {
 				method: 'PUT'
 			})
@@ -183,11 +198,8 @@ class Wrapper extends EventEmitter {
 			if (response === constants.API_NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
 				return this.resumePlayback(this.#lastDevices[0].id)
 
-			if (this.#lastSong === null) {
-				clearTimeout(this.#songChangeForceUpdatePlaybackStateTimeout)
-				this.#setSong(null, true)
-				this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(async () => await this.#updatePlaybackState(true), constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
-			}
+			if (this.#lastSong === null)
+				this.#onSongChangeExpected()
 
 			this.#setPlaying(true)
 
@@ -196,7 +208,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async pausePlayback(deviceId = this.#lastDevice) {
-		return this.#callPlaybackApi(async () => {
+		return this.#wrapCall(async () => {
 			const response = await connector.callSpotifyApi(`me/player/pause${deviceId ? `?device_id=${deviceId}` : ''}`, {
 				method: 'PUT'
 			})
@@ -211,7 +223,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async nextSong(deviceId = this.#lastDevice) {
-		return this.#callPlaybackApi(async () => {
+		return this.#wrapCall(async () => {
 			const response = await connector.callSpotifyApi(`me/player/next${deviceId ? `?device_id=${deviceId}` : ''}`, {
 				method: 'POST'
 			})
@@ -219,16 +231,14 @@ class Wrapper extends EventEmitter {
 			if (response === constants.API_NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
 				return this.nextSong(this.#lastDevices[0].id)
 
-			clearTimeout(this.#songChangeForceUpdatePlaybackStateTimeout)
-			this.#setSong(null, true)
-			this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(async () => await this.#updatePlaybackState(true), constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
+			this.#onSongChangeExpected()
 
 			return true
 		})
 	}
 
 	async previousSong(deviceId = this.#lastDevice) {
-		return this.#callPlaybackApi(async () => {
+		return this.#wrapCall(async () => {
 			const response = await connector.callSpotifyApi(`me/player/previous${deviceId ? `?device_id=${deviceId}` : ''}`, {
 				method: 'POST'
 			})
@@ -236,16 +246,14 @@ class Wrapper extends EventEmitter {
 			if (response === constants.API_NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
 				return this.previousSong(this.#lastDevices[0].id)
 
-			clearTimeout(this.#songChangeForceUpdatePlaybackStateTimeout)
-			this.#setSong(null, true)
-			this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(async () => await this.#updatePlaybackState(true), constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
+			this.#onSongChangeExpected()
 
 			return true
 		})
 	}
 
 	async turnOnShuffle(deviceId = this.#lastDevice) {
-		return this.#callPlaybackApi(async () => {
+		return this.#wrapCall(async () => {
 			const response = await connector.callSpotifyApi(`me/player/shuffle?state=true${deviceId ? `&device_id=${deviceId}` : ''}`, {
 				method: 'PUT'
 			})
@@ -260,7 +268,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async turnOffShuffle(deviceId = this.#lastDevice) {
-		return this.#callPlaybackApi(async () => {
+		return this.#wrapCall(async () => {
 			const response = await connector.callSpotifyApi(`me/player/shuffle?state=false${deviceId ? `&device_id=${deviceId}` : ''}`, {
 				method: 'PUT'
 			})
@@ -275,7 +283,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async turnOnContextRepeat(deviceId = this.#lastDevice) {
-		return this.#callPlaybackApi(async () => {
+		return this.#wrapCall(async () => {
 			const response = await connector.callSpotifyApi(`me/player/repeat?state=context${deviceId ? `&device_id=${deviceId}` : ''}`, {
 				method: 'PUT'
 			})
@@ -290,7 +298,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async turnOnTrackRepeat(deviceId = this.#lastDevice) {
-		return this.#callPlaybackApi(async () => {
+		return this.#wrapCall(async () => {
 			const response = await connector.callSpotifyApi(`me/player/repeat?state=track${deviceId ? `&device_id=${deviceId}` : ''}`, {
 				method: 'PUT'
 			})
@@ -305,7 +313,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async turnOffRepeat(deviceId = this.#lastDevice) {
-		return this.#callPlaybackApi(async () => {
+		return this.#wrapCall(async () => {
 			const response = await connector.callSpotifyApi(`me/player/repeat?state=off${deviceId ? `&device_id=${deviceId}` : ''}`, {
 				method: 'PUT'
 			})
@@ -320,7 +328,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async setPlaybackVolume(volumePercent, deviceId = this.#lastDevice) {
-		return this.#callPlaybackApi(async () => {
+		return this.#wrapCall(async () => {
 			volumePercent = Math.max(0, Math.min(100, volumePercent))
 
 			const response = await connector.callSpotifyApi(`me/player/volume?volume_percent=${volumePercent}${deviceId ? `&device_id=${deviceId}` : ''}`, {
@@ -337,23 +345,20 @@ class Wrapper extends EventEmitter {
 	}
 
 	async muteVolume(deviceId = this.#lastDevice) {
-		return this.#callPlaybackApi(async () => {
+		return this.#wrapCall(async () => {
 			this.#setMuted(this.#lastVolumePercent)
 			return this.setPlaybackVolume(0, deviceId)
 		})
 	}
 
 	async unmuteVolume(deviceId = this.#lastDevice) {
-		return this.#callPlaybackApi(async () => {
+		return this.#wrapCall(async () => {
 			return this.setPlaybackVolume(this.#lastMuted, deviceId)
 		})
 	}
 
 	async likeLastSong() {
-		return this.#callPlaybackApi(async () => {
-			if (!this.#lastSong)
-				throw new Error('Tried to like last song, but no song is playing.')
-	
+		return this.#wrapCall(async () => {
 			await connector.callSpotifyApi(`me/tracks?ids=${this.#lastSong.item.id}`, {
 				method: 'PUT'
 			})
@@ -368,10 +373,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async unlikeLastSong() {
-		return this.#callPlaybackApi(async () => {
-			if (!this.#lastSong)
-				throw new Error('Tried to unlike last song, but no song is playing.')
-	
+		return this.#wrapCall(async () => {
 			await connector.callSpotifyApi(`me/tracks?ids=${this.#lastSong.item.id}`, {
 				method: 'DELETE'
 			})

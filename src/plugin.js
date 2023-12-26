@@ -25,5 +25,5 @@ streamDeck.connect().then(() => {
 	actions.register()
 })
 
-process.on('uncaughtException', e => logger.error(e))
-process.on('unhandledRejection', e => logger.error(e))
+process.on('uncaughtException', e => logger.error(`An uncaught exception occured: "${e}".`))
+process.on('unhandledRejection', e => logger.error(`An unhandled promise rejection occured: "${e}".`))

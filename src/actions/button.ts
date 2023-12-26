@@ -8,10 +8,6 @@ export class Button extends SingletonAction {
 		super()
 	}
 
-	isVisible(context: string) {
-		return this.contexts.includes(context)
-	}
-
 	async flashImage(action: any, image: string, duration: number = 500, times = 2) {
 		for (let i = 0; i < times; i++) {
 			await action.setImage(image)
@@ -19,14 +15,6 @@ export class Button extends SingletonAction {
 			await action.setImage()
 			await new Promise(resolve => setTimeout(resolve, duration))
 		}
-	}
-
-	onWillAppear(ev: WillAppearEvent<any>): void {
-		this.contexts.push(ev.action.id)
-	}
-
-	onWillDisappear(ev: WillDisappearEvent<any>): void {
-		this.contexts.splice(this.contexts.indexOf(ev.action.id), 1)
 	}
 
 	async onKeyDown(ev: KeyDownEvent<any>) {
@@ -37,6 +25,18 @@ export class Button extends SingletonAction {
 	}
 
 	async onButtonKeyDown(): Promise<boolean> {
-		throw new Error('Method not implemented.')
+		throw new Error('The method "onButtonKeyDown" is not implemented.')
+	}
+
+	isVisible(context: string) {
+		return this.contexts.includes(context)
+	}
+
+	onWillAppear(ev: WillAppearEvent<any>): void {
+		this.contexts.push(ev.action.id)
+	}
+
+	onWillDisappear(ev: WillDisappearEvent<any>): void {
+		this.contexts.splice(this.contexts.indexOf(ev.action.id), 1)
 	}
 }

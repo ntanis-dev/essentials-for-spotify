@@ -14,15 +14,15 @@ export default class ShuffleButton extends Button {
 			setImmediate(async () => await streamDeck.client.setState(context, state ? 1 : 0))
 	}
 
-	onWillAppear(ev: WillAppearEvent<any>): void {
-		super.onWillAppear(ev)
-		this.#onShuffleStateChanged(wrapper.shuffleState, [ev.action.id])
-	}
-
 	async onButtonKeyDown() {
 		if (wrapper.shuffleState)
 			return wrapper.turnOffShuffle()
 		else
 			return wrapper.turnOnShuffle()
+	}
+
+	onWillAppear(ev: WillAppearEvent<any>): void {
+		super.onWillAppear(ev)
+		this.#onShuffleStateChanged(wrapper.shuffleState, [ev.action.id])
 	}
 }

@@ -14,15 +14,15 @@ export default class PlayPauseButton extends Button {
 			setImmediate(async () => await streamDeck.client.setState(context, state ? 1 : 0))
 	}
 
-	onWillAppear(ev: WillAppearEvent<any>): void {
-		super.onWillAppear(ev)
-		this.#onPlaybackStateChanged(wrapper.playing, [ev.action.id])
-	}
-
 	async onButtonKeyDown() {
 		if (wrapper.playing)
 			return wrapper.pausePlayback()
 		else
 			return wrapper.resumePlayback()
+	}
+
+	onWillAppear(ev: WillAppearEvent<any>): void {
+		super.onWillAppear(ev)
+		this.#onPlaybackStateChanged(wrapper.playing, [ev.action.id])
 	}
 }

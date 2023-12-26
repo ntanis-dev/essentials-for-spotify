@@ -16,15 +16,6 @@ export default class SongArtworkButton extends Button {
 		wrapper.on('songChanged', this.#onSongChanged.bind(this))
 	}
 
-	#getTextSpacingWidth(text: string) {
-		let totalWidth = 0
-
-		for (const char of text)
-			totalWidth += constants.CHARACTER_WIDTH_MAP[char] || 1
-
-		return totalWidth;
-	}
-
 	async #marqueeTitle(id: string, title: string, artists: string, context: string) {
 		const isInitial = this.#marquees[context] === undefined
 
@@ -81,19 +72,12 @@ export default class SongArtworkButton extends Button {
 			this.#marquees[context].timeout = setTimeout(async () => await this.#marqueeTitle(this.#marquees[context].id, this.#marquees[context].title.original, this.#marquees[context].artists.original, context), constants.TITLE_MARQUEE_INTERVAL)
 	}
 
-	#pauseMarquee(context: string) {
-		if (this.#marquees[context]) {
-			clearTimeout(this.#marquees[context].timeout)
-			this.#marquees[context].timeout = null
-		}
-	}
-
 	async #onSongChanged(song: any, pending: boolean = false, contexts = this.contexts) {
 		for (const context of contexts)
 			setImmediate(async () => {
 				const url = song && song.item.album.images.length > 0 ? song.item.album.images[0].url : null
 
-				if (this.#marquees[context] && this.#marquees[context].id !== song.item.id) {
+				if (pending || this.#marquees[context] && this.#marquees[context].id !== song.item.id) {
 					clearTimeout(this.#marquees[context].timeout)
 					delete this.#marquees[context]
 					await streamDeck.client.setTitle(context, '')
@@ -122,6 +106,22 @@ export default class SongArtworkButton extends Button {
 				} else
 					await streamDeck.client.setImage(context)
 			})
+	}
+
+	#getTextSpacingWidth(text: string) {
+		let totalWidth = 0
+
+		for (const char of text)
+			totalWidth += constants.CHARACTER_WIDTH_MAP[char] || 1
+
+		return totalWidth;
+	}
+
+	#pauseMarquee(context: string) {
+		if (this.#marquees[context]) {
+			clearTimeout(this.#marquees[context].timeout)
+			this.#marquees[context].timeout = null
+		}
 	}
 
 	onWillAppear(ev: WillAppearEvent<any>): void {
