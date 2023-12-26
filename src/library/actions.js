@@ -1,5 +1,4 @@
-import streamDeck from '@elgato/streamdeck'
-
+import StreamDeck from '@elgato/streamdeck'
 import PlayPauseButton from './../actions/play-pause-button'
 import PreviousSongButton from './../actions/previous-song-button'
 import NextSongButton from './../actions/next-song-button'
@@ -14,16 +13,16 @@ import SongArtworkButton from './../actions/song-artwork-button'
 
 export default {
 	register: () => {
-		streamDeck.actions.registerAction(new PlayPauseButton())
-		streamDeck.actions.registerAction(new PreviousSongButton())
-		streamDeck.actions.registerAction(new NextSongButton())
-		streamDeck.actions.registerAction(new LoopContextButton())
-		streamDeck.actions.registerAction(new LoopSongButton())
-		streamDeck.actions.registerAction(new ShuffleButton())
-		streamDeck.actions.registerAction(new LikeUnlikeButton())
-		streamDeck.actions.registerAction(new VolumeUpButton())
-		streamDeck.actions.registerAction(new VolumeDownButton())
-		streamDeck.actions.registerAction(new VolumeMuteUnmuteButton())
-		streamDeck.actions.registerAction(new SongArtworkButton())
+		StreamDeck.actions.registerAction(new PlayPauseButton())
+		StreamDeck.actions.registerAction(new PreviousSongButton())
+		StreamDeck.actions.registerAction(new NextSongButton())
+		StreamDeck.actions.registerAction(new LoopContextButton())
+		StreamDeck.actions.registerAction(new LoopSongButton())
+		StreamDeck.actions.registerAction(new ShuffleButton())
+		StreamDeck.actions.registerAction(new LikeUnlikeButton())
+		StreamDeck.actions.registerAction(new VolumeUpButton())
+		StreamDeck.actions.registerAction(new VolumeDownButton())
+		StreamDeck.actions.registerAction(new VolumeMuteUnmuteButton())
+		StreamDeck.actions.registerAction(new SongArtworkButton())
 	}
 }

@@ -1,7 +1,5 @@
-import streamDeck, {
+import StreamDeck, {
 	LogLevel
 } from '@elgato/streamdeck'
 
-streamDeck.logger.setLevel(LogLevel.INFO)
-
-export default streamDeck.logger.createScope('Spotify Essentials')
+export default StreamDeck.logger.setLevel(LogLevel.INFO).createScope('Spotify Essentials')

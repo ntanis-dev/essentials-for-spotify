@@ -1,6 +1,14 @@
-import streamDeck, { action, WillAppearEvent } from '@elgato/streamdeck'
+import StreamDeck, {
+	action,
+	WillAppearEvent
+} from '@elgato/streamdeck'
+
+import {
+	Button
+} from './button.js'
+
+import logger from './../library/logger.js'
 import wrapper from './../library/wrapper.js'
-import { Button } from './button.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.play-pause-button' })
 export default class PlayPauseButton extends Button {
@@ -11,10 +19,10 @@ export default class PlayPauseButton extends Button {
 
 	#onPlaybackStateChanged(state: boolean, contexts = this.contexts) {
 		for (const context of contexts)
-			setImmediate(async () => await streamDeck.client.setState(context, state ? 1 : 0))
+			StreamDeck.client.setState(context, state ? 1 : 0).catch(e => logger.error(`An error occurred while setting the Stream Deck state of "${this.manifestId}": "${e}".`))
 	}
 
-	async onButtonKeyDown() {
+	async invokeWrapperAction() {
 		if (wrapper.playing)
 			return wrapper.pausePlayback()
 		else

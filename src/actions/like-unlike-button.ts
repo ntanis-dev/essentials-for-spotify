@@ -1,7 +1,15 @@
 
-import streamDeck, { action, WillAppearEvent } from '@elgato/streamdeck'
+import StreamDeck, {
+	action,
+	WillAppearEvent
+} from '@elgato/streamdeck'
+
+import {
+	Button
+} from './button.js'
+
+import logger from './../library/logger.js'
 import wrapper from './../library/wrapper.js'
-import { Button } from './button.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.like-unlike-button' })
 export default class LikeUnlikeButton extends Button {
@@ -12,23 +20,22 @@ export default class LikeUnlikeButton extends Button {
 
 	#onLikedStateChanged(liked: boolean, pending: boolean = false, contexts = this.contexts) {
 		for (const context of contexts)
-			setImmediate(async () => {
-				if (pending)
-					await streamDeck.client.setImage(context, 'images/states/pending')
-				else {
-					await streamDeck.client.setImage(context)
-					await streamDeck.client.setState(context, liked ? 1 : 0)
-				}
+			setImmediate(() => {
+				StreamDeck.client.setImage(context, pending ? 'images/states/pending' : undefined).catch(e => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e}".`))
+
+				if (!pending)
+					StreamDeck.client.setState(context, liked ? 1 : 0).catch(e => logger.error(`An error occurred while setting the Stream Deck state of "${this.manifestId}": "${e}".`))
 			})
 	}
 
-	async onButtonKeyDown() {
-		if (wrapper.song) {
-			if (wrapper.song.liked)
-				return wrapper.unlikeLastSong()
-			else
-				return wrapper.likeLastSong()
-		}
+	async invokeWrapperAction() {
+		if (!wrapper.song)
+			return
+
+		if (wrapper.song.liked)
+			return wrapper.unlikeSong(wrapper.song.item)
+		else
+			return wrapper.likeSong(wrapper.song.item)
 	}
 
 	onWillAppear(ev: WillAppearEvent<any>): void {

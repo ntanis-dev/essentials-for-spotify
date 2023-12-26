@@ -1,7 +1,8 @@
-import streamDeck from '@elgato/streamdeck'
+import StreamDeck from '@elgato/streamdeck'
+import EventEmitter from 'events'
 import express from 'express'
 import constants from './constants'
-import EventEmitter from 'events'
+import logger from './logger'
 
 class Connector extends EventEmitter {
 	#accessToken = null
@@ -33,7 +34,7 @@ class Connector extends EventEmitter {
 			}
 		})
 
-		if (!response.ok)
+		if (response.status !== 200)
 			throw new Error(`The refresh token Spotify API call failed with status "${response.status}".`)
 
 		this.#accessToken = (await response.json()).access_token
@@ -48,17 +49,17 @@ class Connector extends EventEmitter {
 		this.#accessToken = null
 		this.#refreshToken = null
 
-		this.#server = this.#app.listen(this.#port)
+		this.#server = this.#app.listen(this.#port, () => logger.info(`Connector setup server listening on port "${this.#port}".`))
 
-		streamDeck.client.setGlobalSettings({
+		StreamDeck.client.setGlobalSettings({
 			clientId: null,
 			clientSecret: null,
 			refreshToken: null,
 			accessToken: null
-		})
+		}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e}".`))
 	}
 
-	async callSpotifyApi(path, options = {}) {
+	async callSpotifyApi(path, options = {}, allowResponses = []) {
 		if (!this.#setup)
 			throw new Error(`The Spotify API call "${path}" failed because the connector is not set up.`)
 
@@ -84,12 +85,12 @@ class Connector extends EventEmitter {
 			})
 		}
 
-		if (response.status === 204)
+		if (response.status === 204 && allowResponses.includes(constants.API_EMPTY_RESPONSE))
 			return constants.API_EMPTY_RESPONSE
-		else if (response.status === 404)
+		else if (response.status === 404 && allowResponses.includes(constants.API_NOT_FOUND_RESPONSE))
 			return constants.API_NOT_FOUND_RESPONSE
 
-		if (!response.ok)
+		if (response.status !== 200)
 			throw new Error(`The Spotify API call "${path}" failed with status "${response.status}".`)
 
 		if (response.headers.get('content-type')?.includes('application/json'))
@@ -98,7 +99,9 @@ class Connector extends EventEmitter {
 			return response.text()
 	}
 
-	startSetup(clientId = null, clientSecret = null, refreshToken = null, port = 4202) {
+	startSetup(clientId = null, clientSecret = null, refreshToken = null, port = constants.CONNECTOR_DEFAULT_PORT) {
+		logger.info('Starting connector setup.')
+
 		this.#clientId = clientId
 		this.#clientSecret = clientSecret
 		this.#refreshToken = refreshToken
@@ -151,7 +154,7 @@ class Connector extends EventEmitter {
 					}
 				})
 
-				if (!response.ok)
+				if (response.status !== 200)
 					throw new Error(`The access token Spotify API call failed with status "${response.status}".`)
 
 				const data = await response.json()
@@ -160,12 +163,12 @@ class Connector extends EventEmitter {
 				this.#accessToken = data.access_token
 				this.#setSetup(true)
 
-				streamDeck.client.setGlobalSettings({
+				StreamDeck.client.setGlobalSettings({
 					clientId: this.#clientId,
 					clientSecret: this.#clientSecret,
 					refreshToken: this.#refreshToken,
 					accessToken: this.#accessToken
-				})
+				}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e}".`))
 
 				res.send('OK! You may close this page now!')
 
@@ -194,7 +197,7 @@ class Connector extends EventEmitter {
 				this.#invalidateSetup()
 			})
 		else
-			this.#server = this.#app.listen(port)
+			this.#server = this.#app.listen(port, () => logger.info(`Connector setup server listening on port "${port}".`))
 	}
 
 	get set() {

@@ -1,8 +1,17 @@
 
-import streamDeck, { action, WillAppearEvent, WillDisappearEvent } from '@elgato/streamdeck'
-import wrapper from './../library/wrapper.js'
+import StreamDeck, {
+	action,
+	WillAppearEvent,
+	WillDisappearEvent
+} from '@elgato/streamdeck'
+
+import {
+	Button
+} from './button.js'
+
 import constants from './../library/constants.js'
-import { Button } from './button.js'
+import logger from './../library/logger.js'
+import wrapper from './../library/wrapper.js'
 
 declare const fetch: Function
 
@@ -51,7 +60,10 @@ export default class SongArtworkButton extends Button {
 		if (marqueeData.artists.totalFrames === null)
 			marqueeData.artists.totalFrames = marqueeData.artists.render.length
 
-		await streamDeck.client.setTitle(context, `${this.#getTextSpacingWidth(title) > constants.TITLE_MARQUEE_SPACING ? `${marqueeData.title.render.slice(marqueeData.title.frame)}${marqueeData.title.render.slice(0, marqueeData.title.frame)}` : title}\n${this.#getTextSpacingWidth(artists) > constants.TITLE_MARQUEE_SPACING ? `${marqueeData.artists.render.slice(marqueeData.artists.frame)}${marqueeData.artists.render.slice(0, marqueeData.artists.frame)}` : artists}`)
+		await StreamDeck.client.setTitle(context, `${this.#getTextSpacingWidth(title) > constants.TITLE_MARQUEE_SPACING ? `${marqueeData.title.render.slice(marqueeData.title.frame)}${marqueeData.title.render.slice(0, marqueeData.title.frame)}` : title}\n${this.#getTextSpacingWidth(artists) > constants.TITLE_MARQUEE_SPACING ? `${marqueeData.artists.render.slice(marqueeData.artists.frame)}${marqueeData.artists.render.slice(0, marqueeData.artists.frame)}` : artists}`).catch((e: Error) => logger.error(`An error occurred while setting the Stream Deck title of "${this.manifestId}": "${e}".`))
+
+		if ((!this.#marquees[context]) || this.#marquees[context].id !== id)
+			return
 
 		marqueeData.title.frame++
 		marqueeData.artists.frame++
@@ -62,14 +74,14 @@ export default class SongArtworkButton extends Button {
 		if (marqueeData.artists.frame >= marqueeData.artists.totalFrames)
 			marqueeData.artists.frame = 0
 
-		marqueeData.timeout = setTimeout(async () => await this.#marqueeTitle(id, title, artists, context), isInitial ? constants.TITLE_MARQUEE_INTERVAL_INITIAL : constants.TITLE_MARQUEE_INTERVAL)
+		marqueeData.timeout = setTimeout(() => this.#marqueeTitle(id, title, artists, context), isInitial ? constants.TITLE_MARQUEE_INTERVAL_INITIAL : constants.TITLE_MARQUEE_INTERVAL)
 
 		this.#marquees[context] = marqueeData
 	}
 
 	async #resumeMarquee(context: string) {
 		if (this.#marquees[context])
-			this.#marquees[context].timeout = setTimeout(async () => await this.#marqueeTitle(this.#marquees[context].id, this.#marquees[context].title.original, this.#marquees[context].artists.original, context), constants.TITLE_MARQUEE_INTERVAL)
+			this.#marquees[context].timeout = setTimeout(() => this.#marqueeTitle(this.#marquees[context].id, this.#marquees[context].title.original, this.#marquees[context].artists.original, context), constants.TITLE_MARQUEE_INTERVAL)
 	}
 
 	async #onSongChanged(song: any, pending: boolean = false, contexts = this.contexts) {
@@ -77,34 +89,40 @@ export default class SongArtworkButton extends Button {
 			setImmediate(async () => {
 				const url = song && song.item.album.images.length > 0 ? song.item.album.images[0].url : null
 
-				if (pending || this.#marquees[context] && this.#marquees[context].id !== song.item.id) {
+				if (pending || (song && this.#marquees[context] && this.#marquees[context].id !== song.item.id)) {
 					clearTimeout(this.#marquees[context].timeout)
 					delete this.#marquees[context]
-					await streamDeck.client.setTitle(context, '')
+					StreamDeck.client.setTitle(context, '').catch((e: Error) => logger.error(`An error occurred while setting the Stream Deck title of "${this.manifestId}": "${e}".`))
 				}
 
 				if (url) {
 					if (!this.#imageCache[url])
-						await streamDeck.client.setImage(context, 'images/states/pending')
+						StreamDeck.client.setImage(context, 'images/states/pending').catch((e: Error) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e}".`))
 
-					const imageBuffer = this.#imageCache[url] || Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')
+					let imageBuffer = undefined
+
+					try {
+						imageBuffer = this.#imageCache[url] || Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')
+					} catch (e) {
+						logger.error(`An error occurred while fetching the image of song "${song.item.id}": "${e}".`)
+					}
 
 					this.#imageCache[url] = imageBuffer
 
 					if ((!this.#marquees[context]) || this.#marquees[context].id !== song.item.id)
-						await this.#marqueeTitle(song.item.id, song.item.name, song.item.artists.map((artist: any) => artist.name).join(', '), context)
+						this.#marqueeTitle(song.item.id, song.item.name, song.item.artists.map((artist: any) => artist.name).join(', '), context)
 					else
 						this.#resumeMarquee(context)
 
 					if (imageBuffer)
-						await streamDeck.client.setImage(context, `data:image/jpeg;base64,${imageBuffer}`)
+						StreamDeck.client.setImage(context, `data:image/jpeg;base64,${imageBuffer}`).catch((e: Error) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e}".`))
 					else
-						await streamDeck.client.setImage(context)
+						StreamDeck.client.setImage(context).catch((e: Error) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e}".`))
 				} else if (pending) {
 					this.#imageCache = {}
-					await streamDeck.client.setImage(context, 'images/states/pending')
+					StreamDeck.client.setImage(context, 'images/states/pending').catch((e: Error) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e}".`))
 				} else
-					await streamDeck.client.setImage(context)
+					StreamDeck.client.setImage(context).catch((e: Error) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e}".`))
 			})
 	}
 
