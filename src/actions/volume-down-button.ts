@@ -10,6 +10,8 @@ import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.volume-down-button' })
 export default class VolumeDownButton extends Button {
+	static readonly HOLDABLE = true
+
 	async invokeWrapperAction() {
 		return wrapper.setPlaybackVolume(wrapper.volumePercent - 5)
 	}

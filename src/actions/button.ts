@@ -1,5 +1,6 @@
 import {
 	KeyDownEvent,
+	KeyUpEvent,
 	SingletonAction,
 	WillAppearEvent,
 	WillDisappearEvent
@@ -10,7 +11,10 @@ import connector from './../library/connector.js'
 import logger from './../library/logger.js'
 
 export class Button extends SingletonAction {
+	static HOLDABLE = false
+
 	contexts: Array<string> = []
+	pressed: any = {}
 
 	constructor() {
 		super()
@@ -26,6 +30,8 @@ export class Button extends SingletonAction {
 	}
 
 	async onKeyDown(ev: KeyDownEvent<any>) {
+		this.pressed[ev.action.id] = true
+
 		if (!connector.set)
 			await this.flashImage(ev.action, 'images/states/setup-error', 1000, 1)
 		else {
@@ -35,7 +41,14 @@ export class Button extends SingletonAction {
 				await this.flashImage(ev.action, 'images/states/api-error', 1000, 1)
 			else if (response === constants.WRAPPER_RESPONSE_PENDING)
 				await this.flashImage(ev.action, 'images/states/busy', 500, 1)
+			else if (response === constants.WRAPPER_RESPONSE_SUCCESS)
+				if (this.pressed[ev.action.id] && (this.constructor as typeof Button).HOLDABLE)
+					this.onKeyDown(ev)
 		}
+	}
+
+	async onKeyUp(ev: KeyUpEvent<any>) {
+		this.pressed[ev.action.id] = false
 	}
 
 	async invokeWrapperAction(): Promise<boolean> {
