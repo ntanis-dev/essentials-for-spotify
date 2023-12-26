@@ -1,3 +1,10 @@
+// TODO
+// Better image indicators
+// Better error handling, especially on promises
+// Dial support
+// Feedback support
+// Rate limit handling
+
 import streamDeck from '@elgato/streamdeck'
 import logger from './library/logger'
 import connector from './library/connector'

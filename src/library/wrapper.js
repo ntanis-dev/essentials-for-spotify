@@ -92,11 +92,11 @@ class Wrapper extends EventEmitter {
 		this.emit('mutedStateChanged', this.#lastMuted !== false)
 	}
 
-	#setLastSong(song, pending = false) {
+	#setSong(song, pending = false) {
 		const songChanged = this.#lastSong?.item?.id !== song?.item?.id
 		const likedChanged = this.#lastSong?.liked !== song?.liked
 
-		if ((!songChanged) && (!likedChanged))
+		if ((!songChanged) && (!likedChanged) && (!pending))
 			return
 
 		this.#updatePlaybackStateStatus = 'skip'
@@ -141,7 +141,7 @@ class Wrapper extends EventEmitter {
 			this.#setShuffleState(response?.shuffle_state || false)
 			this.#setVolumePercent(typeof(response?.device.volume_percent) !== 'number' ? 100 : response.device.volume_percent)
 
-			this.#setLastSong(response?.item ? {
+			this.#setSong(response?.item ? {
 				item: response.item,
 				liked: await this.#getSongIdIsLiked(response.item.id)
 			} : null)
@@ -186,6 +186,12 @@ class Wrapper extends EventEmitter {
 
 			if (response === constants.API_NOT_FOUND_RESPONSE && this.#lastDevices.length > 0)
 				return this.resumePlayback(this.#lastDevices[0].id)
+
+			if (this.#lastSong === null) {
+				clearTimeout(this.#songChangeForceUpdatePlaybackStateTimeout)
+				this.#setSong(null, true)
+				this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(async () => await this.#updatePlaybackState(true), constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
+			}
 
 			this.#setPlaying(true)
 
@@ -234,10 +240,9 @@ class Wrapper extends EventEmitter {
 				return this.nextSong(this.#lastDevices[0].id)
 
 			clearTimeout(this.#songChangeForceUpdatePlaybackStateTimeout)
-
-			this.#setLastSong(null, true)
+			this.#setSong(null, true)
 			this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(async () => await this.#updatePlaybackState(true), constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
-			
+
 			return true
 		} catch (e) {
 			logger.error(e)
@@ -260,8 +265,7 @@ class Wrapper extends EventEmitter {
 				return this.previousSong(this.#lastDevices[0].id)
 
 			clearTimeout(this.#songChangeForceUpdatePlaybackStateTimeout)
-
-			this.#setLastSong(null, true)
+			this.#setSong(null, true)
 			this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(async () => await this.#updatePlaybackState(true), constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
 
 			return true
@@ -454,7 +458,7 @@ class Wrapper extends EventEmitter {
 				method: 'PUT'
 			})
 
-			this.#setLastSong({
+			this.#setSong({
 				item: this.#lastSong.item,
 				liked: true
 			})
@@ -480,7 +484,7 @@ class Wrapper extends EventEmitter {
 				method: 'DELETE'
 			})
 
-			this.#setLastSong({
+			this.#setSong({
 				item: this.#lastSong.item,
 				liked: false
 			})

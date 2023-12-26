@@ -1,5 +1,5 @@
 
-import streamDeck, { action, WillAppearEvent } from '@elgato/streamdeck'
+import streamDeck, { action, WillAppearEvent, WillDisappearEvent } from '@elgato/streamdeck'
 import wrapper from './../library/wrapper.js'
 import logger from './../library/logger.js'
 import constants from './../library/constants.js'
@@ -14,60 +14,69 @@ export default class SongArtworkButton extends Button {
 	constructor() {
 		super()
 		wrapper.on('songChanged', this.#onSongChanged.bind(this))
-		logger.info(`Action "${this.manifestId}" registered.`)
 	}
 
-	#marqueeTitle(title: string, artists: string, context: string) {
+	#getTextSpacingWidth(text: string) {
+		let totalWidth = 0
+
+		for (const char of text)
+			totalWidth += constants.CHARACTER_WIDTH_MAP[char] || 1
+
+		return totalWidth;
+	}
+
+	async #marqueeTitle(title: string, artists: string, context: string) {
+		const isInitial = this.#marquees[context] === undefined
+
 		const marqueeData = this.#marquees[context] || {
 			timeout: null,
 
 			title: {
-				render: `${title}${' '.repeat(constants.TITLE_MARQUEE_SPACING)}`,
+				render: `${title}${' '.repeat(constants.TITLE_MARQUEE_SPACING * constants.TITLE_MARQUEE_SPACING_MULTIPLIER)}`,
 				frame: null,
 				totalFrames: null
 			},
 
 			artists: {
-				render: `${artists}${' '.repeat(constants.TITLE_MARQUEE_SPACING)}`,
+				render: `${artists}${' '.repeat(constants.TITLE_MARQUEE_SPACING * constants.TITLE_MARQUEE_SPACING_MULTIPLIER)}`,
 				frame: null,
 				totalFrames: null
 			}
 		}
 
-		marqueeData.timeout = setTimeout(async () => {
-			if (marqueeData.title.frame === null)
-				marqueeData.title.frame = (title.length / 2) + constants.TITLE_MARQUEE_SPACING
+		if (marqueeData.title.frame === null)
+			marqueeData.title.frame = (title.length / 2) + constants.TITLE_MARQUEE_SPACING
 
-			if (marqueeData.artists.frame === null)
-				marqueeData.artists.frame = (artists.length / 2) + constants.TITLE_MARQUEE_SPACING
-			
-			if (marqueeData.title.totalFrames === null)
-				marqueeData.title.totalFrames = marqueeData.title.render.length
+		if (marqueeData.artists.frame === null)
+			marqueeData.artists.frame = (artists.length / 2) + constants.TITLE_MARQUEE_SPACING
+		
+		if (marqueeData.title.totalFrames === null)
+			marqueeData.title.totalFrames = marqueeData.title.render.length
 
-			if (marqueeData.artists.totalFrames === null)
-				marqueeData.artists.totalFrames = marqueeData.artists.render.length
+		if (marqueeData.artists.totalFrames === null)
+			marqueeData.artists.totalFrames = marqueeData.artists.render.length
 
-			await streamDeck.client.setTitle(context, `${title.length > constants.TITLE_MARQUEE_SPACING ? `${marqueeData.title.render.slice(marqueeData.title.frame)}${marqueeData.title.render.slice(0, marqueeData.title.frame)}` : title}\n${artists.length > constants.TITLE_MARQUEE_SPACING ? `${marqueeData.artists.render.slice(marqueeData.artists.frame)}${marqueeData.artists.render.slice(0, marqueeData.artists.frame)}` : artists}`)
+		await streamDeck.client.setTitle(context, `${this.#getTextSpacingWidth(title) > constants.TITLE_MARQUEE_SPACING ? `${marqueeData.title.render.slice(marqueeData.title.frame)}${marqueeData.title.render.slice(0, marqueeData.title.frame)}` : title}\n${this.#getTextSpacingWidth(artists) > constants.TITLE_MARQUEE_SPACING ? `${marqueeData.artists.render.slice(marqueeData.artists.frame)}${marqueeData.artists.render.slice(0, marqueeData.artists.frame)}` : artists}`)
 
-			marqueeData.title.frame++
-			marqueeData.artists.frame++
+		marqueeData.title.frame++
+		marqueeData.artists.frame++
 
-			if (marqueeData.title.frame >= marqueeData.title.totalFrames)
-				marqueeData.title.frame = 0
+		if (marqueeData.title.frame >= marqueeData.title.totalFrames)
+			marqueeData.title.frame = 0
 
-			if (marqueeData.artists.frame >= marqueeData.artists.totalFrames)
-				marqueeData.artists.frame = 0
+		if (marqueeData.artists.frame >= marqueeData.artists.totalFrames)
+			marqueeData.artists.frame = 0
 
-			marqueeData.timeout = setTimeout(() => this.#marqueeTitle(title, artists, context), constants.TITLE_MARQUEE_INTERVAL)
-		}, constants.TITLE_MARQUEE_INTERVAL_INITIAL)
+		marqueeData.timeout = setTimeout(async () => await this.#marqueeTitle(title, artists, context), isInitial ? constants.TITLE_MARQUEE_INTERVAL_INITIAL : constants.TITLE_MARQUEE_INTERVAL)
 
 		this.#marquees[context] = marqueeData
 	}
 
-	#clearMarquee(context: string) {
+	async #clearMarquee(context: string) {
 		if (this.#marquees[context]) {
 			clearTimeout(this.#marquees[context].timeout)
 			delete this.#marquees[context]
+			await streamDeck.client.setTitle(context, '')
 		}
 	}
 
@@ -76,20 +85,25 @@ export default class SongArtworkButton extends Button {
 			setImmediate(async () => {
 				const url = song && song.item.album.images.length > 0 ? song.item.album.images[0].url : null
 
-				this.#clearMarquee(context)
-				await streamDeck.client.setTitle(context, '')
+				await this.#clearMarquee(context)
 
 				if (url) {
 					await streamDeck.client.setImage(context, 'images/states/pending')
 
+					let imageBuffer = null
+
 					try {
-						await streamDeck.client.setImage(context, `data:image/jpeg;base64,${Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')}`).catch(e => logger.error(`Failed to set state for "${this.manifestId}".`, e))
+						imageBuffer = Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')
 					} catch (e) {
 						logger.error(`Failed to fetch image for song "${song.item.id}".`, e)
-						await streamDeck.client.setImage(context)
 					}
 
-					this.#marqueeTitle(song.item.name, song.item.artists.map((artist: any) => artist.name).join(', '), context)
+					await this.#marqueeTitle(song.item.name, song.item.artists.map((artist: any) => artist.name).join(', '), context)
+
+					if (imageBuffer)
+						await streamDeck.client.setImage(context, `data:image/jpeg;base64,${imageBuffer}`).catch(e => logger.error(`Failed to set state for "${this.manifestId}".`, e))
+					else
+						await streamDeck.client.setImage(context)
 				} else if (pending)
 					await streamDeck.client.setImage(context, 'images/states/pending')
 				else
@@ -100,5 +114,10 @@ export default class SongArtworkButton extends Button {
 	onWillAppear(ev: WillAppearEvent<any>): void {
 		super.onWillAppear(ev)
 		this.#onSongChanged(wrapper.song, false, [ev.action.id])
+	}
+
+	onWillDisappear(ev: WillDisappearEvent<any>): void {
+		super.onWillDisappear(ev)
+		this.#clearMarquee(ev.action.id)
 	}
 }
