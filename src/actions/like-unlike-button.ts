@@ -1,7 +1,6 @@
 
-import streamDeck, { action, WillAppearEvent } from '@elgato/streamdeck'
+import streamDeck, { action, WillAppearEvent, WillDisappearEvent } from '@elgato/streamdeck'
 import wrapper from './../library/wrapper.js'
-import logger from './../library/logger.js'
 import { Button } from './button.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.like-unlike-button' })
@@ -18,14 +17,14 @@ export default class LikeUnlikeButton extends Button {
 					await streamDeck.client.setImage(context, 'images/states/pending')
 				else {
 					await streamDeck.client.setImage(context)
-					await streamDeck.client.setState(context, liked ? 1 : 0).catch(e => logger.error(`Failed to set state for "${this.manifestId}".`, e))
+					await streamDeck.client.setState(context, liked ? 1 : 0)
 				}
 			})
 	}
 
 	onWillAppear(ev: WillAppearEvent<any>): void {
 		super.onWillAppear(ev)
-		this.#onLikedStateChanged(wrapper.song, false, [ev.action.id])
+		this.#onLikedStateChanged(wrapper.song?.liked, false, [ev.action.id])
 	}
 
 	async onButtonKeyDown() {

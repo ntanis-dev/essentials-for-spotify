@@ -41,8 +41,6 @@ class Connector extends EventEmitter {
 			const data = await response.json()
 
 			this.#accessToken = data.access_token
-
-			logger.info(`Refreshed access token, new value: "${this.#accessToken}".`)
 		} catch (e) {
 			this.#invalidateSetup()
 			throw e
@@ -57,26 +55,33 @@ class Connector extends EventEmitter {
 		this.#accessToken = null
 		this.#refreshToken = null
 
-		this.#server = this.#app.listen(this.#port, () => logger.info(`Setup server is now listening @ http://localhost:${port}`))
+		this.#server = this.#app.listen(this.#port)
 
 		streamDeck.client.setGlobalSettings({
 			clientId: null,
 			clientSecret: null,
 			refreshToken: null,
 			accessToken: null
-		}).catch(e => logger.error(`Error while saving global settings: ${e}`))
-
-		logger.info('Setup was invalidated.')
+		})
 	}
 
 	async callSpotifyApi(path, options = {}) {
 		if (!this.#setup)
 			throw new Error(`Tried to call Spotify API before setup! Path: "${path}"`)
 
-		const method = options.method || 'GET'
+		let response = await fetch(`https://api.spotify.com/v1/${path}`, {
+			...options,
 
-		try {
-			let response = await fetch(`https://api.spotify.com/v1/${path}`, {
+			headers: {
+				...options.headers,
+				'Authorization': `Bearer ${this.#accessToken}`
+			}
+		})
+
+		if (response.status === 401) {
+			await this.#refreshAccessToken()
+
+			response = await fetch(`https://api.spotify.com/v1/${path}`, {
 				...options,
 
 				headers: {
@@ -84,46 +89,27 @@ class Connector extends EventEmitter {
 					'Authorization': `Bearer ${this.#accessToken}`
 				}
 			})
-
-			if (response.status === 401) {
-				logger.info('Access token expired!')
-
-				await this.#refreshAccessToken()
-
-				response = await fetch(`https://api.spotify.com/v1/${path}`, {
-					...options,
-
-					headers: {
-						...options.headers,
-						'Authorization': `Bearer ${this.#accessToken}`
-					}
-				})
-			}
-
-			logger.trace(`Spotify API call "${method}" to "${path}" returned status ${response.status}.`)
-
-			if (response.status === 204)
-				return constants.API_EMPTY_RESPONSE
-			else if (response.status === 404)
-				return constants.API_NOT_FOUND_RESPONSE
-
-			if (!response.ok)
-				throw new Error(`HTTP error during Spotify API call! Status: ${response.status}`)
-
-			if (response.headers.get('content-type')?.includes('application/json'))
-				return response.json()
-			else
-				return response.text()
-		} catch (e) {
-			throw e
 		}
+
+		if (response.status === 204)
+			return constants.API_EMPTY_RESPONSE
+		else if (response.status === 404)
+			return constants.API_NOT_FOUND_RESPONSE
+
+		if (!response.ok)
+			throw new Error(`HTTP error during Spotify API call! Status: ${response.status}`)
+
+		if (response.headers.get('content-type')?.includes('application/json'))
+			return response.json()
+		else
+			return response.text()
 	}
 
 	get set() {
 		return this.#setup
 	}
 
-	startSetup(clientId = null, clientSecret = null, refreshToken = null, port = 4202) {
+	async startSetup(clientId = null, clientSecret = null, refreshToken = null, port = 4202) {
 		if (this.#app)
 			throw new Error('Tried to setup connector twice.')
 
@@ -193,17 +179,13 @@ class Connector extends EventEmitter {
 					clientSecret: this.#clientSecret,
 					refreshToken: this.#refreshToken,
 					accessToken: this.#accessToken
-				}).catch(e => logger.error(`Error while saving global settings: ${e}`))
+				})
 
 				res.send('OK! You may close this page now!')
 
 				this.#server.close()
 				this.#server = null
-
-				logger.info(`Finished setup, access token: "${this.#accessToken}", refresh token: "${this.#refreshToken}".`)
 			} catch (e) {
-				logger.error(`Error during setup: ${e}`)
-
 				res.send(`
 					Something went wrong! Please make sure you have entered the correct client ID and secret in the setup settings and try again.
 
@@ -219,11 +201,10 @@ class Connector extends EventEmitter {
 		})
 
 		if (this.#refreshToken) {
-			this.#refreshAccessToken().then(() => {
-				this.#setSetup(true)
-			}).catch(e => logger.error(`Error refreshing access token during setup: ${e}`))
+			await this.#refreshAccessToken()
+			this.#setSetup(true)
 		} else
-			this.#server = this.#app.listen(port, () => logger.info(`Setup server is now listening @ http://localhost:${port}`))
+			this.#server = this.#app.listen(port)
 	}
 }
 

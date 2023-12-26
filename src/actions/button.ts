@@ -1,7 +1,5 @@
 import { KeyDownEvent, SingletonAction, WillAppearEvent, WillDisappearEvent } from '@elgato/streamdeck'
 import connector from './../library/connector.js'
-import helpers from './../library/helpers.js'
-import logger from './../library/logger.js'
 
 export class Button extends SingletonAction {
 	contexts: Array<string> = []
@@ -10,12 +8,16 @@ export class Button extends SingletonAction {
 		super()
 	}
 
+	isVisible(context: string) {
+		return this.contexts.includes(context)
+	}
+
 	async flashImage(action: any, image: string, duration: number = 500, times = 2) {
 		for (let i = 0; i < times; i++) {
 			await action.setImage(image)
-			await helpers.sleep(duration)
+			await new Promise(resolve => setTimeout(resolve, duration))
 			await action.setImage()
-			await helpers.sleep(duration)
+			await new Promise(resolve => setTimeout(resolve, duration))
 		}
 	}
 

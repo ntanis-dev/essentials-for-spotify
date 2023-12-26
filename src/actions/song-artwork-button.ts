@@ -1,7 +1,6 @@
 
 import streamDeck, { action, WillAppearEvent, WillDisappearEvent } from '@elgato/streamdeck'
 import wrapper from './../library/wrapper.js'
-import logger from './../library/logger.js'
 import constants from './../library/constants.js'
 import { Button } from './button.js'
 
@@ -10,6 +9,7 @@ declare const fetch: Function
 @action({ UUID: 'com.ntanis.spotify-essentials.song-artwork-button' })
 export default class SongArtworkButton extends Button {
 	#marquees: any = {}
+	#imageCache: any = {}
 
 	constructor() {
 		super()
@@ -25,19 +25,23 @@ export default class SongArtworkButton extends Button {
 		return totalWidth;
 	}
 
-	async #marqueeTitle(title: string, artists: string, context: string) {
+	async #marqueeTitle(id: string, title: string, artists: string, context: string) {
 		const isInitial = this.#marquees[context] === undefined
 
 		const marqueeData = this.#marquees[context] || {
 			timeout: null,
 
+			id,
+
 			title: {
+				original: title,
 				render: `${title}${' '.repeat(constants.TITLE_MARQUEE_SPACING * constants.TITLE_MARQUEE_SPACING_MULTIPLIER)}`,
 				frame: null,
 				totalFrames: null
 			},
 
 			artists: {
+				original: artists,
 				render: `${artists}${' '.repeat(constants.TITLE_MARQUEE_SPACING * constants.TITLE_MARQUEE_SPACING_MULTIPLIER)}`,
 				frame: null,
 				totalFrames: null
@@ -67,16 +71,20 @@ export default class SongArtworkButton extends Button {
 		if (marqueeData.artists.frame >= marqueeData.artists.totalFrames)
 			marqueeData.artists.frame = 0
 
-		marqueeData.timeout = setTimeout(async () => await this.#marqueeTitle(title, artists, context), isInitial ? constants.TITLE_MARQUEE_INTERVAL_INITIAL : constants.TITLE_MARQUEE_INTERVAL)
+		marqueeData.timeout = setTimeout(async () => await this.#marqueeTitle(id, title, artists, context), isInitial ? constants.TITLE_MARQUEE_INTERVAL_INITIAL : constants.TITLE_MARQUEE_INTERVAL)
 
 		this.#marquees[context] = marqueeData
 	}
 
-	async #clearMarquee(context: string) {
+	async #resumeMarquee(context: string) {
+		if (this.#marquees[context])
+			this.#marquees[context].timeout = setTimeout(async () => await this.#marqueeTitle(this.#marquees[context].id, this.#marquees[context].title.original, this.#marquees[context].artists.original, context), constants.TITLE_MARQUEE_INTERVAL)
+	}
+
+	#pauseMarquee(context: string) {
 		if (this.#marquees[context]) {
 			clearTimeout(this.#marquees[context].timeout)
-			delete this.#marquees[context]
-			await streamDeck.client.setTitle(context, '')
+			this.#marquees[context].timeout = null
 		}
 	}
 
@@ -85,28 +93,33 @@ export default class SongArtworkButton extends Button {
 			setImmediate(async () => {
 				const url = song && song.item.album.images.length > 0 ? song.item.album.images[0].url : null
 
-				await this.#clearMarquee(context)
+				if (this.#marquees[context] && this.#marquees[context].id !== song.item.id) {
+					clearTimeout(this.#marquees[context].timeout)
+					delete this.#marquees[context]
+					await streamDeck.client.setTitle(context, '')
+				}
 
 				if (url) {
-					await streamDeck.client.setImage(context, 'images/states/pending')
+					if (!this.#imageCache[url])
+						await streamDeck.client.setImage(context, 'images/states/pending')
 
-					let imageBuffer = null
+					const imageBuffer = this.#imageCache[url] || Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')
 
-					try {
-						imageBuffer = Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')
-					} catch (e) {
-						logger.error(`Failed to fetch image for song "${song.item.id}".`, e)
-					}
+					this.#imageCache[url] = imageBuffer
 
-					await this.#marqueeTitle(song.item.name, song.item.artists.map((artist: any) => artist.name).join(', '), context)
+					if ((!this.#marquees[context]) || this.#marquees[context].id !== song.item.id)
+						await this.#marqueeTitle(song.item.id, song.item.name, song.item.artists.map((artist: any) => artist.name).join(', '), context)
+					else
+						this.#resumeMarquee(context)
 
 					if (imageBuffer)
-						await streamDeck.client.setImage(context, `data:image/jpeg;base64,${imageBuffer}`).catch(e => logger.error(`Failed to set state for "${this.manifestId}".`, e))
+						await streamDeck.client.setImage(context, `data:image/jpeg;base64,${imageBuffer}`)
 					else
 						await streamDeck.client.setImage(context)
-				} else if (pending)
+				} else if (pending) {
+					this.#imageCache = {}
 					await streamDeck.client.setImage(context, 'images/states/pending')
-				else
+				} else
 					await streamDeck.client.setImage(context)
 			})
 	}
@@ -118,6 +131,6 @@ export default class SongArtworkButton extends Button {
 
 	onWillDisappear(ev: WillDisappearEvent<any>): void {
 		super.onWillDisappear(ev)
-		this.#clearMarquee(ev.action.id)
+		this.#pauseMarquee(ev.action.id)
 	}
 }
