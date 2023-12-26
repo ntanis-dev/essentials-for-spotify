@@ -49,13 +49,30 @@ class Wrapper extends EventEmitter {
 		try {
 			return await fn()
 		} catch (e) {
-			logger.error(`An error occured while responding to a wrapper call: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`)
+			logger.error(`An error occured while responding to a wrapper call: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
 			return constants.WRAPPER_RESPONSE_ERROR
 		} finally {
 			this.#updatePlaybackStateStatus = 'idle'
 			this.#lastPlaybackStateUpdate = Date.now()
 			this.#pendingWrappedCall = false
 		}
+	}
+
+	async #deviceCall(path, options, deviceId) {
+		path = `${path}${path.includes('?') ? '&' : '?'}`
+
+		let response = await connector.callSpotifyApi(`${path}${deviceId ? `device_id=${deviceId}` : ''}`, options, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
+
+		if (response === constants.API_NOT_FOUND_RESPONSE)
+			if (this.#lastDevices.length > 0) {
+				response = await connector.callSpotifyApi(`${path}device_id=${this.#lastDevices[0].id}`, options, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
+
+				if (response === constants.API_NOT_FOUND_RESPONSE)
+					throw new Error('No device available.')
+			} else
+				throw new Error('No device available.')
+
+		return response
 	}
 
 	async #updatePlaybackState(force = false) {
@@ -89,7 +106,7 @@ class Wrapper extends EventEmitter {
 
 			this.#setDevices(response?.device.id || null, (await connector.callSpotifyApi('me/player/devices')).devices)
 		} catch (e) {
-			logger.error(`An error occured while updating playback state: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`)
+			logger.error(`An error occured while updating playback state: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
 		} finally {
 			this.#updatePlaybackStateStatus = 'idle'
 			this.#lastPlaybackStateUpdate = Date.now()
@@ -192,15 +209,9 @@ class Wrapper extends EventEmitter {
 
 	async resumePlayback(deviceId = this.#lastDevice) {
 		return this.#wrapCall(async () => {
-			const response = await connector.callSpotifyApi(`me/player/play${deviceId ? `?device_id=${deviceId}` : ''}`, {
+			await this.#deviceCall('me/player/play', {
 				method: 'PUT'
-			}, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
-
-			if (response === constants.API_NOT_FOUND_RESPONSE)
-				if (this.#lastDevices.length > 0)
-					return this.resumePlayback(this.#lastDevices[0].id)
-				else
-					throw new Error('No device available.')
+			}, deviceId)
 
 			if (this.#lastSong === null)
 				this.#onSongChangeExpected()
@@ -213,15 +224,9 @@ class Wrapper extends EventEmitter {
 
 	async pausePlayback(deviceId = this.#lastDevice) {
 		return this.#wrapCall(async () => {
-			const response = await connector.callSpotifyApi(`me/player/pause${deviceId ? `?device_id=${deviceId}` : ''}`, {
+			await this.#deviceCall('me/player/pause', {
 				method: 'PUT'
-			}, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
-
-			if (response === constants.API_NOT_FOUND_RESPONSE)
-				if (this.#lastDevices.length > 0)
-					return this.pausePlayback(this.#lastDevices[0].id)
-				else
-					throw new Error('No device available.')
+			}, deviceId)
 
 			this.#setPlaying(false)
 
@@ -231,15 +236,9 @@ class Wrapper extends EventEmitter {
 
 	async nextSong(deviceId = this.#lastDevice) {
 		return this.#wrapCall(async () => {
-			const response = await connector.callSpotifyApi(`me/player/next${deviceId ? `?device_id=${deviceId}` : ''}`, {
+			await this.#deviceCall('me/player/next', {
 				method: 'POST'
-			}, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
-
-			if (response === constants.API_NOT_FOUND_RESPONSE)
-				if (this.#lastDevices.length > 0)
-					return this.nextSong(this.#lastDevices[0].id)
-				else
-					throw new Error('No device available.')
+			}, deviceId)
 
 			this.#onSongChangeExpected()
 
@@ -249,15 +248,9 @@ class Wrapper extends EventEmitter {
 
 	async previousSong(deviceId = this.#lastDevice) {
 		return this.#wrapCall(async () => {
-			const response = await connector.callSpotifyApi(`me/player/previous${deviceId ? `?device_id=${deviceId}` : ''}`, {
+			await this.#deviceCall('me/player/previous', {
 				method: 'POST'
-			}, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
-
-			if (response === constants.API_NOT_FOUND_RESPONSE)
-				if (this.#lastDevices.length > 0)
-					return this.previousSong(this.#lastDevices[0].id)
-				else
-					throw new Error('No device available.')
+			}, deviceId)
 
 			this.#onSongChangeExpected()
 
@@ -267,15 +260,9 @@ class Wrapper extends EventEmitter {
 
 	async turnOnShuffle(deviceId = this.#lastDevice) {
 		return this.#wrapCall(async () => {
-			const response = await connector.callSpotifyApi(`me/player/shuffle?state=true${deviceId ? `&device_id=${deviceId}` : ''}`, {
+			await this.#deviceCall('me/player/shuffle?state=true', {
 				method: 'PUT'
-			}, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
-
-			if (response === constants.API_NOT_FOUND_RESPONSE)
-				if (this.#lastDevices.length > 0)
-					return this.turnOnShuffle(this.#lastDevices[0].id)
-				else
-					throw new Error('No device available.')
+			}, deviceId)
 
 			this.#setShuffleState(true)
 
@@ -285,15 +272,9 @@ class Wrapper extends EventEmitter {
 
 	async turnOffShuffle(deviceId = this.#lastDevice) {
 		return this.#wrapCall(async () => {
-			const response = await connector.callSpotifyApi(`me/player/shuffle?state=false${deviceId ? `&device_id=${deviceId}` : ''}`, {
+			await this.#deviceCall('me/player/shuffle?state=false', {
 				method: 'PUT'
-			}, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
-
-			if (response === constants.API_NOT_FOUND_RESPONSE)
-				if (this.#lastDevices.length > 0)
-					return this.turnOffShuffle(this.#lastDevices[0].id)
-				else
-					throw new Error('No device available.')
+			}, deviceId)
 
 			this.#setShuffleState(false)
 
@@ -303,15 +284,9 @@ class Wrapper extends EventEmitter {
 
 	async turnOnContextRepeat(deviceId = this.#lastDevice) {
 		return this.#wrapCall(async () => {
-			const response = await connector.callSpotifyApi(`me/player/repeat?state=context${deviceId ? `&device_id=${deviceId}` : ''}`, {
+			await this.#deviceCall('me/player/repeat?state=context', {
 				method: 'PUT'
-			}, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
-
-			if (response === constants.API_NOT_FOUND_RESPONSE)
-				if (this.#lastDevices.length > 0)
-					return this.turnOnContextRepeat(this.#lastDevices[0].id)
-				else
-					throw new Error('No device available.')
+			}, deviceId)
 
 			this.#setRepeatState('context')
 
@@ -321,15 +296,9 @@ class Wrapper extends EventEmitter {
 
 	async turnOnTrackRepeat(deviceId = this.#lastDevice) {
 		return this.#wrapCall(async () => {
-			const response = await connector.callSpotifyApi(`me/player/repeat?state=track${deviceId ? `&device_id=${deviceId}` : ''}`, {
+			await this.#deviceCall('me/player/repeat?state=track', {
 				method: 'PUT'
-			}, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
-
-			if (response === constants.API_NOT_FOUND_RESPONSE)
-				if (this.#lastDevices.length > 0)
-					return this.turnOnTrackRepeat(this.#lastDevices[0].id)
-				else
-					throw new Error('No device available.')
+			}, deviceId)
 
 			this.#setRepeatState('track')
 
@@ -339,15 +308,9 @@ class Wrapper extends EventEmitter {
 
 	async turnOffRepeat(deviceId = this.#lastDevice) {
 		return this.#wrapCall(async () => {
-			const response = await connector.callSpotifyApi(`me/player/repeat?state=off${deviceId ? `&device_id=${deviceId}` : ''}`, {
+			await this.#deviceCall('me/player/repeat?state=off', {
 				method: 'PUT'
-			}, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
-
-			if (response === constants.API_NOT_FOUND_RESPONSE)
-				if (this.#lastDevices.length > 0)
-					return this.turnOffRepeat(this.#lastDevices[0].id)
-				else
-					throw new Error('No device available.')
+			}, deviceId)
 
 			this.#setRepeatState('off')
 
@@ -359,15 +322,9 @@ class Wrapper extends EventEmitter {
 		return this.#wrapCall(async () => {
 			volumePercent = Math.max(0, Math.min(100, volumePercent))
 
-			const response = await connector.callSpotifyApi(`me/player/volume?volume_percent=${volumePercent}${deviceId ? `&device_id=${deviceId}` : ''}`, {
+			await this.#deviceCall(`me/player/volume?volume_percent=${volumePercent}`, {
 				method: 'PUT'
-			}, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
-
-			if (response === constants.API_NOT_FOUND_RESPONSE)
-				if (this.#lastDevices.length > 0)
-					return this.setPlaybackVolume(volumePercent, this.#lastDevices[0].id)
-				else
-					throw new Error('No device available.')
+			}, deviceId)
 
 			this.#setVolumePercent(volumePercent)
 
@@ -428,6 +385,10 @@ class Wrapper extends EventEmitter {
 
 	get volumePercent() {
 		return this.#lastVolumePercent
+	}
+
+	get mutedVolumePercent() {
+		return this.#lastMuted || 0
 	}
 
 	get muted() {

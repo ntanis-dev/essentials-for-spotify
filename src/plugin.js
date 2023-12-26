@@ -22,12 +22,12 @@ StreamDeck.connect().then(() => {
 			connector.startSetup()
 		}
 	}).catch(e => {
-		logger.error(`An error occurred while getting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`)
+		logger.error(`An error occurred while getting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
 		connector.startSetup()
 	})
 
 	actions.register()
-}).catch(e => logger.error(`An error occured while connecting to Stream Deck: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
+}).catch(e => logger.error(`An error occured while connecting to Stream Deck: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
-process.on('uncaughtException', e => logger.error(`An uncaught exception occured: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
-process.on('unhandledRejection', e => logger.error(`An unhandled promise rejection occured: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
+process.on('uncaughtException', e => logger.error(`An uncaught exception occured: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+process.on('unhandledRejection', e => logger.error(`An unhandled promise rejection occured: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))

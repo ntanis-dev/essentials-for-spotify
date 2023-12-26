@@ -19,7 +19,7 @@ export default class LoopSongButton extends Button {
 
 	#onRepeatStateChanged(state: string, contexts = this.contexts) {
 		for (const context of contexts)
-			StreamDeck.client.setState(context, state === 'track' ? 1 : 0).catch(e => logger.error(`An error occurred while setting the Stream Deck state of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
+			StreamDeck.client.setState(context, state === 'track' ? 1 : 0).catch(e => logger.error(`An error occurred while setting the Stream Deck state of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
 	async invokeWrapperAction() {

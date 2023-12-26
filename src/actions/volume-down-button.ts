@@ -13,6 +13,9 @@ export default class VolumeDownButton extends Button {
 	static readonly HOLDABLE = true
 
 	async invokeWrapperAction() {
+		if (wrapper.muted && wrapper.mutedVolumePercent > 5)
+			await wrapper.unmuteVolume()
+
 		return wrapper.setPlaybackVolume(wrapper.volumePercent - 5)
 	}
 }

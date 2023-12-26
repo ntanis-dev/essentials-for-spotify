@@ -35,7 +35,7 @@ class Connector extends EventEmitter {
 		})
 
 		if (response.status !== 200)
-			throw new Error(`The refresh token Spotify API call failed with status "${response.status}".`)
+			throw new Error(`The refresh token Spotify API call failed with status "${response.status}" and body "${await response.text()}".`)
 
 		this.#accessToken = (await response.json()).access_token
 
@@ -59,7 +59,7 @@ class Connector extends EventEmitter {
 			clientSecret: null,
 			refreshToken: null,
 			accessToken: null
-		}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
+		}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 		logger.info('The connector setup has been invalidated.')
 	}
@@ -96,7 +96,7 @@ class Connector extends EventEmitter {
 			return constants.API_NOT_FOUND_RESPONSE
 
 		if (response.status !== 200)
-			throw new Error(`The Spotify API call "${path}" failed with status "${response.status}".`)
+			throw new Error(`The Spotify API call "${path}" failed with status "${response.status}" and body "${await response.text()}".`)
 
 		if (response.headers.get('content-type')?.includes('application/json'))
 			return response.json()
@@ -173,7 +173,7 @@ class Connector extends EventEmitter {
 					clientSecret: this.#clientSecret,
 					refreshToken: this.#refreshToken,
 					accessToken: this.#accessToken
-				}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
+				}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 				res.send('OK! You may close this page now!')
 
@@ -182,7 +182,7 @@ class Connector extends EventEmitter {
 
 				logger.info('The connector setup has been completed.')
 			} catch (e) {
-				logger.error(`An error occured while setting up the connector: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`)
+				logger.error(`An error occured while setting up the connector: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
 
 				res.send(`
 					Something went wrong! Please make sure you have entered the correct client ID and secret in the setup settings and try again.
@@ -200,7 +200,7 @@ class Connector extends EventEmitter {
 
 		if (this.#refreshToken)
 			this.#refreshAccessToken().then(() => this.#setSetup(true)).catch(e => {
-				logger.error(`An error occured while setting up the connector: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`)
+				logger.error(`An error occured while setting up the connector: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
 				this.#invalidateSetup()
 			})
 		else
