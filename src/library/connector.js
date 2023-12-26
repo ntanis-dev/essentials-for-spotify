@@ -19,29 +19,25 @@ class Connector extends EventEmitter {
 	}
 
 	async #refreshAccessToken() {
-		try {
-			const response = await fetch('https://accounts.spotify.com/api/token', {
-				method: 'POST',
+		const response = await fetch('https://accounts.spotify.com/api/token', {
+			method: 'POST',
 
-				body: new URLSearchParams({
-					refresh_token: this.#refreshToken,
-					grant_type: 'refresh_token'
-				}),
+			body: new URLSearchParams({
+				refresh_token: this.#refreshToken,
+				grant_type: 'refresh_token'
+			}),
 
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded',
-					'Authorization': `Basic ${Buffer.from(`${this.#clientId}:${this.#clientSecret}`).toString('base64')}`
-				}
-			})
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Authorization': `Basic ${Buffer.from(`${this.#clientId}:${this.#clientSecret}`).toString('base64')}`
+			}
+		})
 
-			if (!response.ok)
-				throw new Error(`HTTP error during refresh access token! Status: ${response.status}`)
+		if (!response.ok)
+			throw new Error(`The refresh token Spotify API call failed with status "${response.status}".`)
 
-			this.#accessToken = (await response.json()).access_token
-		} catch (e) {
-			this.#invalidateSetup()
-			throw e
-		}
+		this.#accessToken = (await response.json()).access_token
+		return true
 	}
 
 	#invalidateSetup() {
@@ -64,7 +60,7 @@ class Connector extends EventEmitter {
 
 	async callSpotifyApi(path, options = {}) {
 		if (!this.#setup)
-			throw new Error(`Tried to call Spotify API before setup! Path: "${path}"`)
+			throw new Error(`The Spotify API call "${path}" failed because the connector is not set up.`)
 
 		let response = await fetch(`https://api.spotify.com/v1/${path}`, {
 			...options,
@@ -94,7 +90,7 @@ class Connector extends EventEmitter {
 			return constants.API_NOT_FOUND_RESPONSE
 
 		if (!response.ok)
-			throw new Error(`HTTP error during Spotify API call! Status: ${response.status}`)
+			throw new Error(`The Spotify API call "${path}" failed with status "${response.status}".`)
 
 		if (response.headers.get('content-type')?.includes('application/json'))
 			return response.json()
@@ -102,10 +98,7 @@ class Connector extends EventEmitter {
 			return response.text()
 	}
 
-	async startSetup(clientId = null, clientSecret = null, refreshToken = null, port = 4202) {
-		if (this.#app)
-			throw new Error('Tried to setup connector twice.')
-
+	startSetup(clientId = null, clientSecret = null, refreshToken = null, port = 4202) {
 		this.#clientId = clientId
 		this.#clientSecret = clientSecret
 		this.#refreshToken = refreshToken
@@ -159,7 +152,7 @@ class Connector extends EventEmitter {
 				})
 
 				if (!response.ok)
-					throw new Error(`HTTP error during authorization! Status: ${response.status}`)
+					throw new Error(`The access token Spotify API call failed with status "${response.status}".`)
 
 				const data = await response.json()
 
@@ -179,6 +172,8 @@ class Connector extends EventEmitter {
 				this.#server.close()
 				this.#server = null
 			} catch (e) {
+				logger.error(`An error occured while setting up the connector: "${e}".`)
+
 				res.send(`
 					Something went wrong! Please make sure you have entered the correct client ID and secret in the setup settings and try again.
 
@@ -193,10 +188,12 @@ class Connector extends EventEmitter {
 			}
 		})
 
-		if (this.#refreshToken) {
-			await this.#refreshAccessToken()
-			this.#setSetup(true)
-		} else
+		if (this.#refreshToken)
+			this.#refreshAccessToken().then(() => this.#setSetup(true)).catch(e => {
+				logger.error(`An error occured while setting up the connector: "${e}".`)
+				this.#invalidateSetup()
+			})
+		else
 			this.#server = this.#app.listen(port)
 	}
 
