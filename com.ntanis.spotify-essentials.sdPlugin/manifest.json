@@ -204,10 +204,10 @@
 		},
 		
 		{
-			"Name": "Song Artwork",
-			"UUID": "com.ntanis.spotify-essentials.song-artwork-button",
-			"Icon": "images/actions/song-artwork",
-			"Tooltip": "Displays the artwork of the current song.",
+			"Name": "Song Information",
+			"UUID": "com.ntanis.spotify-essentials.song-information-button",
+			"Icon": "images/actions/song-information",
+			"Tooltip": "Displays the information of the current song.",
 			"DisableAutomaticStates": true,
 			"UserTitleEnabled": false,
 			"Controllers": [
@@ -215,7 +215,79 @@
 			],
 			"States": [
 				{
-					"Image": "images/states/song-artwork",
+					"Image": "images/states/song-information",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		
+		{
+			"Name": "Song Clipboard",
+			"UUID": "com.ntanis.spotify-essentials.song-clipboard-button",
+			"Icon": "images/actions/song-clipboard",
+			"Tooltip": "Copies the information of the current song to the clipboard.",
+			"DisableAutomaticStates": true,
+			"UserTitleEnabled": false,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/song-clipboard",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		
+		{
+			"Name": "Surprise Me",
+			"UUID": "com.ntanis.spotify-essentials.surprise-me-button",
+			"Icon": "images/actions/surprise-me",
+			"Tooltip": "Plays a random song that you may like.",
+			"DisableAutomaticStates": true,
+			"UserTitleEnabled": false,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/surprise-me",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		
+		{
+			"Name": "Backward Seek",
+			"UUID": "com.ntanis.spotify-essentials.backward-seek-button",
+			"Icon": "images/actions/backward-seek",
+			"Tooltip": "Seek backward in the current song.",
+			"DisableAutomaticStates": true,
+			"UserTitleEnabled": false,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/backward-seek",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		
+		{
+			"Name": "Forward Seek",
+			"UUID": "com.ntanis.spotify-essentials.forward-seek-button",
+			"Icon": "images/actions/forward-seek",
+			"Tooltip": "Seek forward in the current song.",
+			"DisableAutomaticStates": true,
+			"UserTitleEnabled": false,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/forward-seek",
 					"TitleAlignment": "middle"
 				}
 			]

@@ -16,6 +16,7 @@ export class Button extends SingletonAction {
 	contexts: Array<string> = []
 	pressed: any = {}
 	holding: any = {}
+	busy: any = {}
 
 	constructor() {
 		super()
@@ -26,11 +27,17 @@ export class Button extends SingletonAction {
 			await action.setImage(image).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 			await new Promise(resolve => setTimeout(resolve, duration))
 			await action.setImage().catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
-			await new Promise(resolve => setTimeout(resolve, duration))
+
+			if (i + 1 < times)
+				await new Promise(resolve => setTimeout(resolve, duration))
 		}
 	}
 
 	async onKeyDown(ev: KeyDownEvent<any>) {
+		if (this.busy[ev.action.id])
+			return
+
+		this.busy[ev.action.id] = true
 		this.pressed[ev.action.id] = true
 
 		if ((!this.holding[ev.action.id]) && (this.constructor as typeof Button).HOLDABLE)
@@ -46,7 +53,7 @@ export class Button extends SingletonAction {
 		else {
 			const startedInvokingAt = Date.now()
 			const response = await this.invokeWrapperAction()
-			logger.info((response as Symbol).description)
+
 			if (response === constants.WRAPPER_RESPONSE_ERROR)
 				await this.flashImage(ev.action, 'images/states/api-error', constants.LONG_FLASH_DURATION, constants.LONG_FLASH_TIMES)
 			else if (response === constants.WRAPPER_RESPONSE_PENDING)
@@ -56,7 +63,13 @@ export class Button extends SingletonAction {
 					if (this.pressed[ev.action.id])
 						this.onKeyDown(ev)
 				}, Math.max(0, constants.BUTTON_HOLD_REPEAT_INTERVAL - (Date.now() - startedInvokingAt)))
+			else if (!response)
+				await this.flashImage(ev.action, 'images/states/fatal-error', constants.LONG_FLASH_DURATION, constants.LONG_FLASH_TIMES)
+			else if (response === true)
+				await this.flashImage(ev.action, 'images/states/success', constants.SHORT_FLASH_DURATION, constants.SHORT_FLASH_TIMES)
 		}
+
+		this.busy[ev.action.id] = false
 	}
 
 	async onKeyUp(ev: KeyUpEvent<any>) {

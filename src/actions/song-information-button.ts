@@ -9,14 +9,14 @@ import {
 	Button
 } from './button.js'
 
-import constants from './../library/constants.js'
-import logger from './../library/logger.js'
-import wrapper from './../library/wrapper.js'
+import constants from '../library/constants.js'
+import logger from '../library/logger.js'
+import wrapper from '../library/wrapper.js'
 
 declare const fetch: Function
 
-@action({ UUID: 'com.ntanis.spotify-essentials.song-artwork-button' })
-export default class SongArtworkButton extends Button {
+@action({ UUID: 'com.ntanis.spotify-essentials.song-information-button' })
+export default class SongInformationButton extends Button {
 	#marquees: any = {}
 	#imageCache: any = {}
 
