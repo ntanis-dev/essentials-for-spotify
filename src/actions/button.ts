@@ -18,9 +18,9 @@ export class Button extends SingletonAction {
 
 	async flashImage(action: any, image: string, duration: number = 500, times = 2) {
 		for (let i = 0; i < times; i++) {
-			await action.setImage(image).catch((e: Error) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e}".`))
+			await action.setImage(image).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
 			await new Promise(resolve => setTimeout(resolve, duration))
-			await action.setImage().catch((e: Error) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e}".`))
+			await action.setImage().catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
 			await new Promise(resolve => setTimeout(resolve, duration))
 		}
 	}

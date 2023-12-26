@@ -1,6 +1,5 @@
 // TODO
 // Better image indicators
-// Better error handling, especially on promises
 // Dial support
 // Feedback support
 // Rate limit handling
@@ -23,12 +22,12 @@ StreamDeck.connect().then(() => {
 			connector.startSetup()
 		}
 	}).catch(e => {
-		logger.error(`An error occurred while getting the Stream Deck global settings: "${e}".`)
+		logger.error(`An error occurred while getting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`)
 		connector.startSetup()
 	})
 
 	actions.register()
-}).catch(e => logger.error(`An error occured while connecting to Stream Deck: "${e}".`))
+}).catch(e => logger.error(`An error occured while connecting to Stream Deck: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
 
-process.on('uncaughtException', e => logger.error(`An uncaught exception occured: "${e}".`))
-process.on('unhandledRejection', e => logger.error(`An unhandled promise rejection occured: "${e}".`))
+process.on('uncaughtException', e => logger.error(`An uncaught exception occured: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
+process.on('unhandledRejection', e => logger.error(`An unhandled promise rejection occured: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))

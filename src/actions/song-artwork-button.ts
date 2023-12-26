@@ -62,7 +62,7 @@ export default class SongArtworkButton extends Button {
 		if (marqueeData.artists.totalFrames === null)
 			marqueeData.artists.totalFrames = marqueeData.artists.render.length
 
-		await StreamDeck.client.setTitle(context, `${this.#getTextSpacingWidth(title) > constants.TITLE_MARQUEE_SPACING ? `${marqueeData.title.render.slice(marqueeData.title.frame)}${marqueeData.title.render.slice(0, marqueeData.title.frame)}` : title}\n${this.#getTextSpacingWidth(artists) > constants.TITLE_MARQUEE_SPACING ? `${marqueeData.artists.render.slice(marqueeData.artists.frame)}${marqueeData.artists.render.slice(0, marqueeData.artists.frame)}` : artists}`).catch((e: Error) => logger.error(`An error occurred while setting the Stream Deck title of "${this.manifestId}": "${e}".`))
+		await StreamDeck.client.setTitle(context, `${this.#getTextSpacingWidth(title) > constants.TITLE_MARQUEE_SPACING ? `${marqueeData.title.render.slice(marqueeData.title.frame)}${marqueeData.title.render.slice(0, marqueeData.title.frame)}` : title}\n${this.#getTextSpacingWidth(artists) > constants.TITLE_MARQUEE_SPACING ? `${marqueeData.artists.render.slice(marqueeData.artists.frame)}${marqueeData.artists.render.slice(0, marqueeData.artists.frame)}` : artists}`).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck title of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
 
 		if ((!this.#marquees[context]) || this.#marquees[context].id !== id)
 			return
@@ -92,19 +92,19 @@ export default class SongArtworkButton extends Button {
 				if (pending || (song && this.#marquees[context] && this.#marquees[context].id !== song.item.id)) {
 					clearTimeout(this.#marquees[context].timeout)
 					delete this.#marquees[context]
-					StreamDeck.client.setTitle(context, '').catch((e: Error) => logger.error(`An error occurred while setting the Stream Deck title of "${this.manifestId}": "${e}".`))
+					StreamDeck.client.setTitle(context, '').catch((e: any) => logger.error(`An error occurred while setting the Stream Deck title of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
 				}
 
 				if (url) {
 					if (!this.#imageCache[url])
-						StreamDeck.client.setImage(context, 'images/states/pending').catch((e: Error) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e}".`))
+						StreamDeck.client.setImage(context, 'images/states/pending').catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
 
 					let imageBuffer = undefined
 
 					try {
 						imageBuffer = this.#imageCache[url] || Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')
-					} catch (e) {
-						logger.error(`An error occurred while fetching the image of song "${song.item.id}": "${e}".`)
+					} catch (e: any) {
+						logger.error(`An error occurred while fetching the image of song "${song.item.id}": "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`)
 					}
 
 					this.#imageCache[url] = imageBuffer
@@ -115,14 +115,14 @@ export default class SongArtworkButton extends Button {
 						this.#resumeMarquee(context)
 
 					if (imageBuffer)
-						StreamDeck.client.setImage(context, `data:image/jpeg;base64,${imageBuffer}`).catch((e: Error) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e}".`))
+						StreamDeck.client.setImage(context, `data:image/jpeg;base64,${imageBuffer}`).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
 					else
-						StreamDeck.client.setImage(context).catch((e: Error) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e}".`))
+						StreamDeck.client.setImage(context).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
 				} else if (pending) {
 					this.#imageCache = {}
-					StreamDeck.client.setImage(context, 'images/states/pending').catch((e: Error) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e}".`))
+					StreamDeck.client.setImage(context, 'images/states/pending').catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
 				} else
-					StreamDeck.client.setImage(context).catch((e: Error) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e}".`))
+					StreamDeck.client.setImage(context).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
 			})
 	}
 

@@ -21,10 +21,10 @@ export default class LikeUnlikeButton extends Button {
 	#onLikedStateChanged(liked: boolean, pending: boolean = false, contexts = this.contexts) {
 		for (const context of contexts)
 			setImmediate(() => {
-				StreamDeck.client.setImage(context, pending ? 'images/states/pending' : undefined).catch(e => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e}".`))
+				StreamDeck.client.setImage(context, pending ? 'images/states/pending' : undefined).catch(e => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
 
 				if (!pending)
-					StreamDeck.client.setState(context, liked ? 1 : 0).catch(e => logger.error(`An error occurred while setting the Stream Deck state of "${this.manifestId}": "${e}".`))
+					StreamDeck.client.setState(context, liked ? 1 : 0).catch(e => logger.error(`An error occurred while setting the Stream Deck state of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
 			})
 	}
 

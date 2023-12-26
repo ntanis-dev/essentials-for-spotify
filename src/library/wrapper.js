@@ -49,7 +49,7 @@ class Wrapper extends EventEmitter {
 		try {
 			return await fn()
 		} catch (e) {
-			logger.error(`An error occured while responding to a wrapper call: "${e}".`)
+			logger.error(`An error occured while responding to a wrapper call: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`)
 			return constants.WRAPPER_RESPONSE_ERROR
 		} finally {
 			this.#updatePlaybackStateStatus = 'idle'
@@ -89,7 +89,7 @@ class Wrapper extends EventEmitter {
 
 			this.#setDevices(response?.device.id || null, (await connector.callSpotifyApi('me/player/devices')).devices)
 		} catch (e) {
-			logger.error(`An error occured while updating playback state: "${e}".`)
+			logger.error(`An error occured while updating playback state: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`)
 		} finally {
 			this.#updatePlaybackStateStatus = 'idle'
 			this.#lastPlaybackStateUpdate = Date.now()

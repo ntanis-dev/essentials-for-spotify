@@ -38,6 +38,9 @@ class Connector extends EventEmitter {
 			throw new Error(`The refresh token Spotify API call failed with status "${response.status}".`)
 
 		this.#accessToken = (await response.json()).access_token
+
+		logger.info('The access token has been refreshed.')
+
 		return true
 	}
 
@@ -56,7 +59,9 @@ class Connector extends EventEmitter {
 			clientSecret: null,
 			refreshToken: null,
 			accessToken: null
-		}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e}".`))
+		}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
+
+		logger.info('The connector setup has been invalidated.')
 	}
 
 	async callSpotifyApi(path, options = {}, allowResponses = []) {
@@ -168,14 +173,16 @@ class Connector extends EventEmitter {
 					clientSecret: this.#clientSecret,
 					refreshToken: this.#refreshToken,
 					accessToken: this.#accessToken
-				}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e}".`))
+				}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`))
 
 				res.send('OK! You may close this page now!')
 
 				this.#server.close()
 				this.#server = null
+
+				logger.info('The connector setup has been completed.')
 			} catch (e) {
-				logger.error(`An error occured while setting up the connector: "${e}".`)
+				logger.error(`An error occured while setting up the connector: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`)
 
 				res.send(`
 					Something went wrong! Please make sure you have entered the correct client ID and secret in the setup settings and try again.
@@ -193,7 +200,7 @@ class Connector extends EventEmitter {
 
 		if (this.#refreshToken)
 			this.#refreshAccessToken().then(() => this.#setSetup(true)).catch(e => {
-				logger.error(`An error occured while setting up the connector: "${e}".`)
+				logger.error(`An error occured while setting up the connector: "${e.message || 'No message.'}" @ "${e.stack || 'No stacktrace.'}".`)
 				this.#invalidateSetup()
 			})
 		else
