@@ -40,7 +40,7 @@
 
 		{
 			"key": "count",
-			"type": "count",
+			"type": "text",
 			"value": "?? / ??",
 			"rect": [72, 64, 112, 24],
 
