@@ -14,7 +14,7 @@ export default class VolumeUpButton extends Button {
 	static readonly HOLDABLE = true
 
 	async invokeWrapperAction() {
-		if (!wrapper.volumePercent)
+		if (wrapper.volumePercent === null)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		if (wrapper.muted)

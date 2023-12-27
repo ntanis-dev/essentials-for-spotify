@@ -126,7 +126,7 @@ class Wrapper extends EventEmitter {
 			this.#setPlaying(response?.is_playing || false)
 			this.#setRepeatState(response?.repeat_state || 'off')
 			this.#setShuffleState(response?.shuffle_state || false)
-			this.#setVolumePercent(typeof(response?.device.volume_percent) !== 'number' ? 100 : response.device.volume_percent)
+			this.#setVolumePercent(response?.device.supports_volume ? (typeof(response?.device.volume_percent) !== 'number' ? 100 : response.device.volume_percent) : null)
 
 			this.#setSong(response?.item ? {
 				item: response.item,
@@ -178,11 +178,12 @@ class Wrapper extends EventEmitter {
 	#setVolumePercent(volumePercent) {
 		if (this.#lastVolumePercent === volumePercent)
 			return
-		
-		if (volumePercent > 0)
-			this.#setMuted(false)
-		else if (volumePercent === 0 && this.#lastMuted === false)
-			this.#setMuted(this.#lastVolumePercent || constants.VOLUME_PERCENT_MUTE_RESTORE)
+
+		if (volumePercent !== null)
+			if (volumePercent > 0)
+				this.#setMuted(false)
+			else if (volumePercent === 0 && this.#lastMuted === false)
+				this.#setMuted(this.#lastVolumePercent || constants.VOLUME_PERCENT_MUTE_RESTORE)
 
 		this.#updatePlaybackStateStatus = 'skip'
 		this.#lastVolumePercent = volumePercent

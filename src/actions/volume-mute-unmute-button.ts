@@ -8,6 +8,7 @@ import {
 	Button
 } from './button.js'
 
+import constants from '../library/constants.js'
 import logger from './../library/logger.js'
 import wrapper from './../library/wrapper.js'
 
@@ -24,6 +25,9 @@ export default class VolumeMuteUnmuteButton extends Button {
 	}
 
 	async invokeWrapperAction() {
+		if (wrapper.volumePercent === null)
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 		if (wrapper.muted)
 			return wrapper.unmuteVolume()
 		else

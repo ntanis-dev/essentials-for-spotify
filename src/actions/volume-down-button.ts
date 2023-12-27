@@ -14,7 +14,7 @@ export default class VolumeDownButton extends Button {
 	static readonly HOLDABLE = true
 
 	async invokeWrapperAction() {
-		if (!wrapper.volumePercent)
+		if (wrapper.volumePercent === null)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		if (wrapper.muted && wrapper.mutedVolumePercent > constants.VOLUME_STEP_SIZE)
