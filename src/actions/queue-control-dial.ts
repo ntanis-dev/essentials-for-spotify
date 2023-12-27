@@ -9,18 +9,14 @@ import {
 
 import logger from './../library/logger.js'
 
-@action({ UUID: 'com.ntanis.spotify-essentials.volume-control-dial' })
-export default class VolumeControlDial extends Dial {
+@action({ UUID: 'com.ntanis.spotify-essentials.queue-control-dial' })
+export default class QueueControlDial extends Dial {
 	onWillAppear(ev: WillAppearEvent<any>): void {
 		super.onWillAppear(ev)
 
 		// StreamDeck.client.setFeedback(ev.action.id, {
 		// 	title: {
-		// 		value: 'Volume Control'
-		// 	},
-
-		// 	indicator: {
-		// 		opacity: 0.3
+		// 		value: 'Queue Control'
 		// 	},
 
 		// 	icon: {
@@ -28,7 +24,16 @@ export default class VolumeControlDial extends Dial {
 		// 	},
 
 		// 	value: {
-		// 		value: '?%',
+		// 		value: '??:?? / ??:??',
+		// 		opacity: 0.3,
+
+		// 		font: {
+		// 			size: 18
+		// 		}
+		// 	},
+
+		// 	value_two: {
+		// 		value: '??:?? / ??:??',
 		// 		opacity: 0.3,
 
 		// 		font: {

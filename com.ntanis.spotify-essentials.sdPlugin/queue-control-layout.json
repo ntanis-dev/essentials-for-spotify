@@ -1,0 +1,56 @@
+{
+	"id": "com.ntanis.spotify-essentials.layouts.queue-control",
+
+	"items": [
+		{
+			"key": "title",
+			"type": "text",
+			"rect": [16, 10, 136, 24],
+
+			"font": {
+				"size": 16,
+				"weight": 600
+			},
+
+			"value": "Playlists",
+			"alignment": "left"
+		},
+
+		{
+			"key": "icon",
+			"type": "pixmap",
+			"rect": [16, 40, 48, 48],
+			"opacity": 0.3
+		},
+
+		{
+			"key": "value",
+			"type": "text",
+			"value": "?????",
+			"rect": [72, 36, 112, 24],
+
+			"font": {
+				"size": 16,
+				"weight": 600
+			},
+
+			"alignment": "right",
+			"opacity": 0.3
+		},
+
+		{
+			"key": "value_bottom",
+			"type": "text",
+			"value": "?? / ??",
+			"rect": [72, 64, 112, 24],
+
+			"font": {
+				"size": 16,
+				"weight": 600
+			},
+
+			"alignment": "right",
+			"opacity": 0.3
+		}
+	]
+}

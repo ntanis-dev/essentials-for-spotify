@@ -1,0 +1,48 @@
+{
+	"id": "com.ntanis.spotify-essentials.layouts.playback-control",
+
+	"items": [
+		{
+			"key": "title",
+			"type": "text",
+			"rect": [16, 10, 136, 24],
+
+			"font": {
+				"size": 16,
+				"weight": 600
+			},
+
+			"value": "Playback Control",
+			"alignment": "left"
+		},
+		{
+			"key": "icon",
+			"type": "pixmap",
+			"rect": [16, 40, 48, 48],
+			"opacity": 0.3
+		},
+		{
+			"key": "value",
+			"type": "text",
+			"value": "??:?? / ??:??",
+			"rect": [76, 40, 108, 32],
+
+			"font": {
+				"size": 16,
+				"weight": 600
+			},
+
+			"alignment": "right",
+			"opacity": 0.3
+		},
+		{
+			"key": "indicator",
+			"type": "bar",
+			"rect": [76, 74, 108, 12],
+			"value": 0,
+			"subtype": 4,
+			"border_w": 0,
+			"opacity": 0.3
+		}
+	]
+}

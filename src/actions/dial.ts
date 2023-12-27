@@ -1,6 +1,8 @@
 import {
+	DialDownEvent,
 	DialRotateEvent,
 	SingletonAction,
+	TouchTapEvent,
 	WillAppearEvent,
 	WillDisappearEvent
 } from '@elgato/streamdeck'
@@ -38,5 +40,15 @@ export class Dial extends SingletonAction {
 		this.contexts.splice(this.contexts.indexOf(ev.action.id), 1)
 	}
 
-	onDialRotate(ev: DialRotateEvent<object>): void | Promise<void> { }
+	onDialRotate(ev: DialRotateEvent<object>): void | Promise<void> {
+
+	}
+
+	onDialDown(ev: DialDownEvent<object>): void | Promise<void> {
+		
+	}
+
+	onTouchTap(ev: TouchTapEvent<object>): void | Promise<void> {
+		// long touch?
+	}
 }
