@@ -1,5 +1,4 @@
 import {
-	WillAppearEvent,
 	action
 } from '@elgato/streamdeck'
 
@@ -18,10 +17,5 @@ export default class VolumeUpButton extends Button {
 			await wrapper.unmuteVolume()
 
 		return wrapper.setPlaybackVolume(wrapper.volumePercent + 5)
-	}
-
-	onWillAppear(ev: WillAppearEvent<any>): void {
-		super.onWillAppear(ev)
-		// this.#onVolumeChanged(wrapper.volumePercent, [ev.action.id])
 	}
 }

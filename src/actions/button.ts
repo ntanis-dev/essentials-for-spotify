@@ -17,6 +17,7 @@ export class Button extends SingletonAction {
 	pressed: any = {}
 	holding: any = {}
 	busy: any = {}
+	forcedBusy: any = {}
 
 	constructor() {
 		super()
@@ -34,7 +35,8 @@ export class Button extends SingletonAction {
 	}
 
 	async onKeyDown(ev: KeyDownEvent<any>) {
-		if (this.busy[ev.action.id])
+		logger.debug(`Received key down event for "${ev.action.id}".`)
+		if (this.busy[ev.action.id] || this.forcedBusy[ev.action.id])
 			return
 
 		this.busy[ev.action.id] = true
@@ -63,7 +65,7 @@ export class Button extends SingletonAction {
 					if (this.pressed[ev.action.id])
 						this.onKeyDown(ev)
 				}, Math.max(0, constants.BUTTON_HOLD_REPEAT_INTERVAL - (Date.now() - startedInvokingAt)))
-			else if (!response)
+			else if (response === false)
 				await this.flashImage(ev.action, 'images/states/fatal-error', constants.LONG_FLASH_DURATION, constants.LONG_FLASH_TIMES)
 			else if (response === true)
 				await this.flashImage(ev.action, 'images/states/success', constants.SHORT_FLASH_DURATION, constants.SHORT_FLASH_TIMES)
@@ -80,8 +82,13 @@ export class Button extends SingletonAction {
 		this.holding[ev.action.id] = false
 	}
 
-	async invokeWrapperAction(): Promise<boolean | Symbol> {
+	async invokeWrapperAction(): Promise<boolean | null | Symbol> {
 		throw new Error('The method "invokeWrapperAction" is not implemented.')
+	}
+
+	setBusy(context: string, busy: boolean) {
+		logger.debug(`Setting busy state of "${context}" to "${busy}".`)
+		this.forcedBusy[context] = busy
 	}
 
 	isVisible(context: string) {

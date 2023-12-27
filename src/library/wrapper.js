@@ -398,6 +398,8 @@ class Wrapper extends EventEmitter {
 	get song() {
 		return this.#lastSong
 	}
+
+	
 }
 
 export default new Wrapper()

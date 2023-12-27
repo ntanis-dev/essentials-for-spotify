@@ -79,7 +79,7 @@ export default class SongInformationButton extends Button {
 		marqueeData.timeout = setTimeout(() => this.#marqueeTitle(id, title, artists, context), isInitial ? constants.TITLE_MARQUEE_INTERVAL_INITIAL : constants.TITLE_MARQUEE_INTERVAL)
 	}
 
-	async #resumeMarquee(context: string) {
+	#resumeMarquee(context: string) {
 		if (this.#marquees[context])
 			this.#marquees[context].timeout = setTimeout(() => this.#marqueeTitle(this.#marquees[context].id, this.#marquees[context].title.original, this.#marquees[context].artists.original, context), constants.TITLE_MARQUEE_INTERVAL)
 	}
@@ -87,17 +87,19 @@ export default class SongInformationButton extends Button {
 	async #onSongChanged(song: any, pending: boolean = false, contexts = this.contexts) {
 		for (const context of contexts)
 			setImmediate(async () => {
+				this.setBusy(context, true)
+
 				const url = song && song.item.album.images.length > 0 ? song.item.album.images[0].url : null
 
 				if (pending || (song && this.#marquees[context] && this.#marquees[context].id !== song.item.id) || ((!song) && this.#marquees[context])) {
 					clearTimeout(this.#marquees[context].timeout)
 					delete this.#marquees[context]
-					StreamDeck.client.setTitle(context, '').catch((e: any) => logger.error(`An error occurred while setting the Stream Deck title of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+					await StreamDeck.client.setTitle(context, '').catch((e: any) => logger.error(`An error occurred while setting the Stream Deck title of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 				}
 
 				if (url) {
 					if (!this.#imageCache[url])
-						StreamDeck.client.setImage(context, 'images/states/pending').catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+						await StreamDeck.client.setImage(context, 'images/states/pending').catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 					let imageBuffer = undefined
 
@@ -115,19 +117,22 @@ export default class SongInformationButton extends Button {
 						this.#resumeMarquee(context)
 
 					if (imageBuffer)
-						StreamDeck.client.setImage(context, `data:image/jpeg;base64,${imageBuffer}`).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+						await StreamDeck.client.setImage(context, `data:image/jpeg;base64,${imageBuffer}`).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 					else
-						StreamDeck.client.setImage(context).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+						await StreamDeck.client.setImage(context).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 				} else if (pending) {
 					this.#imageCache = {}
-					StreamDeck.client.setImage(context, 'images/states/pending').catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+					await StreamDeck.client.setImage(context, 'images/states/pending').catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 				} else
-					StreamDeck.client.setImage(context).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+					await StreamDeck.client.setImage(context).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+
+				if (!pending)
+					this.setBusy(context, false)
 			})
 	}
 
 	async invokeWrapperAction() {
-		return true
+		return null
 	}
 
 	#getTextSpacingWidth(text: string) {

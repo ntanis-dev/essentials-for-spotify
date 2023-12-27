@@ -1,5 +1,4 @@
 // TODO
-// Better image indicators
 // Dial support
 // Feedback support
 // Rate limit handling

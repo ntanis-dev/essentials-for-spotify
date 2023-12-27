@@ -227,7 +227,6 @@
 			"Icon": "images/actions/song-clipboard",
 			"Tooltip": "Copies the information of the current song to the clipboard.",
 			"DisableAutomaticStates": true,
-			"UserTitleEnabled": false,
 			"Controllers": [
 				"Keypad"
 			],
@@ -245,7 +244,6 @@
 			"Icon": "images/actions/surprise-me",
 			"Tooltip": "Plays a random song that you may like.",
 			"DisableAutomaticStates": true,
-			"UserTitleEnabled": false,
 			"Controllers": [
 				"Keypad"
 			],
@@ -263,7 +261,6 @@
 			"Icon": "images/actions/backward-seek",
 			"Tooltip": "Seek backward in the current song.",
 			"DisableAutomaticStates": true,
-			"UserTitleEnabled": false,
 			"Controllers": [
 				"Keypad"
 			],
@@ -281,7 +278,6 @@
 			"Icon": "images/actions/forward-seek",
 			"Tooltip": "Seek forward in the current song.",
 			"DisableAutomaticStates": true,
-			"UserTitleEnabled": false,
 			"Controllers": [
 				"Keypad"
 			],
@@ -296,7 +292,7 @@
 	"Category": "Spotify Essentials",
 	"CategoryIcon": "images/plugin/category",
 	"CodePath": "bin/plugin.js",
-	"Description": "Effortlessly control your Spotify through your Elgato Stream Deck. A Spotify Premium account is required.",
+	"Description": "Effortlessly control your Spotify through your Elgato Stream Deck. A Spotify Premium account is required. This plugin leverages the Spotify Web API.",
 	"Icon": "images/plugin/marketplace",
 	"SDKVersion": 2,
 	"Software": {

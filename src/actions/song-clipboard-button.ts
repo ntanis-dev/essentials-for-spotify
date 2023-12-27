@@ -1,5 +1,6 @@
-import {
-	action
+import StreamDeck, {
+	action,
+	WillAppearEvent
 } from '@elgato/streamdeck'
 
 import {
@@ -16,40 +17,62 @@ import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.song-clipboard-button' })
 export default class SongClipboardButton extends Button {
-		copyToClipboard(text: string) {
-			let process = null
+	constructor() {
+		super()
+		wrapper.on('songChanged', this.#onSongChanged.bind(this))
+	}
 
-			try {
-				switch (os.platform()) {
-					case 'darwin':
-						process = spawn('pbcopy')
-						break
+	#onSongChanged(song: any, pending: boolean = false, contexts = this.contexts) {
+		for (const context of contexts)
+			setImmediate(async () => {
+				this.setBusy(context, true)
 
-					case 'win32':
-						process = spawn('clip')
-						break
+				await StreamDeck.client.setImage(context, pending ? 'images/states/pending' : undefined).catch(e => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
-					case 'linux':
-						process = spawn('xclip', ['-selection', 'c'])
-						break
+				if (!pending)
+					this.setBusy(context, false)
+			})
+	}
 
-					default:
-						return false
-				}
+	#copyToClipboard(text: string) {
+		let process = null
 
-				process.stdin.end(text)
-			} catch (e: any) {
-				logger.error(`An error occurred while copying to clipboard: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
-				return false
+		try {
+			switch (os.platform()) {
+				case 'darwin':
+					process = spawn('pbcopy')
+					break
+
+				case 'win32':
+					process = spawn('clip')
+					break
+
+				case 'linux':
+					process = spawn('xclip', ['-selection', 'c'])
+					break
+
+				default:
+					return false
 			}
 
-			return true
+			process.stdin.end(text)
+		} catch (e: any) {
+			logger.error(`An error occurred while copying to clipboard: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
+			return false
+		}
+
+		return true
 	}
 
 	async invokeWrapperAction() {
 		if (wrapper.song)
-			return this.copyToClipboard(`${wrapper.song.item.name} - ${wrapper.song.item.artists.map((artist: any) => artist.name).join(', ')}\n${wrapper.song.item.external_urls.spotify}`)
+			return this.#copyToClipboard(`${wrapper.song.item.name} - ${wrapper.song.item.artists.map((artist: any) => artist.name).join(', ')}\n${wrapper.song.item.external_urls.spotify}`)
 
 		return false
+	}
+
+	onWillAppear(ev: WillAppearEvent<any>): void {
+		super.onWillAppear(ev)
+		this.#onSongChanged(wrapper.song, false, [ev.action.id])
 	}
 }
