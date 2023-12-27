@@ -42,6 +42,9 @@ class Wrapper extends EventEmitter {
 		}, constants.INTERVAL_CHECK_UPDATE_PLAYBACK_STATE)
 
 		setInterval(() => {
+			if (!connector.set)
+				return
+
 			if ((!this.#lastSong) || (!this.#lastPlaying))
 				return
 
@@ -469,6 +472,48 @@ class Wrapper extends EventEmitter {
 				progress: newProgress,
 				duration: song.duration
 			})
+
+			return constants.WRAPPER_RESPONSE_SUCCESS
+		})
+	}
+
+	async surpriseMe(deviceId = this.#lastDevice) {
+		return this.#wrapCall(async () => {
+			const genreSeeds = await connector.callSpotifyApi('recommendations/available-genre-seeds')
+
+			if (!genreSeeds.genres.length)
+				throw new constants.ApiError('No genre seeds available.')
+
+			const randomSeeds = []
+
+			for (let i = 0; i < 5; i++) {
+				const randomIndex = Math.floor(Math.random() * genreSeeds.genres.length)
+				randomSeeds.push(genreSeeds.genres[randomIndex])
+			}
+
+			const recommendations = await connector.callSpotifyApi(`recommendations?seed_genres=${randomSeeds.join(',')}`)
+
+			if (!recommendations.tracks.length)
+				throw new constants.ApiError('No recommendations available.')
+
+			const randomIndex = Math.floor(Math.random() * recommendations.tracks.length)
+			const randomSong = recommendations.tracks[randomIndex]
+
+			await this.#deviceCall('me/player/play', {
+				method: 'PUT',
+				body: JSON.stringify({
+					uris: [randomSong.uri]
+				})
+			}, deviceId)
+
+			this.#setSong({
+				item: randomSong,
+				liked: (await connector.callSpotifyApi(`me/tracks/contains?ids=${randomSong.id}`))[0],
+				progress: 0,
+				duration: randomSong.duration_ms
+			})
+
+			this.#setPlaying(true)
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
 		})
