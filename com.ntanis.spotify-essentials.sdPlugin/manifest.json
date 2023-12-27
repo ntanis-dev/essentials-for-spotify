@@ -210,6 +210,7 @@
 			"Tooltip": "Displays the information of the current song.",
 			"DisableAutomaticStates": true,
 			"UserTitleEnabled": false,
+			"SupportedInMultiActions": false,
 			"Controllers": [
 				"Keypad"
 			],
@@ -287,6 +288,80 @@
 					"TitleAlignment": "middle"
 				}
 			]
+		},
+		
+		{
+			"Name": "Explicit Indicator",
+			"UUID": "com.ntanis.spotify-essentials.song-explicit-button",
+			"Icon": "images/actions/song-explicit",
+			"Tooltip": "Shows whether the current song is explicit or not",
+			"DisableAutomaticStates": true,
+			"SupportedInMultiActions": false,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/song-not-explicit",
+					"TitleAlignment": "middle"
+				},
+				
+				{
+					"Image": "images/states/song-explicit",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		
+		{
+			"Name": "Volume Control",
+			"UUID": "com.ntanis.spotify-essentials.volume-control-dial",
+			"Icon": "images/actions/volume-control",
+			"Tooltip": "Controls the playback volume.",
+			"Controllers": [
+				"Encoder"
+			],
+			"States": [
+				{
+					"Image": "images/states/volume-control",
+					"TitleAlignment": "left"
+				}
+			],
+			"Encoder": {
+				"layout": "$B1",
+				"StackColor": "#FFF",
+				"TriggerDescription": {
+					"Rotate": "Adjust Volume",
+					"Push": "Mute / Unmute",
+					"Touch": "Mute / Unmute"
+				}
+			}
+		},
+		
+		{
+			"Name": "Playback Control",
+			"UUID": "com.ntanis.spotify-essentials.playback-control-dial",
+			"Icon": "images/actions/playback-control",
+			"Tooltip": "Controls the playback of the current song.",
+			"Controllers": [
+				"Encoder"
+			],
+			"States": [
+				{
+					"Image": "images/states/playback-control",
+					"TitleAlignment": "left"
+				}
+			],
+			"Encoder": {
+				"layout": "$B1",
+				"StackColor": "#FFF",
+				"TriggerDescription": {
+					"Rotate": "Seek",
+					"Push": "Play / Pause",
+					"Touch": "Mute / Unmute",
+					"LongTouch": "Next Song"
+				}
+			}
 		}
 	],
 	"Category": "Spotify Essentials",

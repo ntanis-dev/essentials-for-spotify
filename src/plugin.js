@@ -1,10 +1,16 @@
 // TODO
+
 // Dial support
 // Feedback support
-// Rate limit handling
+
 // Device hot-swapping handling
 // Disable song-based buttons when something non-song is playing
-// Device supports_volume flag
+
+// Device supports_volume flag // NOT_AVAILABLE
+// actions.disallows flags // NOT_AVAILABLE
+
+// Settings
+// Setup
 
 import StreamDeck from '@elgato/streamdeck'
 import logger from './library/logger'

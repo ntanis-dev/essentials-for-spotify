@@ -14,6 +14,9 @@ import SongClipboardButton from './../actions/song-clipboard-button'
 import SurpriseMeButton from './../actions/surprise-me-button'
 import BackwardSeekButton from './../actions/backward-seek-button'
 import ForwardSeekButton from './../actions/forward-seek-button'
+import SongExplicitButton from './../actions/song-explicit-button'
+import VolumeControlDial from './../actions/volume-control-dial'
+import PlaybackControlDial from './../actions/playback-control-dial'
 
 export default {
 	register: () => {
@@ -32,5 +35,8 @@ export default {
 		StreamDeck.actions.registerAction(new SurpriseMeButton())
 		StreamDeck.actions.registerAction(new BackwardSeekButton())
 		StreamDeck.actions.registerAction(new ForwardSeekButton())
+		StreamDeck.actions.registerAction(new SongExplicitButton())
+		StreamDeck.actions.registerAction(new VolumeControlDial())
+		StreamDeck.actions.registerAction(new PlaybackControlDial())
 	}
 }

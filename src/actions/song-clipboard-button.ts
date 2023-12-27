@@ -28,7 +28,7 @@ export default class SongClipboardButton extends Button {
 			setImmediate(async () => {
 				this.setBusy(context, true)
 
-				await StreamDeck.client.setImage(context, pending ? 'images/states/pending' : undefined).catch(e => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+				await StreamDeck.client.setImage(context, pending ? 'images/states/pending' : undefined).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 				if (!pending)
 					this.setBusy(context, false)

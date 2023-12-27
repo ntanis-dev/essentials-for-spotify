@@ -15,7 +15,7 @@ export default class ForwardSeekButton extends Button {
 
 	async invokeWrapperAction() {
 		if (wrapper.song)
-			if (wrapper.song.progress + constants.SEEK_STEP_SIZE < wrapper.song.duration)
+			if (wrapper.song.progress + constants.SEEK_STEP_SIZE < wrapper.song.item.duration_ms)
 				return wrapper.forwardSeek(Object.assign({}, wrapper.song), constants.SEEK_STEP_SIZE)
 			else
 				return constants.WRAPPER_RESPONSE_SUCCESS

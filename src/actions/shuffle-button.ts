@@ -19,7 +19,7 @@ export default class ShuffleButton extends Button {
 
 	#onShuffleStateChanged(state: boolean, contexts = this.contexts) {
 		for (const context of contexts)
-			StreamDeck.client.setState(context, state ? 1 : 0).catch(e => logger.error(`An error occurred while setting the Stream Deck state of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+			StreamDeck.client.setState(context, state ? 1 : 0).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck state of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
 	async invokeWrapperAction() {

@@ -59,7 +59,7 @@ class Connector extends EventEmitter {
 			accessToken: null
 		}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
-		logger.info('The connector setup has been invalidated.')
+		logger.warn('The connector setup has been invalidated.')
 	}
 
 	async callSpotifyApi(path, options = {}, allowResponses = []) {

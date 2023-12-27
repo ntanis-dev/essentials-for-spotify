@@ -13,7 +13,7 @@ class Wrapper extends EventEmitter {
 	#lastShuffleState = false
 	#pendingWrappedCall = false
 	#lastPendingSong = false
-	#lastVolumePercent = 100
+	#lastVolumePercent = null
 	#lastDevice = null
 	#lastSong = null
 	#previousSong = null
@@ -53,8 +53,8 @@ class Wrapper extends EventEmitter {
 			this.#setSong({
 				item: this.#lastSong.item,
 				liked: this.#lastSong.liked,
-				progress: Math.min(this.#lastSong.progress + timeDiff, this.#lastSong.duration),
-				duration: this.#lastSong.duration
+				progress: Math.min(this.#lastSong.progress + timeDiff, this.#lastSong.item.duration_ms),
+				surprise: this.#lastSong.surprise
 			}, false, true)
 		}, constants.INTERVAL_CHECK_UPDATE_SONG_TIME)
 	}
@@ -132,7 +132,7 @@ class Wrapper extends EventEmitter {
 				item: response.item,
 				liked: (await connector.callSpotifyApi(`me/tracks/contains?ids=${response.item.id}`))[0],
 				progress: response.progress_ms,
-				duration: response.item.duration_ms
+				surprise: this.#lastSong && this.#lastSong.id === response.item.id ? this.#lastSong.surprise : false
 			} : null)
 
 			this.#setDevices(response?.device.id || null, (await connector.callSpotifyApi('me/player/devices')).devices)
@@ -222,14 +222,14 @@ class Wrapper extends EventEmitter {
 		} else {
 			const previousSongChanged = this.#previousSong?.item?.id !== song.item.id
 			const previousSongLikedChanged = this.#previousSong?.liked !== song.liked
-			const previousSongTimeChanged = this.#previousSong?.progress !== song.progress || this.#previousSong?.duration !== song.duration
+			const previousSongTimeChanged = this.#previousSong?.progress !== song.progress || this.#previousSong?.item?.duration_ms !== song.item.duration_ms
 
-			if (this.#previousSong && (!previousSongChanged) && (!previousSongLikedChanged) && (!previousSongTimeChanged))
+			if (this.#previousSong && (!previousSongChanged) && (!previousSongLikedChanged) && (!previousSongTimeChanged) && (this.#lastPlaying))
 				return
 
 			const songChanged = this.#lastSong?.item?.id !== song?.item?.id
 			const likedChanged = this.#lastSong?.liked !== song?.liked
-			const timeChanged = this.#lastSong?.progress !== song?.progress || this.#lastSong?.duration !== song?.duration
+			const timeChanged = this.#lastSong?.progress !== song?.progress || this.#lastSong?.item?.duration_ms !== song?.duration_ms
 
 			this.#lastSong = song
 			this.#previousSong = Object.assign({}, this.#lastSong)
@@ -244,9 +244,9 @@ class Wrapper extends EventEmitter {
 				this.emit('songLikedStateChanged', song.liked, pending)
 
 			if (timeChanged)
-				this.emit('songTimeChanged', song.progress, song.duration, pending)
+				this.emit('songTimeChanged', song.progress, song.item.duration_ms, pending)
 
-			if (this.#lastSong.progress >= this.#lastSong.duration)
+			if (this.#lastSong.progress >= this.#lastSong.item.duration_ms)
 				this.#onSongChangeExpected()
 		}
 	}
@@ -417,7 +417,7 @@ class Wrapper extends EventEmitter {
 				item: song.item,
 				liked: true,
 				progress: song.progress,
-				duration: song.duration
+				surprise: song.surprise
 			})
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
@@ -434,7 +434,7 @@ class Wrapper extends EventEmitter {
 				item: song.item,
 				liked: false,
 				progress: song.progress,
-				duration: song.duration
+				surprise: song.surprise
 			})
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
@@ -451,7 +451,7 @@ class Wrapper extends EventEmitter {
 				item: song.item,
 				liked: song.liked,
 				progress: song.progress + time,
-				duration: song.duration
+				surprise: song.surprise
 			})
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
@@ -470,7 +470,7 @@ class Wrapper extends EventEmitter {
 				item: song.item,
 				liked: song.liked,
 				progress: newProgress,
-				duration: song.duration
+				surprise: song.surprise
 			})
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
@@ -479,38 +479,42 @@ class Wrapper extends EventEmitter {
 
 	async surpriseMe(deviceId = this.#lastDevice) {
 		return this.#wrapCall(async () => {
-			const genreSeeds = await connector.callSpotifyApi('recommendations/available-genre-seeds')
-
-			if (!genreSeeds.genres.length)
-				throw new constants.ApiError('No genre seeds available.')
-
-			const randomSeeds = []
-
-			for (let i = 0; i < 5; i++) {
-				const randomIndex = Math.floor(Math.random() * genreSeeds.genres.length)
-				randomSeeds.push(genreSeeds.genres[randomIndex])
+			let recommendations = {
+				tracks: []
 			}
 
-			const recommendations = await connector.callSpotifyApi(`recommendations?seed_genres=${randomSeeds.join(',')}`)
+			if ((!this.#lastPlaying) || (!this.#lastSong) || this.#lastSong.surprise) {
+				const genreSeeds = await connector.callSpotifyApi('recommendations/available-genre-seeds')
+
+				if (!genreSeeds.genres.length)
+					throw new constants.ApiError('No genre seeds available.')
+
+				const randomSeeds = []
+
+				for (let i = 0; i < 5; i++) {
+					const randomIndex = Math.floor(Math.random() * genreSeeds.genres.length)
+					randomSeeds.push(genreSeeds.genres[randomIndex])
+				}
+
+				recommendations = await connector.callSpotifyApi(`recommendations?seed_genres=${randomSeeds.join(',')}`)
+			} else
+				recommendations = await connector.callSpotifyApi(`recommendations?seed_tracks=${this.#lastSong.item.id}`)
 
 			if (!recommendations.tracks.length)
 				throw new constants.ApiError('No recommendations available.')
 
-			const randomIndex = Math.floor(Math.random() * recommendations.tracks.length)
-			const randomSong = recommendations.tracks[randomIndex]
-
 			await this.#deviceCall('me/player/play', {
 				method: 'PUT',
 				body: JSON.stringify({
-					uris: [randomSong.uri]
+					uris: recommendations.tracks.map(track => track.uri)
 				})
 			}, deviceId)
 
 			this.#setSong({
-				item: randomSong,
-				liked: (await connector.callSpotifyApi(`me/tracks/contains?ids=${randomSong.id}`))[0],
+				item: recommendations.tracks[0],
+				liked: (await connector.callSpotifyApi(`me/tracks/contains?ids=${recommendations.tracks[0].id}`))[0],
 				progress: 0,
-				duration: randomSong.duration_ms
+				surprise: this.#lastSong.surprise || (!this.#lastPlaying)
 			})
 
 			this.#setPlaying(true)

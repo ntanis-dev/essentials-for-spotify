@@ -19,10 +19,6 @@ export class Button extends SingletonAction {
 	busy: any = {}
 	forcedBusy: any = {}
 
-	constructor() {
-		super()
-	}
-
 	async flashImage(action: any, image: string, duration: number = 500, times = 2) {
 		for (let i = 0; i < times; i++) {
 			await action.setImage(image).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))

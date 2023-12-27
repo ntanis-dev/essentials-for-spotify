@@ -167,7 +167,7 @@ export default class SongInformationButton extends Button {
 					this.#imageCache[url] = imageBuffer
 
 					if ((!this.#marquees[context]) || this.#marquees[context].id !== song.item.id)
-						this.#marqueeTitle(song.item.id, song.item.name, song.item.artists.map((artist: any) => artist.name).join(', '), this.#beautifyTime(song.progress, song.duration), context)
+						this.#marqueeTitle(song.item.id, song.item.name, song.item.artists.map((artist: any) => artist.name).join(', '), this.#beautifyTime(song.progress, song.item.duration_ms), context)
 					else
 						this.#resumeMarquee(context)
 
