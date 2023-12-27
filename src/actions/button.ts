@@ -35,7 +35,6 @@ export class Button extends SingletonAction {
 	}
 
 	async onKeyDown(ev: KeyDownEvent<any>) {
-		logger.debug(`Received key down event for "${ev.action.id}".`)
 		if (this.busy[ev.action.id] || this.forcedBusy[ev.action.id])
 			return
 
@@ -94,7 +93,6 @@ export class Button extends SingletonAction {
 	}
 
 	setBusy(context: string, busy: boolean) {
-		logger.debug(`Setting busy state of "${context}" to "${busy}".`)
 		this.forcedBusy[context] = busy
 	}
 

@@ -109,8 +109,10 @@ export default class SongInformationButton extends Button {
 	}
 
 	#resumeMarquee(context: string) {
-		if (this.#marquees[context])
+		if (this.#marquees[context]) {
+			clearTimeout(this.#marquees[context].timeout)
 			this.#marquees[context].timeout = setTimeout(() => this.#marqueeTitle(this.#marquees[context].id, this.#marquees[context].title.original, this.#marquees[context].artists.original, this.#marquees[context].time.original, context), constants.TITLE_MARQUEE_INTERVAL)
+		}
 	}
 
 	#beautifyTime(progressMs: number, durationMs: number) {
@@ -135,6 +137,7 @@ export default class SongInformationButton extends Button {
 	}
 
 	async #onSongChanged(song: any, pending: boolean = false, contexts = this.contexts) {
+		logger.info('Song change received on button')
 		for (const context of contexts)
 			setImmediate(async () => {
 				this.setBusy(context, true)
@@ -142,8 +145,11 @@ export default class SongInformationButton extends Button {
 				const url = song && song.item.album.images.length > 0 ? song.item.album.images[0].url : null
 
 				if (pending || (song && this.#marquees[context] && this.#marquees[context].id !== song.item.id) || ((!song) && this.#marquees[context])) {
-					clearTimeout(this.#marquees[context].timeout)
-					delete this.#marquees[context]
+					if (this.#marquees[context]) {
+						clearTimeout(this.#marquees[context].timeout)
+						delete this.#marquees[context]
+					}
+
 					await StreamDeck.client.setTitle(context, '').catch((e: any) => logger.error(`An error occurred while setting the Stream Deck title of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 				}
 

@@ -15,6 +15,7 @@ class Wrapper extends EventEmitter {
 	#lastVolumePercent = 100
 	#lastDevice = null
 	#lastSong = null
+	#previousSong = null
 	#lastSongTimeUpdateAt = null
 	#lastPlaybackStateUpdate = null
 	#songChangeForceUpdatePlaybackStateTimeout = null
@@ -40,21 +41,15 @@ class Wrapper extends EventEmitter {
 		}, constants.INTERVAL_CHECK_UPDATE_PLAYBACK_STATE)
 
 		setInterval(() => {
-			if (this.#lastSong === null)
+			if ((!this.#lastSong) || (!this.#lastPlaying))
 				return
 
-			if ((this.#lastSong.progress + constants.INTERVAL_CHECK_UPDATE_SONG_TIME) > this.#lastSong.duration) {
-				this.#onSongChangeExpected()
-				return
-			}
-
-			if (!this.#lastPlaying)
-				return
+			const timeDiff = (Date.now() - this.#lastSongTimeUpdateAt)
 
 			this.#setSong({
 				item: this.#lastSong.item,
 				liked: this.#lastSong.liked,
-				progress: this.#lastSong.progress + (Date.now() - this.#lastSongTimeUpdateAt),
+				progress: Math.min(this.#lastSong.progress + timeDiff, this.#lastSong.duration),
 				duration: this.#lastSong.duration
 			}, false, true)
 		}, constants.INTERVAL_CHECK_UPDATE_SONG_TIME)
@@ -205,32 +200,49 @@ class Wrapper extends EventEmitter {
 	}
 
 	#setSong(song, pending = false, allowPlaybackStateUpdate = false) {
-		const songChanged = this.#lastSong?.item?.id !== song?.item?.id
-		const likedChanged = this.#lastSong?.liked !== song?.liked
-		const timeChanged = this.#lastSong?.progress !== song?.progress || this.#lastSong?.duration !== song?.duration
-
-		if ((!songChanged) && (!likedChanged) && (!timeChanged) && (!pending))
-			return
-
 		if (!allowPlaybackStateUpdate)
 			this.#updatePlaybackStateStatus = 'skip'
 
-		this.#lastSong = song
+		if (!song) {
+			const hadSong = !!this.#lastSong
 
-		if (songChanged || timeChanged)
-			this.#lastSongTimeUpdateAt = Date.now()
+			this.#lastSong = null
 
-		if (songChanged)
-			this.emit('songChanged', song, pending)
+			if (hadSong) {
+				this.emit('songChanged', null, pending)
+				this.emit('songLikedStateChanged', false, pending)
+				this.emit('songTimeChanged', 0, 0, pending)
+			}
+		} else {
+			const previousSongChanged = this.#previousSong?.item?.id !== song.item.id
+			const previousSongLikedChanged = this.#previousSong?.liked !== song.liked
+			const previousSongTimeChanged = this.#previousSong?.progress !== song.progress || this.#previousSong?.duration !== song.duration
 
-		if (likedChanged)
-			this.emit('songLikedStateChanged', song?.liked, pending)
+			if (this.#previousSong && (!previousSongChanged) && (!previousSongLikedChanged) && (!previousSongTimeChanged))
+				return
 
-		if (timeChanged)
-			this.emit('songTimeChanged', song?.progress, song?.duration, pending)
+			const songChanged = this.#lastSong?.item?.id !== song?.item?.id
+			const likedChanged = this.#lastSong?.liked !== song?.liked
+			const timeChanged = this.#lastSong?.progress !== song?.progress || this.#lastSong?.duration !== song?.duration
 
-		if (this.#lastSong && this.#lastSong.progress > this.#lastSong.duration)
-			this.#onSongChangeExpected()
+			this.#lastSong = song
+			this.#previousSong = Object.assign({}, this.#lastSong)
+
+			if (songChanged || timeChanged)
+				this.#lastSongTimeUpdateAt = Date.now()
+
+			if (songChanged)
+				this.emit('songChanged', song, pending)
+
+			if (likedChanged)
+				this.emit('songLikedStateChanged', song.liked, pending)
+
+			if (timeChanged)
+				this.emit('songTimeChanged', song.progress, song.duration, pending)
+
+			if (this.#lastSong.progress >= this.#lastSong.duration)
+				this.#onSongChangeExpected()
+		}
 	}
 
 	#setDevices(last, devices) {
@@ -250,6 +262,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	#onSongChangeExpected() {
+		logger.info('Song change is expected')
 		clearTimeout(this.#songChangeForceUpdatePlaybackStateTimeout)
 		this.#setSong(null, true)
 		this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(() => this.#updatePlaybackState(true), constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
@@ -261,7 +274,7 @@ class Wrapper extends EventEmitter {
 				method: 'PUT'
 			}, deviceId)
 
-			if (this.#lastSong === null)
+			if (!this.#lastSong)
 				this.#onSongChangeExpected()
 
 			this.#setPlaying(true)
@@ -423,36 +436,36 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async forwardSeek(time, deviceId = this.#lastDevice) {
+	async forwardSeek(song, time, deviceId = this.#lastDevice) {
 		return this.#wrapCall(async () => {
-			await this.#deviceCall(`me/player/seek?position_ms=${this.#lastSong.progress + time}`, {
+			await this.#deviceCall(`me/player/seek?position_ms=${song.progress + time}`, {
 				method: 'PUT'
 			}, deviceId)
 
 			this.#setSong({
-				item: this.#lastSong.item,
-				liked: this.#lastSong.liked,
-				progress: this.#lastSong.progress + time,
-				duration: this.#lastSong.duration
+				item: song.item,
+				liked: song.liked,
+				progress: song.progress + time,
+				duration: song.duration
 			})
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
 		})
 	}
 
-	async backwardSeek(time, deviceId = this.#lastDevice) {
+	async backwardSeek(song, time, deviceId = this.#lastDevice) {
 		return this.#wrapCall(async () => {
-			const newProgress = Math.max(0, this.#lastSong.progress - time)
+			const newProgress = Math.max(0, song.progress - time)
 
 			await this.#deviceCall(`me/player/seek?position_ms=${newProgress}`, {
 				method: 'PUT'
 			}, deviceId)
 
 			this.#setSong({
-				item: this.#lastSong.item,
-				liked: this.#lastSong.liked,
+				item: song.item,
+				liked: song.liked,
 				progress: newProgress,
-				duration: this.#lastSong.duration
+				duration: song.duration
 			})
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
