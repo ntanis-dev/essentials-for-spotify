@@ -137,7 +137,6 @@ export default class SongInformationButton extends Button {
 	}
 
 	async #onSongChanged(song: any, pending: boolean = false, contexts = this.contexts) {
-		logger.info('Song change received on button')
 		for (const context of contexts)
 			setImmediate(async () => {
 				this.setBusy(context, true)

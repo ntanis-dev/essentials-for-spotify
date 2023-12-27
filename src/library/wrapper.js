@@ -12,6 +12,7 @@ class Wrapper extends EventEmitter {
 	#lastPlaying = false
 	#lastShuffleState = false
 	#pendingWrappedCall = false
+	#lastPendingSong = false
 	#lastVolumePercent = 100
 	#lastDevice = null
 	#lastSong = null
@@ -200,6 +201,8 @@ class Wrapper extends EventEmitter {
 	}
 
 	#setSong(song, pending = false, allowPlaybackStateUpdate = false) {
+		this.#lastPendingSong = pending
+
 		if (!allowPlaybackStateUpdate)
 			this.#updatePlaybackStateStatus = 'skip'
 
@@ -262,7 +265,6 @@ class Wrapper extends EventEmitter {
 	}
 
 	#onSongChangeExpected() {
-		logger.info('Song change is expected')
 		clearTimeout(this.#songChangeForceUpdatePlaybackStateTimeout)
 		this.#setSong(null, true)
 		this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(() => this.#updatePlaybackState(true), constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
@@ -498,6 +500,10 @@ class Wrapper extends EventEmitter {
 
 	get song() {
 		return this.#lastSong
+	}
+
+	get pendingSongChange() {
+		return this.#lastPendingSong
 	}
 }
 
