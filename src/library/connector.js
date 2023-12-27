@@ -40,8 +40,6 @@ class Connector extends EventEmitter {
 		this.#accessToken = (await response.json()).access_token
 
 		logger.info('The access token has been refreshed.')
-
-		return true
 	}
 
 	#invalidateSetup() {

@@ -53,13 +53,13 @@ export default class SongClipboardButton extends Button {
 					break
 
 				default:
-					return false
+					return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 			}
 
 			process.stdin.end(text)
 		} catch (e: any) {
 			logger.error(`An error occurred while copying to clipboard: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
-			return false
+			return constants.WRAPPER_RESPONSE_FATAL_ERROR
 		}
 
 		return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
@@ -69,7 +69,7 @@ export default class SongClipboardButton extends Button {
 		if (wrapper.song)
 			return this.#copyToClipboard(`${wrapper.song.item.name} - ${wrapper.song.item.artists.map((artist: any) => artist.name).join(', ')}\n${wrapper.song.item.external_urls.spotify}`)
 
-		return false
+		return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 
 	onWillAppear(ev: WillAppearEvent<any>): void {
