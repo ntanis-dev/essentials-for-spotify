@@ -455,7 +455,7 @@
 				"StackColor": "#FFF",
 
 				"TriggerDescription": {
-					"Rotate": "Previous / Next",
+					"Rotate": "Navigate",
 					"Push": "Play"
 				}
 			}
