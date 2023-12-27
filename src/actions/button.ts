@@ -13,11 +13,12 @@ import logger from './../library/logger.js'
 export class Button extends SingletonAction {
 	static HOLDABLE = false
 
+	#pressed: any = {}
+	#holding: any = {}
+	#busy: any = {}
+	#forcedBusy: any = {}
+
 	contexts: Array<string> = []
-	pressed: any = {}
-	holding: any = {}
-	busy: any = {}
-	forcedBusy: any = {}
 
 	async flashImage(action: any, image: string, duration: number = 500, times = 2) {
 		for (let i = 0; i < times; i++) {
@@ -31,16 +32,16 @@ export class Button extends SingletonAction {
 	}
 
 	async onKeyDown(ev: KeyDownEvent<any>) {
-		if (this.busy[ev.action.id] || this.forcedBusy[ev.action.id])
+		if (this.#busy[ev.action.id] || this.#forcedBusy[ev.action.id])
 			return
 
-		this.busy[ev.action.id] = true
-		this.pressed[ev.action.id] = true
+		this.#busy[ev.action.id] = true
+		this.#pressed[ev.action.id] = true
 
-		if ((!this.holding[ev.action.id]) && (this.constructor as typeof Button).HOLDABLE)
-			this.holding[ev.action.id] = setTimeout(() => {
-				if (this.pressed[ev.action.id]) {
-					this.holding[ev.action.id] = true
+		if ((!this.#holding[ev.action.id]) && (this.constructor as typeof Button).HOLDABLE)
+			this.#holding[ev.action.id] = setTimeout(() => {
+				if (this.#pressed[ev.action.id]) {
+					this.#holding[ev.action.id] = true
 					this.onKeyDown(ev)
 				}
 			}, constants.BUTTON_HOLD_DELAY)
@@ -54,9 +55,9 @@ export class Button extends SingletonAction {
 			if (response === constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)
 				await this.flashImage(ev.action, 'images/states/success', constants.SHORT_FLASH_DURATION, constants.SHORT_FLASH_TIMES)
 
-			if ((response === constants.WRAPPER_RESPONSE_SUCCESS || response === constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE) && this.holding[ev.action.id] === true)
-				this.pressed[ev.action.id] = setTimeout(() => {
-					if (this.pressed[ev.action.id])
+			if ((response === constants.WRAPPER_RESPONSE_SUCCESS || response === constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE) && this.#holding[ev.action.id] === true)
+				this.#pressed[ev.action.id] = setTimeout(() => {
+					if (this.#pressed[ev.action.id])
 						this.onKeyDown(ev)
 				}, Math.max(0, constants.BUTTON_HOLD_REPEAT_INTERVAL - (Date.now() - startedInvokingAt)))
 			else if (response === constants.WRAPPER_RESPONSE_NOT_AVAILABLE)
@@ -73,15 +74,15 @@ export class Button extends SingletonAction {
 				await this.flashImage(ev.action, 'images/states/busy', constants.SHORT_FLASH_DURATION, constants.SHORT_FLASH_TIMES)
 		}
 
-		this.busy[ev.action.id] = false
+		this.#busy[ev.action.id] = false
 	}
 
 	async onKeyUp(ev: KeyUpEvent<any>) {
-		clearTimeout(this.pressed[ev.action.id])
-		clearTimeout(this.holding[ev.action.id])
+		clearTimeout(this.#pressed[ev.action.id])
+		clearTimeout(this.#holding[ev.action.id])
 
-		this.pressed[ev.action.id] = false
-		this.holding[ev.action.id] = false
+		this.#pressed[ev.action.id] = false
+		this.#holding[ev.action.id] = false
 	}
 
 	async invokeWrapperAction(): Promise<Symbol> {
@@ -89,7 +90,7 @@ export class Button extends SingletonAction {
 	}
 
 	setBusy(context: string, busy: boolean) {
-		this.forcedBusy[context] = busy
+		this.#forcedBusy[context] = busy
 	}
 
 	isVisible(context: string) {
@@ -101,11 +102,11 @@ export class Button extends SingletonAction {
 	}
 
 	onWillDisappear(ev: WillDisappearEvent<any>): void {
-		clearTimeout(this.pressed[ev.action.id])
-		clearTimeout(this.holding[ev.action.id])
+		clearTimeout(this.#pressed[ev.action.id])
+		clearTimeout(this.#holding[ev.action.id])
 
-		this.pressed[ev.action.id] = false
-		this.holding[ev.action.id] = false
+		this.#pressed[ev.action.id] = false
+		this.#holding[ev.action.id] = false
 
 		this.contexts.splice(this.contexts.indexOf(ev.action.id), 1)
 	}

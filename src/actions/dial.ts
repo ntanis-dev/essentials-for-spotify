@@ -1,4 +1,4 @@
-import {
+import StreamDeck, {
 	DialDownEvent,
 	DialRotateEvent,
 	SingletonAction,
@@ -10,8 +10,19 @@ import {
 import logger from './../library/logger.js'
 
 export class Dial extends SingletonAction {
+	#layout: string
+	#forcedBusy: any = {}
+
 	contexts: Array<string> = []
-	forcedBusy: any = {}
+
+	constructor(layout: string) {
+		super()
+		this.#layout = layout
+	}
+
+	async #resetFeedbackLayout(context: string) {
+		await StreamDeck.client.setFeedbackLayout(context, this.#layout).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback layout of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+	}
 
 	async flashImage(action: any, image: string, duration: number = 500, times = 2) {
 		for (let i = 0; i < times; i++) {
@@ -25,7 +36,7 @@ export class Dial extends SingletonAction {
 	}
 
 	setBusy(context: string, busy: boolean) {
-		this.forcedBusy[context] = busy
+		this.#forcedBusy[context] = busy
 	}
 
 	isVisible(context: string) {

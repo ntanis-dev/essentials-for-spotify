@@ -11,6 +11,10 @@ import logger from './../library/logger.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.playback-control-dial' })
 export default class PlaybackControlDial extends Dial {
+	constructor() {
+		super('playback-control-layout.json')
+	}
+
 	onWillAppear(ev: WillAppearEvent<any>): void {
 		super.onWillAppear(ev)
 

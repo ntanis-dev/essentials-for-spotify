@@ -11,6 +11,10 @@ import logger from './../library/logger.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.volume-control-dial' })
 export default class VolumeControlDial extends Dial {
+	constructor() {
+		super('volume-control-layout.json')
+	}
+
 	onWillAppear(ev: WillAppearEvent<any>): void {
 		super.onWillAppear(ev)
 
