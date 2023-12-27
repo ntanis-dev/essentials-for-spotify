@@ -16,6 +16,8 @@ export default class BackwardSeekButton extends Button {
 	async invokeWrapperAction() {
 		if (wrapper.song)
 			return wrapper.backwardSeek(Object.assign({}, wrapper.song), constants.SEEK_STEP_SIZE)
+		else if (wrapper.pendingSongChange)
+			return constants.WRAPPER_RESPONSE_SUCCESS
 		else
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
