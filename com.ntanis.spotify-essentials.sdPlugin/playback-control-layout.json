@@ -15,14 +15,16 @@
 			"value": "Playback Control",
 			"alignment": "left"
 		},
+
 		{
 			"key": "icon",
 			"type": "pixmap",
 			"rect": [16, 40, 48, 48],
 			"opacity": 0.3
 		},
+
 		{
-			"key": "value",
+			"key": "text",
 			"type": "text",
 			"value": "??:?? / ??:??",
 			"rect": [76, 40, 108, 32],
@@ -35,6 +37,7 @@
 			"alignment": "right",
 			"opacity": 0.3
 		},
+
 		{
 			"key": "indicator",
 			"type": "bar",

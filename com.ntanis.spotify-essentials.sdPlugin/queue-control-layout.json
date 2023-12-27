@@ -24,7 +24,7 @@
 		},
 
 		{
-			"key": "value",
+			"key": "name",
 			"type": "text",
 			"value": "?????",
 			"rect": [72, 36, 112, 24],
@@ -39,8 +39,8 @@
 		},
 
 		{
-			"key": "value_bottom",
-			"type": "text",
+			"key": "count",
+			"type": "count",
 			"value": "?? / ??",
 			"rect": [72, 64, 112, 24],
 
