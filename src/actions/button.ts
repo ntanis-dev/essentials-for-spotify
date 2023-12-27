@@ -66,6 +66,8 @@ export class Button extends SingletonAction {
 				}, Math.max(0, constants.BUTTON_HOLD_REPEAT_INTERVAL - (Date.now() - startedInvokingAt)))
 			else if (response === constants.WRAPPER_RESPONSE_NOT_AVAILABLE)
 				await this.flashImage(ev.action, 'images/states/not-available', constants.LONG_FLASH_DURATION, constants.LONG_FLASH_TIMES)
+			else if (response === constants.WRAPPER_RESPONSE_API_RATE_LIMITED)
+				await this.flashImage(ev.action, 'images/states/api-rate-limited', constants.LONG_FLASH_DURATION, constants.LONG_FLASH_TIMES)
 			else if (response === constants.WRAPPER_RESPONSE_API_ERROR)
 				await this.flashImage(ev.action, 'images/states/api-error', constants.LONG_FLASH_DURATION, constants.LONG_FLASH_TIMES)
 			else if (response === constants.WRAPPER_RESPONSE_FATAL_ERROR)
