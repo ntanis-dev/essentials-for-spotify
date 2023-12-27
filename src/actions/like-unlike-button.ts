@@ -15,7 +15,7 @@ import wrapper from './../library/wrapper.js'
 export default class LikeUnlikeButton extends Button {
 	constructor() {
 		super()
-		wrapper.on('likedStateChanged', this.#onLikedStateChanged.bind(this))
+		wrapper.on('songLikedStateChanged', this.#onLikedStateChanged.bind(this))
 	}
 
 	#onLikedStateChanged(liked: boolean, pending: boolean = false, contexts = this.contexts) {
@@ -37,9 +37,9 @@ export default class LikeUnlikeButton extends Button {
 			return
 
 		if (wrapper.song.liked)
-			return wrapper.unlikeSong(wrapper.song.item)
+			return wrapper.unlikeSong(Object.assign({}, wrapper.song))
 		else
-			return wrapper.likeSong(wrapper.song.item)
+			return wrapper.likeSong(Object.assign({}, wrapper.song))
 	}
 
 	onWillAppear(ev: WillAppearEvent<any>): void {

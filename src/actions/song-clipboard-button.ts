@@ -12,6 +12,7 @@ import {
 } from 'child_process'
 
 import os from 'os'
+import constants from '../library/constants.js'
 import logger from './../library/logger.js'
 import wrapper from './../library/wrapper.js'
 
@@ -61,7 +62,7 @@ export default class SongClipboardButton extends Button {
 			return false
 		}
 
-		return true
+		return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
 	}
 
 	async invokeWrapperAction() {

@@ -6,11 +6,17 @@ import {
 	Button
 } from './button.js'
 
+import constants from '../library/constants.js'
 import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.backward-seek-button' })
 export default class BackwardSeekButton extends Button {
+	static readonly HOLDABLE = true
+
 	async invokeWrapperAction() {
-		return false
+		if (wrapper.song)
+			return wrapper.backwardSeek(constants.SEEK_STEP_SIZE)
+		else
+			return null
 	}
 }

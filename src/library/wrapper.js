@@ -15,6 +15,7 @@ class Wrapper extends EventEmitter {
 	#lastVolumePercent = 100
 	#lastDevice = null
 	#lastSong = null
+	#lastSongTimeUpdateAt = null
 	#lastPlaybackStateUpdate = null
 	#songChangeForceUpdatePlaybackStateTimeout = null
 	#lastRepeatState = 'off'
@@ -37,11 +38,31 @@ class Wrapper extends EventEmitter {
 
 			this.#updatePlaybackState()
 		}, constants.INTERVAL_CHECK_UPDATE_PLAYBACK_STATE)
+
+		setInterval(() => {
+			if (this.#lastSong === null)
+				return
+
+			if ((this.#lastSong.progress + constants.INTERVAL_CHECK_UPDATE_SONG_TIME) > this.#lastSong.duration) {
+				this.#onSongChangeExpected()
+				return
+			}
+
+			if (!this.#lastPlaying)
+				return
+
+			this.#setSong({
+				item: this.#lastSong.item,
+				liked: this.#lastSong.liked,
+				progress: this.#lastSong.progress + (Date.now() - this.#lastSongTimeUpdateAt),
+				duration: this.#lastSong.duration
+			}, false, true)
+		}, constants.INTERVAL_CHECK_UPDATE_SONG_TIME)
 	}
 
 	async #wrapCall(fn) {
 		if (this.#pendingWrappedCall)
-			return constants.WRAPPER_RESPONSE_PENDING
+			return constants.WRAPPER_RESPONSE_BUSY
 
 		this.#updatePlaybackStateStatus = 'pause'
 		this.#pendingWrappedCall = true
@@ -49,8 +70,17 @@ class Wrapper extends EventEmitter {
 		try {
 			return await fn()
 		} catch (e) {
-			logger.error(`An error occured while responding to a wrapper call: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
-			return constants.WRAPPER_RESPONSE_ERROR
+			let response = constants.WRAPPER_RESPONSE_FATAL_ERROR
+
+			if (e instanceof constants.ApiError)
+				response = e.status == 429 ? constants.WRAPPER_RESPONSE_API_RATE_LIMITED : constants.WRAPPER_RESPONSE_API_ERROR
+			else if (e instanceof constants.NoDeviceError)
+				response = constants.WRAPPER_RESPONSE_NO_DEVICE_ERROR
+
+			if (response !== constants.WRAPPER_RESPONSE_API_RATE_LIMITED)
+				logger.error(`An error occured while responding to a wrapper call: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
+
+			return response
 		} finally {
 			this.#updatePlaybackStateStatus = 'idle'
 			this.#lastPlaybackStateUpdate = Date.now()
@@ -68,9 +98,9 @@ class Wrapper extends EventEmitter {
 				response = await connector.callSpotifyApi(`${path}device_id=${this.#lastDevices[0].id}`, options, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
 
 				if (response === constants.API_NOT_FOUND_RESPONSE)
-					throw new Error('No device available.')
+					throw new constants.NoDeviceError('No device available.')
 			} else
-				throw new Error('No device available.')
+				throw new constants.NoDeviceError('No device available.')
 
 		return response
 	}
@@ -101,7 +131,9 @@ class Wrapper extends EventEmitter {
 
 			this.#setSong(response?.item ? {
 				item: response.item,
-				liked: (await connector.callSpotifyApi(`me/tracks/contains?ids=${response.item.id}`))[0]
+				liked: (await connector.callSpotifyApi(`me/tracks/contains?ids=${response.item.id}`))[0],
+				progress: response.progress_ms,
+				duration: response.item.duration_ms
 			} : null)
 
 			this.#setDevices(response?.device.id || null, (await connector.callSpotifyApi('me/player/devices')).devices)
@@ -117,8 +149,12 @@ class Wrapper extends EventEmitter {
 		if (this.#lastPlaying === playing)
 			return
 
+		if (playing)
+			this.#lastSongTimeUpdateAt = Date.now()
+
 		this.#updatePlaybackStateStatus = 'skip'
 		this.#lastPlaying = playing
+
 		this.emit('playbackStateChanged', playing)
 	}
 
@@ -168,21 +204,33 @@ class Wrapper extends EventEmitter {
 		this.emit('mutedStateChanged', this.#lastMuted !== false)
 	}
 
-	#setSong(song, pending = false) {
+	#setSong(song, pending = false, allowPlaybackStateUpdate = false) {
 		const songChanged = this.#lastSong?.item?.id !== song?.item?.id
 		const likedChanged = this.#lastSong?.liked !== song?.liked
+		const timeChanged = this.#lastSong?.progress !== song?.progress || this.#lastSong?.duration !== song?.duration
 
-		if ((!songChanged) && (!likedChanged) && (!pending))
+		if ((!songChanged) && (!likedChanged) && (!timeChanged) && (!pending))
 			return
 
-		this.#updatePlaybackStateStatus = 'skip'
+		if (!allowPlaybackStateUpdate)
+			this.#updatePlaybackStateStatus = 'skip'
+
 		this.#lastSong = song
+
+		if (songChanged || timeChanged)
+			this.#lastSongTimeUpdateAt = Date.now()
 
 		if (songChanged)
 			this.emit('songChanged', song, pending)
 
 		if (likedChanged)
-			this.emit('likedStateChanged', song?.liked, pending)
+			this.emit('songLikedStateChanged', song?.liked, pending)
+
+		if (timeChanged)
+			this.emit('songTimeChanged', song?.progress, song?.duration, pending)
+
+		if (this.#lastSong && this.#lastSong.progress > this.#lastSong.duration)
+			this.#onSongChangeExpected()
 	}
 
 	#setDevices(last, devices) {
@@ -341,30 +389,70 @@ class Wrapper extends EventEmitter {
 		return this.setPlaybackVolume(this.#lastMuted, deviceId)
 	}
 
-	async likeSong(songItem) {
+	async likeSong(song) {
 		return this.#wrapCall(async () => {
-			await connector.callSpotifyApi(`me/tracks?ids=${songItem.id}`, {
+			await connector.callSpotifyApi(`me/tracks?ids=${song.item.id}`, {
 				method: 'PUT'
 			})
 
 			this.#setSong({
-				item: songItem,
-				liked: true
+				item: song.item,
+				liked: true,
+				progress: song.progress,
+				duration: song.duration
 			})
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
 		})
 	}
 
-	async unlikeSong(songItem) {
+	async unlikeSong(song) {
 		return this.#wrapCall(async () => {
-			await connector.callSpotifyApi(`me/tracks?ids=${songItem.id}`, {
+			await connector.callSpotifyApi(`me/tracks?ids=${song.item.id}`, {
 				method: 'DELETE'
 			})
 
 			this.#setSong({
-				item: songItem,
-				liked: false
+				item: song.item,
+				liked: false,
+				progress: song.progress,
+				duration: song.duration
+			})
+
+			return constants.WRAPPER_RESPONSE_SUCCESS
+		})
+	}
+
+	async forwardSeek(time, deviceId = this.#lastDevice) {
+		return this.#wrapCall(async () => {
+			await this.#deviceCall(`me/player/seek?position_ms=${this.#lastSong.progress + time}`, {
+				method: 'PUT'
+			}, deviceId)
+
+			this.#setSong({
+				item: this.#lastSong.item,
+				liked: this.#lastSong.liked,
+				progress: this.#lastSong.progress + time,
+				duration: this.#lastSong.duration
+			})
+
+			return constants.WRAPPER_RESPONSE_SUCCESS
+		})
+	}
+
+	async backwardSeek(time, deviceId = this.#lastDevice) {
+		return this.#wrapCall(async () => {
+			const newProgress = Math.max(0, this.#lastSong.progress - time)
+
+			await this.#deviceCall(`me/player/seek?position_ms=${newProgress}`, {
+				method: 'PUT'
+			}, deviceId)
+
+			this.#setSong({
+				item: this.#lastSong.item,
+				liked: this.#lastSong.liked,
+				progress: newProgress,
+				duration: this.#lastSong.duration
 			})
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
@@ -398,8 +486,6 @@ class Wrapper extends EventEmitter {
 	get song() {
 		return this.#lastSong
 	}
-
-	
 }
 
 export default new Wrapper()

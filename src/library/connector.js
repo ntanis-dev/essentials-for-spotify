@@ -35,7 +35,7 @@ class Connector extends EventEmitter {
 		})
 
 		if (response.status !== 200)
-			throw new Error(`The refresh token Spotify API call failed with status "${response.status}" and body "${await response.text()}".`)
+			throw new constants.ApiError(response.status, `The refresh token Spotify API call failed with status "${response.status}" and body "${await response.text()}".`)
 
 		this.#accessToken = (await response.json()).access_token
 
@@ -96,7 +96,7 @@ class Connector extends EventEmitter {
 			return constants.API_NOT_FOUND_RESPONSE
 
 		if (response.status !== 200)
-			throw new Error(`The Spotify API call "${path}" failed with status "${response.status}" and body "${await response.text()}".`)
+			throw new constants.ApiError(response.status, `The Spotify API call "${path}" failed with status "${response.status}" and body "${await response.text()}".`)
 
 		if (response.headers.get('content-type')?.includes('application/json'))
 			return response.json()
@@ -160,7 +160,7 @@ class Connector extends EventEmitter {
 				})
 
 				if (response.status !== 200)
-					throw new Error(`The access token Spotify API call failed with status "${response.status}".`)
+					throw new constants.ApiError(response.status, `The access token Spotify API call failed with status "${response.status}".`)
 
 				const data = await response.json()
 

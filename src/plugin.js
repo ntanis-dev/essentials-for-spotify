@@ -3,6 +3,7 @@
 // Feedback support
 // Rate limit handling
 // Device hot-swapping handling
+// Disable song-based buttons when something non-song is playing
 
 import StreamDeck from '@elgato/streamdeck'
 import logger from './library/logger'
