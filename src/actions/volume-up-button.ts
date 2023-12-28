@@ -17,9 +17,6 @@ export default class VolumeUpButton extends Button {
 		if (wrapper.volumePercent === null)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
-		if (wrapper.muted)
-			await wrapper.unmuteVolume()
-
-		return wrapper.setPlaybackVolume(wrapper.volumePercent + constants.VOLUME_STEP_SIZE)
+		return wrapper.setPlaybackVolume((wrapper.muted ? wrapper.mutedVolumePercent : wrapper.volumePercent) + constants.VOLUME_STEP_SIZE)
 	}
 }

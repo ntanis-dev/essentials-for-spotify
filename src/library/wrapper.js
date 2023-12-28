@@ -183,7 +183,7 @@ class Wrapper extends EventEmitter {
 			if (volumePercent > 0)
 				this.#setMuted(false)
 			else if (volumePercent === 0 && this.#lastMuted === false)
-				this.#setMuted(this.#lastVolumePercent || constants.VOLUME_PERCENT_MUTE_RESTORE)
+				this.#setMuted(0)
 
 		this.#updatePlaybackStateStatus = 'skip'
 		this.#lastVolumePercent = volumePercent
@@ -405,7 +405,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async unmuteVolume(deviceId = this.#lastDevice) {
-		return this.setPlaybackVolume(this.#lastMuted, deviceId)
+		return this.setPlaybackVolume(this.#lastMuted || constants.VOLUME_PERCENT_MUTE_RESTORE, deviceId)
 	}
 
 	async likeSong(song) {

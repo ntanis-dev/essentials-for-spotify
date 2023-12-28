@@ -12,7 +12,7 @@ import logger from './../library/logger.js'
 @action({ UUID: 'com.ntanis.spotify-essentials.queue-control-dial' })
 export default class QueueControlDial extends Dial {
 	constructor() {
-		super('queue-control-layout.json')
+		super('queue-control-layout.json', 'images/icons/queue-control.png')
 	}
 
 	onWillAppear(ev: WillAppearEvent<any>): void {

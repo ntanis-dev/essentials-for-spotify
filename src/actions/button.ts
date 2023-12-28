@@ -74,15 +74,15 @@ export class Button extends SingletonAction {
 				await this.flashImage(ev.action, 'images/states/busy', constants.SHORT_FLASH_DURATION, constants.SHORT_FLASH_TIMES)
 		}
 
-		this.#busy[ev.action.id] = false
+		delete this.#busy[ev.action.id]
 	}
 
 	async onKeyUp(ev: KeyUpEvent<any>) {
 		clearTimeout(this.#pressed[ev.action.id])
 		clearTimeout(this.#holding[ev.action.id])
 
-		this.#pressed[ev.action.id] = false
-		this.#holding[ev.action.id] = false
+		delete this.#pressed[ev.action.id]
+		delete this.#holding[ev.action.id]
 	}
 
 	async invokeWrapperAction(): Promise<Symbol> {
@@ -90,7 +90,10 @@ export class Button extends SingletonAction {
 	}
 
 	setBusy(context: string, busy: boolean) {
-		this.#forcedBusy[context] = busy
+		if (!busy)
+			delete this.#forcedBusy[context]
+		else
+			this.#forcedBusy[context] = busy
 	}
 
 	isVisible(context: string) {
@@ -105,8 +108,8 @@ export class Button extends SingletonAction {
 		clearTimeout(this.#pressed[ev.action.id])
 		clearTimeout(this.#holding[ev.action.id])
 
-		this.#pressed[ev.action.id] = false
-		this.#holding[ev.action.id] = false
+		delete this.#pressed[ev.action.id]
+		delete this.#holding[ev.action.id]
 
 		this.contexts.splice(this.contexts.indexOf(ev.action.id), 1)
 	}

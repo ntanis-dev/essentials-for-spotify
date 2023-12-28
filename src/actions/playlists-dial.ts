@@ -12,7 +12,7 @@ import logger from './../library/logger.js'
 @action({ UUID: 'com.ntanis.spotify-essentials.playlists-dial' })
 export default class PlaylistsDial extends Dial {
 	constructor() {
-		super('playlists-layout.json')
+		super('playlists-layout.json', 'images/icons/playlists.png')
 	}
 
 	onWillAppear(ev: WillAppearEvent<any>): void {

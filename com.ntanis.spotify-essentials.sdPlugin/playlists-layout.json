@@ -20,7 +20,8 @@
 			"key": "icon",
 			"type": "pixmap",
 			"rect": [16, 40, 48, 48],
-			"opacity": 0.3
+			"opacity": 0.3,
+			"value": "images/icons/playlists.png"
 		},
 
 		{
