@@ -21,14 +21,37 @@ export default class VolumeControlDial extends Dial {
 		wrapper.on('volumePercentChanged', this.#onVolumePercentChanged.bind(this))
 	}
 
+	#updateJointFeedback(contexts = this.contexts) {
+		if (wrapper.volumePercent === null)
+			return
+
+		for (const context of contexts) {
+			this.setIcon(context, wrapper.muted ? 'images/icons/volume-control-muted.png' : 'images/icons/volume-control.png')
+
+			StreamDeck.client.setFeedback(context, {
+				text: {
+					value: `${wrapper.muted ? wrapper.mutedVolumePercent : wrapper.volumePercent}%`,
+					opacity: wrapper.muted ? 0.5 : 1.0
+				},
+
+				icon: {
+					opacity: 1
+				},
+
+				indicator: {
+					value: wrapper.muted ? wrapper.mutedVolumePercent : wrapper.volumePercent,
+					opacity: wrapper.muted ? 0.5 : 1.0
+				}
+			}).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+		}
+	}
+
 	#onVolumePercentChanged(percent: number, contexts = this.contexts) {
-		for (const context of contexts)
-			this.updateFeedback(context)
+		this.#updateJointFeedback(contexts)
 	}
 
 	#onMutedStateChanged(state: boolean, contexts = this.contexts) {
-		for (const context of contexts)
-			this.updateFeedback(context)
+		this.#updateJointFeedback(contexts)
 	}
 
 	async invokeWrapperAction(type: symbol) {
@@ -63,24 +86,7 @@ export default class VolumeControlDial extends Dial {
 	}
 
 	updateFeedback(context: string): void {
-		if (wrapper.volumePercent === null)
-			return
-
-		StreamDeck.client.setFeedback(context, {
-			indicator: {
-				value: wrapper.muted ? wrapper.mutedVolumePercent : wrapper.volumePercent,
-				opacity: wrapper.muted ? 0.5 : 1.0
-			},
-
-			icon: {
-				opacity: 1,
-				value: wrapper.muted ? 'images/icons/volume-control-muted.png' : 'images/icons/volume-control.png'
-			},
-
-			text: {
-				value: `${wrapper.muted ? wrapper.mutedVolumePercent : wrapper.volumePercent}%`,
-				opacity: wrapper.muted ? 0.5 : 1.0
-			}
-		}).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+		this.#onMutedStateChanged(wrapper.muted, [context])
+		this.#onVolumePercentChanged(wrapper.volumePercent, [context])
 	}
 }

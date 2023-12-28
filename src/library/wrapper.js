@@ -7,12 +7,12 @@ import constants from './constants'
 import logger from './logger'
 
 class Wrapper extends EventEmitter {
-	#lastDevices = []
-	#lastMuted = false
-	#lastPlaying = false
-	#lastShuffleState = false
 	#pendingWrappedCall = false
-	#lastPendingSong = false
+	#lastDevices = null
+	#lastMuted = null
+	#lastPlaying = null
+	#lastShuffleState = null
+	#lastPendingSong = null
 	#lastVolumePercent = null
 	#lastDevice = null
 	#lastSong = null
@@ -20,7 +20,7 @@ class Wrapper extends EventEmitter {
 	#lastSongTimeUpdateAt = null
 	#lastPlaybackStateUpdate = null
 	#songChangeForceUpdatePlaybackStateTimeout = null
-	#lastRepeatState = 'off'
+	#lastRepeatState = null
 	#updatePlaybackStateStatus = 'idle'
 
 	constructor() {
@@ -92,14 +92,17 @@ class Wrapper extends EventEmitter {
 
 		let response = await connector.callSpotifyApi(`${path}${deviceId ? `device_id=${deviceId}` : ''}`, options, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
 
-		if (response === constants.API_NOT_FOUND_RESPONSE)
-			if (this.#lastDevices.length > 0) {
-				response = await connector.callSpotifyApi(`${path}device_id=${this.#lastDevices[0].id}`, options, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
+		if (response === constants.API_NOT_FOUND_RESPONSE) {
+			const activeDevices = this.#lastDevices && this.#lastDevices.filter(device => device.is_active) || []
+
+			if (activeDevices.length > 0) {
+				response = await connector.callSpotifyApi(`${path}device_id=${activeDevices[0].id}`, options, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
 
 				if (response === constants.API_NOT_FOUND_RESPONSE)
 					throw new constants.NoDeviceError('No device available.')
 			} else
 				throw new constants.NoDeviceError('No device available.')
+		}
 
 		return response
 	}
@@ -132,7 +135,7 @@ class Wrapper extends EventEmitter {
 				item: response.item,
 				liked: (await connector.callSpotifyApi(`me/tracks/contains?ids=${response.item.id}`))[0],
 				progress: response.progress_ms,
-				surprise: this.#lastSong && this.#lastSong.id === response.item.id ? this.#lastSong.surprise : false
+				surprise: this.#lastSong && this.#lastSong.item.id === response.item.id ? this.#lastSong.surprise : false
 			} : null)
 
 			this.#setDevices(response?.device.id || null, (await connector.callSpotifyApi('me/player/devices')).devices)
@@ -258,8 +261,8 @@ class Wrapper extends EventEmitter {
 			this.#lastDevice = last
 			this.emit('deviceChanged', last)
 		}
-
-		if (!(this.#lastDevices.length !== devices.length || this.#lastDevices.some((device, index) => device.id !== devices[index].id) || this.#lastDevices.some((device, index) => device.is_active !== devices[index].is_active)))
+		
+		if (this.#lastDevices && this.#lastDevices.length === devices.length && this.#lastDevices.every((device, index) => device.id === devices[index].id && device.is_active === devices[index].is_active))
 			return
 
 		this.#updatePlaybackStateStatus = 'skip'

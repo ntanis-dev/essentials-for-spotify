@@ -9,6 +9,8 @@
 // Device supports_volume flag // NOT_AVAILABLE
 // actions.disallows flags // NOT_AVAILABLE
 
+// State buttons should de-state when setup is not available and re-state when it is
+
 // Settings
 // Setup
 

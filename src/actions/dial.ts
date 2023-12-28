@@ -22,20 +22,22 @@ export class Dial extends SingletonAction {
 		DOWN: Symbol('DOWN'),
 		TAP: Symbol('TAP')
 	}
-
+	
 	#layout: string
-	#icon: string
 	#busy: any = {}
 	#forcedBusy: any = {}
 	#holding: any = {}
-
+	
+	icon: string
+	originalIcon: string
 	contexts: Array<string> = []
 
 	constructor(layout: string, icon: string) {
 		super()
 
-		this.#layout = layout,
-		this.#icon = icon
+		this.#layout = layout
+		this.icon = icon
+		this.originalIcon = icon
 
 		connector.on('setupStateChanged', (state: boolean) => {
 			if (!state)
@@ -103,7 +105,7 @@ export class Dial extends SingletonAction {
 			await new Promise(resolve => setTimeout(resolve, duration))
 
 			await action.setFeedback({
-				icon: this.#icon
+				icon: this.icon
 			}).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 			if (i + 1 < times)
@@ -145,6 +147,14 @@ export class Dial extends SingletonAction {
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 
+	async setIcon(context: string, icon: string) {
+		this.icon = icon
+
+		await StreamDeck.client.setFeedback(context, {
+			icon
+		}).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+	}
+
 	updateFeedback(context: string) { }
 
 	setBusy(context: string, busy: boolean) {
@@ -160,6 +170,9 @@ export class Dial extends SingletonAction {
 
 	onWillAppear(ev: WillAppearEvent<any>): void {
 		this.contexts.push(ev.action.id)
+
+		if (connector.set)
+			this.updateFeedback(ev.action.id)
 	}
 
 	onWillDisappear(ev: WillDisappearEvent<any>): void {
