@@ -7,7 +7,7 @@ let pendingResults = {}
 
 wrapper.on('songChanged', (song, pending) => {
 	if (lastSong)
-		imageCache[`song:${lastSong.item.id}`] = null
+		delete imageCache[`song:${lastSong.item.id}`]
 
 	if (song)
 		lastSong = song
@@ -25,7 +25,7 @@ const getForSong = async song => {
 			if (imageCache[`song:${song.item.id}`])
 				return imageCache[`song:${song.item.id}`]
 
-			const url = song.item.album.images.length > 0 ? song.item.album.images[0].url : null
+			const url = song.item.album.images.length > 0 ? song.item.album.images[0].url : undefined
 
 			if (!url) {
 				resolve(null)
@@ -38,7 +38,7 @@ const getForSong = async song => {
 			logger.error(`Failed to get image for song "${song.item.id}": "${e.message}"`)
 		}
 	}).finally(result => {
-		pendingResults[`song:${song.item.id}`] = null
+		delete pendingResults[`song:${song.item.id}`]
 		return result
 	})
 

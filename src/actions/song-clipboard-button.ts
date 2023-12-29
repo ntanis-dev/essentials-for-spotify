@@ -1,4 +1,4 @@
-import StreamDeck, {
+import {
 	action,
 	WillAppearEvent
 } from '@elgato/streamdeck'
@@ -25,14 +25,7 @@ export default class SongClipboardButton extends Button {
 
 	#onSongChanged(song: any, pending: boolean = false, contexts = this.contexts) {
 		for (const context of contexts)
-			setImmediate(async () => {
-				this.setBusy(context, true)
-
-				await StreamDeck.client.setImage(context, pending ? 'images/states/pending' : undefined).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
-
-				if (!pending)
-					this.setBusy(context, false)
-			})
+			this.setImage(context, pending ? 'images/states/pending' : undefined)
 	}
 
 	#copyToClipboard(text: string) {

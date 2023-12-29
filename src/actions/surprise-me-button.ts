@@ -1,4 +1,4 @@
-import StreamDeck, {
+import {
 	action
 } from '@elgato/streamdeck'
 
@@ -14,15 +14,15 @@ import wrapper from './../library/wrapper.js'
 export default class SurpriseMeButton extends Button {
 	async invokeWrapperAction() {
 		for (const context of this.contexts) {
-			this.setBusy(context, true)
-			await StreamDeck.client.setImage(context, 'images/states/pending').catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+			this.setUnpressable(context, true)
+			this.setImage(context, 'images/states/pending')
 		}
 
 		const response = await wrapper.surpriseMe()
 
 		for (const context of this.contexts) {
-			this.setBusy(context, false)
-			await StreamDeck.client.setImage(context).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+			this.setImage(context)
+			this.setUnpressable(context, false)
 		}
 
 		if (response === constants.WRAPPER_RESPONSE_SUCCESS)

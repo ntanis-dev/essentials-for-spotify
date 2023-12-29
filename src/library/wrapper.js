@@ -93,7 +93,7 @@ class Wrapper extends EventEmitter {
 		let response = await connector.callSpotifyApi(`${path}${deviceId ? `device_id=${deviceId}` : ''}`, options, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
 
 		if (response === constants.API_NOT_FOUND_RESPONSE) {
-			const activeDevices = this.#lastDevices && this.#lastDevices.filter(device => device.is_active) || []
+			const activeDevices = this.#lastDevices || []
 
 			if (activeDevices.length > 0) {
 				response = await connector.callSpotifyApi(`${path}device_id=${activeDevices[0].id}`, options, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
@@ -261,8 +261,8 @@ class Wrapper extends EventEmitter {
 			this.#lastDevice = last
 			this.emit('deviceChanged', last)
 		}
-		
-		if (this.#lastDevices && this.#lastDevices.length === devices.length && this.#lastDevices.every((device, index) => device.id === devices[index].id && device.is_active === devices[index].is_active))
+
+		if (this.#lastDevices && this.#lastDevices.length === devices.length && this.#lastDevices.every((device, index) => device.id === devices[index].id))
 			return
 
 		this.#updatePlaybackStateStatus = 'skip'

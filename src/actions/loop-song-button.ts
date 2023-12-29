@@ -1,25 +1,26 @@
-import StreamDeck, {
-	action,
-	WillAppearEvent
+import {
+	action
 } from '@elgato/streamdeck'
 
 import {
 	Button
 } from './button.js'
 
-import logger from './../library/logger.js'
 import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.loop-song-button' })
 export default class LoopSongButton extends Button {
+	static readonly STATABLE = true
+
 	constructor() {
 		super()
+		this.setStatelessImage('images/states/loop-one-unknown')
 		wrapper.on('repeatStateChanged', this.#onRepeatStateChanged.bind(this))
 	}
 
 	#onRepeatStateChanged(state: string, contexts = this.contexts) {
 		for (const context of contexts)
-			StreamDeck.client.setState(context, state === 'track' ? 1 : 0).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck state of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+			this.setState(context, state === 'track' ? 1 : 0)
 	}
 
 	async invokeWrapperAction() {
@@ -29,8 +30,8 @@ export default class LoopSongButton extends Button {
 			return wrapper.turnOnTrackRepeat()
 	}
 
-	onWillAppear(ev: WillAppearEvent<any>): void {
-		super.onWillAppear(ev)
-		this.#onRepeatStateChanged(wrapper.repeatState, [ev.action.id])
+	onStateSettled(context: string) {
+		super.onStateSettled(context)
+		this.#onRepeatStateChanged(wrapper.repeatState, [context])
 	}
 }

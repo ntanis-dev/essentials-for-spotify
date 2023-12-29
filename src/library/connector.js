@@ -102,6 +102,16 @@ class Connector extends EventEmitter {
 			return response.text()
 	}
 
+	fakeOff() {
+		this.#setup = false
+		this.emit('setupStateChanged', false)
+	}
+
+	fakeOn() {
+		this.#setup = true
+		this.emit('setupStateChanged', true)
+	}
+
 	startSetup(clientId = null, clientSecret = null, refreshToken = null, port = constants.CONNECTOR_DEFAULT_PORT) {
 		logger.info('Starting connector setup.')
 

@@ -23,9 +23,9 @@ export class Dial extends SingletonAction {
 		TAP: Symbol('TAP')
 	}
 	
-	#layout: string
+	layout: string
 	#busy: any = {}
-	#forcedBusy: any = {}
+	#unpressable: any = {}
 	#holding: any = {}
 	
 	icon: string
@@ -35,14 +35,14 @@ export class Dial extends SingletonAction {
 	constructor(layout: string, icon: string) {
 		super()
 
-		this.#layout = layout
+		this.layout = layout
 		this.icon = icon
 		this.originalIcon = icon
 
 		connector.on('setupStateChanged', (state: boolean) => {
 			if (!state)
 				for (const context of this.contexts)
-					this.#resetFeedbackLayout(context)
+					this.resetFeedbackLayout(context)
 			else
 				for (const context of this.contexts)
 					this.updateFeedback(context)
@@ -53,12 +53,8 @@ export class Dial extends SingletonAction {
 				this.updateFeedback(context)
 	}
 
-	async #resetFeedbackLayout(context: string) {
-		await StreamDeck.client.setFeedbackLayout(context, this.#layout).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback layout of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
-	}
-
 	async #processAction(action: any, type: symbol) {
-		if (this.#busy[action.id] || this.#forcedBusy[action.id] || (type === Dial.TYPES.UP && ((!(this.constructor as typeof Dial).HOLDABLE) || (!this.#holding[action.id]))) || (type === Dial.TYPES.DOWN && this.#holding[action.id]))
+		if (this.#busy[action.id] || this.#unpressable[action.id] || (type === Dial.TYPES.UP && ((!(this.constructor as typeof Dial).HOLDABLE) || (!this.#holding[action.id]))) || (type === Dial.TYPES.DOWN && this.#holding[action.id]))
 			return
 
 		if (type === Dial.TYPES.UP && this.#holding[action.id])
@@ -105,7 +101,7 @@ export class Dial extends SingletonAction {
 			await new Promise(resolve => setTimeout(resolve, duration))
 
 			await action.setFeedback({
-				icon: this.icon
+				icon: this.originalIcon
 			}).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 			if (i + 1 < times)
@@ -133,6 +129,17 @@ export class Dial extends SingletonAction {
 		return this.#processAction(ev.action, Dial.TYPES.TAP)
 	}
 
+	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
+		this.contexts.push(ev.action.id)
+
+		if (connector.set)
+			this.updateFeedback(ev.action.id)
+	}
+
+	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
+		this.contexts.splice(this.contexts.indexOf(ev.action.id), 1)
+	}
+
 	async invokeWrapperAction(type: symbol): Promise<Symbol> {
 		return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
@@ -147,7 +154,17 @@ export class Dial extends SingletonAction {
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 
+	async setFeedback(context: string, feedback: any) {
+		if ((!this.contexts.includes(context)) || (!connector.set))
+			return
+
+		await StreamDeck.client.setFeedback(context, feedback).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+	}
+
 	async setIcon(context: string, icon: string) {
+		if ((!this.contexts.includes(context)) || (!connector.set))
+			return
+
 		this.icon = icon
 
 		await StreamDeck.client.setFeedback(context, {
@@ -155,27 +172,21 @@ export class Dial extends SingletonAction {
 		}).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
-	updateFeedback(context: string) { }
+	async resetFeedbackLayout(context: string, feedback: any = null) {
+		await StreamDeck.client.setFeedbackLayout(context, this.layout).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback layout of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
-	setBusy(context: string, busy: boolean) {
+		if (feedback)
+			await StreamDeck.client.setFeedback(context, feedback).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+	}
+
+	updateFeedback(context: string) {
+		logger.info(`Updating feedback for "${this.manifestId}" in context "${context}".`)
+	}
+
+	setUnpressable(context: string, busy: boolean) {
 		if (!busy)
-			delete this.#forcedBusy[context]
+			delete this.#unpressable[context]
 		else
-			this.#forcedBusy[context] = busy
-	}
-
-	isVisible(context: string) {
-		return this.contexts.includes(context)
-	}
-
-	onWillAppear(ev: WillAppearEvent<any>): void {
-		this.contexts.push(ev.action.id)
-
-		if (connector.set)
-			this.updateFeedback(ev.action.id)
-	}
-
-	onWillDisappear(ev: WillDisappearEvent<any>): void {
-		this.contexts.splice(this.contexts.indexOf(ev.action.id), 1)
+			this.#unpressable[context] = busy
 	}
 }

@@ -1,7 +1,6 @@
 
-import StreamDeck, {
-	action,
-	WillAppearEvent
+import {
+	action
 } from '@elgato/streamdeck'
 
 import {
@@ -9,19 +8,21 @@ import {
 } from './button.js'
 
 import constants from '../library/constants.js'
-import logger from './../library/logger.js'
 import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.volume-mute-unmute-button' })
 export default class VolumeMuteUnmuteButton extends Button {
+	static readonly STATABLE = true
+
 	constructor() {
 		super()
+		this.setStatelessImage('images/states/volume-mute-unknown')
 		wrapper.on('mutedStateChanged', this.#onMutedStateChanged.bind(this))
 	}
 
 	#onMutedStateChanged(state: boolean, contexts = this.contexts) {
 		for (const context of contexts)
-			StreamDeck.client.setState(context, state ? 1 : 0).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck state of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+			this.setState(context, state ? 1 : 0)
 	}
 
 	async invokeWrapperAction() {
@@ -34,8 +35,8 @@ export default class VolumeMuteUnmuteButton extends Button {
 			return wrapper.muteVolume()
 	}
 
-	onWillAppear(ev: WillAppearEvent<any>): void {
-		super.onWillAppear(ev)
-		this.#onMutedStateChanged(wrapper.muted, [ev.action.id])
+	onStateSettled(context: string) {
+		super.onStateSettled(context)
+		this.#onMutedStateChanged(wrapper.muted, [context])
 	}
 }

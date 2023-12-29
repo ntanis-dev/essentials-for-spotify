@@ -1,5 +1,4 @@
-import StreamDeck, {
-	WillAppearEvent,
+import {
 	action
 } from '@elgato/streamdeck'
 
@@ -8,7 +7,6 @@ import {
 } from './dial.js'
 
 import constants from './../library/constants.js'
-import logger from './../library/logger.js'
 import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.volume-control-dial' })
@@ -28,7 +26,7 @@ export default class VolumeControlDial extends Dial {
 		for (const context of contexts) {
 			this.setIcon(context, wrapper.muted ? 'images/icons/volume-control-muted.png' : 'images/icons/volume-control.png')
 
-			StreamDeck.client.setFeedback(context, {
+			this.setFeedback(context, {
 				text: {
 					value: `${wrapper.muted ? wrapper.mutedVolumePercent : wrapper.volumePercent}%`,
 					opacity: wrapper.muted ? 0.5 : 1.0
@@ -42,7 +40,7 @@ export default class VolumeControlDial extends Dial {
 					value: wrapper.muted ? wrapper.mutedVolumePercent : wrapper.volumePercent,
 					opacity: wrapper.muted ? 0.5 : 1.0
 				}
-			}).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+			})
 		}
 	}
 
@@ -86,6 +84,7 @@ export default class VolumeControlDial extends Dial {
 	}
 
 	updateFeedback(context: string): void {
+		super.updateFeedback(context)
 		this.#onMutedStateChanged(wrapper.muted, [context])
 		this.#onVolumePercentChanged(wrapper.volumePercent, [context])
 	}

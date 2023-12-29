@@ -1,4 +1,4 @@
-import StreamDeck, {
+import {
 	action,
 	WillAppearEvent
 } from '@elgato/streamdeck'
@@ -19,7 +19,7 @@ export default class PlayPauseButton extends Button {
 
 	#onPlaybackStateChanged(state: boolean, contexts = this.contexts) {
 		for (const context of contexts)
-			StreamDeck.client.setState(context, state ? 1 : 0).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck state of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+			this.setState(context, state ? 1 : 0)
 	}
 
 	async invokeWrapperAction() {

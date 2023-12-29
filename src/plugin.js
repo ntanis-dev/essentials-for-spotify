@@ -22,7 +22,7 @@ import actions from './library/actions'
 StreamDeck.connect().then(() => {
 	logger.info('Connected to Stream Deck.')
 
-	StreamDeck.client.getGlobalSettings().then(async settings => {
+	StreamDeck.client.getGlobalSettings().then(settings => {
 		if (settings.clientId && settings.clientSecret && settings.refreshToken) {
 			logger.info('Found global settings.')
 			connector.startSetup(settings.clientId, settings.clientSecret, settings.refreshToken)
@@ -34,6 +34,14 @@ StreamDeck.connect().then(() => {
 		logger.error(`An error occurred while getting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
 		connector.startSetup()
 	})
+
+	setTimeout(() => {
+		connector.fakeOff()
+
+		// setTimeout(() => {
+		// 	connector.fakeOn()
+		// }, 5000)
+	}, 5000)
 
 	actions.register()
 }).catch(e => logger.error(`An error occured while connecting to Stream Deck: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))

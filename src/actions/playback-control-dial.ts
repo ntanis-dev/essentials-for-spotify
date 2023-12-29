@@ -1,5 +1,4 @@
-import StreamDeck, {
-	WillAppearEvent,
+import {
 	action
 } from '@elgato/streamdeck'
 
@@ -35,7 +34,7 @@ export default class PlaybackControlDial extends Dial {
 
 	#updateJointFeedback(contexts = this.contexts) {
 		for (const context of contexts)
-			StreamDeck.client.setFeedback(context, {
+			this.setFeedback(context, {
 				title: {
 					value: wrapper.song ? `${wrapper.song.item.name} - ${wrapper.song.item.artists.map((artist: any) => artist.name).join(', ')}` : 'Playback Control',
 				},
@@ -53,30 +52,30 @@ export default class PlaybackControlDial extends Dial {
 					value: wrapper.song ? `${this.#beautifyTime(wrapper.song.progress, wrapper.song.item.duration_ms)}` : '??:?? / ??:??',
 					opacity: wrapper.playing ? 1.0 : 0.5
 				}
-			}).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+			})
 	}
 
 	#onSongChanged(song: any, pending: boolean = false, contexts = this.contexts) {
 		for (const context of contexts)
 			setImmediate(async () => {
-				this.setBusy(context, true)
+				this.setUnpressable(context, true)
 
 				if (wrapper.song) {
 					if (!images.isSongCached(wrapper.song))
-						await this.setIcon(context, 'images/icons/pending.png')
+						this.setIcon(context, 'images/icons/pending.png')
 		
 					const image = await images.getForSong(wrapper.song)
 		
 					if (image)
-						await this.setIcon(context, `data:image/jpeg;base64,${image}`)
+						this.setIcon(context, `data:image/jpeg;base64,${image}`)
 					else
-						await this.setIcon(context, this.originalIcon)
+						this.setIcon(context, this.originalIcon)
 				} else if (wrapper.pendingSongChange)
-					await this.setIcon(context, 'images/icons/pending.png')
+					this.setIcon(context, 'images/icons/pending.png')
 				else
-					await this.setIcon(context, this.originalIcon)
-		
-				this.setBusy(context, false)
+					this.setIcon(context, this.originalIcon)
+
+				this.setUnpressable(context, false)
 			})
 	}
 
@@ -90,7 +89,15 @@ export default class PlaybackControlDial extends Dial {
 			this.#updateJointFeedback([context])
 	}
 
-	async updateFeedback(context: string, isTimeUpdate = false): Promise<void> {
+	async resetFeedbackLayout(context: string): Promise<void> {
+		super.resetFeedbackLayout(context, {
+			title: 'Playback Control',
+			icon: this.originalIcon
+		})
+	}
+
+	async updateFeedback(context: string): Promise<void> {
+		super.updateFeedback(context)
 		this.#onSongChanged(wrapper.song, false, [context])
 		this.#onSongTimeChanged(wrapper.song?.progress, wrapper.song?.item.duration_ms, false, [context])
 		this.#onPlaybackStateChanged(wrapper.playing, [context])
