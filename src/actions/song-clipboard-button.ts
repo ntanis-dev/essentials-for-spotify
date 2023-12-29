@@ -65,7 +65,7 @@ export default class SongClipboardButton extends Button {
 		return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 
-	onWillAppear(ev: WillAppearEvent<any>): void {
+	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
 		super.onWillAppear(ev)
 		this.#onSongChanged(wrapper.song, false, [ev.action.id])
 	}

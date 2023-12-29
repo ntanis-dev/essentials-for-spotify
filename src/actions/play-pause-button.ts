@@ -7,7 +7,6 @@ import {
 	Button
 } from './button.js'
 
-import logger from './../library/logger.js'
 import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.play-pause-button' })
@@ -29,7 +28,7 @@ export default class PlayPauseButton extends Button {
 			return wrapper.resumePlayback()
 	}
 
-	onWillAppear(ev: WillAppearEvent<any>): void {
+	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
 		super.onWillAppear(ev)
 		this.#onPlaybackStateChanged(wrapper.playing, [ev.action.id])
 	}

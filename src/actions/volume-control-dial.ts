@@ -76,11 +76,23 @@ export default class VolumeControlDial extends Dial {
 	}
 
 	async invokeHoldWrapperAction() {
-		return wrapper.muteVolume()
+		if (!wrapper.muted)
+			return wrapper.muteVolume()
+		else
+			return constants.WRAPPER_RESPONSE_SUCCESS
 	}
 
 	async invokeHoldReleaseWrapperAction() {
-		return wrapper.unmuteVolume()
+		if (wrapper.muted)
+			return wrapper.unmuteVolume()
+		else
+			return constants.WRAPPER_RESPONSE_SUCCESS
+	}
+
+	async resetFeedbackLayout(context: string): Promise<void> {
+		super.resetFeedbackLayout(context, {
+			icon: this.originalIcon
+		})
 	}
 
 	updateFeedback(context: string): void {

@@ -27,6 +27,7 @@ export class Dial extends SingletonAction {
 	#busy: any = {}
 	#unpressable: any = {}
 	#holding: any = {}
+	#marquees: any = {}
 	
 	icon: string
 	originalIcon: string
@@ -53,43 +54,7 @@ export class Dial extends SingletonAction {
 				this.updateFeedback(context)
 	}
 
-	async #processAction(action: any, type: symbol) {
-		if (this.#busy[action.id] || this.#unpressable[action.id] || (type === Dial.TYPES.UP && ((!(this.constructor as typeof Dial).HOLDABLE) || (!this.#holding[action.id]))) || (type === Dial.TYPES.DOWN && this.#holding[action.id]))
-			return
-
-		if (type === Dial.TYPES.UP && this.#holding[action.id])
-			delete this.#holding[action.id]
-
-		this.#busy[action.id] = true
-
-		if (!connector.set)
-			await this.flashIcon(action, 'images/icons/setup-error.png')
-		else {
-			const response = ((this.constructor as typeof Dial).HOLDABLE && (type === Dial.TYPES.DOWN || type === Dial.TYPES.UP)) ? (type === Dial.TYPES.DOWN ? await this.invokeHoldWrapperAction() : await this.invokeHoldReleaseWrapperAction()) : await this.invokeWrapperAction(type)
-
-			if ((response === constants.WRAPPER_RESPONSE_SUCCESS || response === constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE) && type === Dial.TYPES.DOWN && (this.constructor as typeof Dial).HOLDABLE)
-				this.#holding[action.id] = true
-
-			if (response === constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)
-				await this.flashIcon(action, 'images/icons/success.png', false)
-			else if (response === constants.WRAPPER_RESPONSE_NOT_AVAILABLE)
-				await this.flashIcon(action, 'images/icons/not-available.png')
-			else if (response === constants.WRAPPER_RESPONSE_API_RATE_LIMITED)
-				await this.flashIcon(action, 'images/icons/api-rate-limited.png')
-			else if (response === constants.WRAPPER_RESPONSE_API_ERROR)
-				await this.flashIcon(action, 'images/icons/api-error.png')
-			else if (response === constants.WRAPPER_RESPONSE_FATAL_ERROR)
-				await this.flashIcon(action, 'images/icons/fatal-error.png')
-			else if (response === constants.WRAPPER_RESPONSE_NO_DEVICE_ERROR)
-				await this.flashIcon(action, 'images/icons/no-device-error.png')
-			else if (response === constants.WRAPPER_RESPONSE_BUSY)
-				await this.flashIcon(action, 'images/icons/busy.png')
-		}
-
-		delete this.#busy[action.id]
-	}
-
-	async flashIcon(action: any, icon: string, alert = true, duration: number = 500, times = 1) {
+	async #flashIcon(action: any, icon: string, alert = true, duration: number = 500, times = 1) {
 		for (let i = 0; i < times; i++) {
 			if (alert)
 				await action.showAlert().catch((e: any) => logger.error(`An error occurred while showing the Stream Deck alert of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
@@ -101,12 +66,87 @@ export class Dial extends SingletonAction {
 			await new Promise(resolve => setTimeout(resolve, duration))
 
 			await action.setFeedback({
-				icon: this.originalIcon
+				icon: connector.set ? this.icon : this.originalIcon
 			}).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 			if (i + 1 < times)
 				await new Promise(resolve => setTimeout(resolve, duration))
 		}
+	}
+
+	async #processAction(action: any, type: symbol) {
+		if (this.#busy[action.id] || this.#unpressable[action.id] || (type === Dial.TYPES.UP && ((!(this.constructor as typeof Dial).HOLDABLE) || (!this.#holding[action.id]))) || (type === Dial.TYPES.DOWN && this.#holding[action.id]))
+			return
+
+		if (type === Dial.TYPES.UP && this.#holding[action.id])
+			delete this.#holding[action.id]
+
+		this.#busy[action.id] = true
+
+		if (!connector.set)
+			await this.#flashIcon(action, 'images/icons/setup-error.png')
+		else {
+			const response = ((this.constructor as typeof Dial).HOLDABLE && (type === Dial.TYPES.DOWN || type === Dial.TYPES.UP)) ? (type === Dial.TYPES.DOWN ? await this.invokeHoldWrapperAction() : await this.invokeHoldReleaseWrapperAction()) : await this.invokeWrapperAction(type)
+
+			if ((response === constants.WRAPPER_RESPONSE_SUCCESS || response === constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE) && type === Dial.TYPES.DOWN && (this.constructor as typeof Dial).HOLDABLE)
+				this.#holding[action.id] = true
+
+			if (response === constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)
+				await this.#flashIcon(action, 'images/icons/success.png', false)
+			else if (response === constants.WRAPPER_RESPONSE_NOT_AVAILABLE)
+				await this.#flashIcon(action, 'images/icons/not-available.png')
+			else if (response === constants.WRAPPER_RESPONSE_API_RATE_LIMITED)
+				await this.#flashIcon(action, 'images/icons/api-rate-limited.png')
+			else if (response === constants.WRAPPER_RESPONSE_API_ERROR)
+				await this.#flashIcon(action, 'images/icons/api-error.png')
+			else if (response === constants.WRAPPER_RESPONSE_FATAL_ERROR)
+				await this.#flashIcon(action, 'images/icons/fatal-error.png')
+			else if (response === constants.WRAPPER_RESPONSE_NO_DEVICE_ERROR)
+				await this.#flashIcon(action, 'images/icons/no-device-error.png')
+			else if (response === constants.WRAPPER_RESPONSE_BUSY)
+				await this.#flashIcon(action, 'images/icons/busy.png')
+		}
+
+		delete this.#busy[action.id]
+	}
+
+	async marquee(id: string, key: string, value: string, countable: string, visible: number, context: string) {
+		const marqueeIdentifier = `${context}-${key}`
+		const isInitial = !this.#marquees[marqueeIdentifier]
+
+		const marqueeData = this.#marquees[marqueeIdentifier] || {
+			timeout: null,
+			id,
+			key,
+			original: value,
+			countable,
+			render: `${value} | `,
+			visible,
+			frame: 0,
+			totalFrames: null
+		}
+
+		if (this.#marquees[marqueeIdentifier] && this.#marquees[marqueeIdentifier].id !== id)
+			return
+
+		this.#marquees[marqueeIdentifier] = marqueeData
+
+		if (marqueeData.totalFrames === null)
+			marqueeData.totalFrames = marqueeData.render.length
+
+		this.setFeedback(context, {
+			[marqueeData.key]: countable.length > marqueeData.visible ? `${marqueeData.render.substr(marqueeData.frame, marqueeData.visible)}${marqueeData.frame + marqueeData.visible > marqueeData.render.length ? marqueeData.render.substr(0, (marqueeData.frame + marqueeData.visible) - marqueeData.render.length) : ''}` : marqueeData.original
+		})
+
+		if ((!this.#marquees[marqueeIdentifier]) || this.#marquees[marqueeIdentifier].id !== id)
+			return
+
+		marqueeData.frame++
+
+		if (marqueeData.frame >= marqueeData.totalFrames)
+			marqueeData.frame = 0
+
+		marqueeData.timeout = setTimeout(() => this.marquee(id, marqueeData.key, marqueeData.original, marqueeData.countable, marqueeData.visible, context), isInitial ? constants.DIAL_MARQUEE_INTERVAL_INITIAL : constants.DIAL_MARQUEE_INTERVAL)
 	}
 
 	async onDialRotate(ev: DialRotateEvent<object>): Promise<void> {
@@ -179,8 +219,45 @@ export class Dial extends SingletonAction {
 			await StreamDeck.client.setFeedback(context, feedback).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
-	updateFeedback(context: string) {
-		logger.info(`Updating feedback for "${this.manifestId}" in context "${context}".`)
+	updateMarquee(context: string, key: string, value: string) {
+		const marqueeIdentifier = `${context}-${key}`
+
+		if (this.#marquees[marqueeIdentifier]) {
+			this.#marquees[marqueeIdentifier].original = value
+			this.#marquees[marqueeIdentifier].render = `${value} | `
+			this.#marquees[marqueeIdentifier].totalFrames = this.#marquees[marqueeIdentifier].render.length
+		}
+	}
+
+	resumeMarquee(context: string, key: string) {
+		const marqueeIdentifier = `${context}-${key}`
+
+		if (this.#marquees[marqueeIdentifier]) {
+			clearTimeout(this.#marquees[marqueeIdentifier].timeout)
+			this.#marquees[marqueeIdentifier].timeout = setTimeout(() => this.marquee(this.#marquees[marqueeIdentifier].id, this.#marquees[marqueeIdentifier].key, this.#marquees[marqueeIdentifier].original, this.#marquees[marqueeIdentifier].countable, this.#marquees[marqueeIdentifier].visible, context), constants.DIAL_MARQUEE_INTERVAL)
+		}
+	}
+
+	pauseMarquee(context: string, key: string) {
+		const marqueeIdentifier = `${context}-${key}`
+
+		if (this.#marquees[marqueeIdentifier]) {
+			clearTimeout(this.#marquees[marqueeIdentifier].timeout)
+			this.#marquees[marqueeIdentifier].timeout = null
+		}
+	}
+
+	clearMarquee(context: string, key: string) {
+		const marqueeIdentifier = `${context}-${key}`
+
+		if (this.#marquees[marqueeIdentifier]) {
+			clearTimeout(this.#marquees[marqueeIdentifier].timeout)
+			delete this.#marquees[marqueeIdentifier]
+		}
+	}
+
+	getMarquee(context: string, key: string) {
+		return this.#marquees[`${context}-${key}`]
 	}
 
 	setUnpressable(context: string, busy: boolean) {
@@ -189,4 +266,6 @@ export class Dial extends SingletonAction {
 		else
 			this.#unpressable[context] = busy
 	}
+
+	updateFeedback(context: string) { }
 }

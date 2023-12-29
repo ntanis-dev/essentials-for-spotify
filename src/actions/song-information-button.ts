@@ -35,14 +35,14 @@ export default class SongInformationButton extends Button {
 
 			title: {
 				original: title,
-				render: `${title}${' '.repeat(constants.TITLE_MARQUEE_SPACING * constants.TITLE_MARQUEE_SPACING_MULTIPLIER)}`,
+				render: `${title}${' '.repeat(constants.SONG_MARQUEE_SPACING * constants.SONG_MARQUEE_SPACING_MULTIPLIER)}`,
 				frame: null,
 				totalFrames: null
 			},
 
 			artists: {
 				original: artists,
-				render: `${artists}${' '.repeat(constants.TITLE_MARQUEE_SPACING * constants.TITLE_MARQUEE_SPACING_MULTIPLIER)}`,
+				render: `${artists}${' '.repeat(constants.SONG_MARQUEE_SPACING * constants.SONG_MARQUEE_SPACING_MULTIPLIER)}`,
 				frame: null,
 				totalFrames: null
 			},
@@ -50,7 +50,7 @@ export default class SongInformationButton extends Button {
 			time: {
 				fake: `${'8'.repeat(time.length - 5)}: : /`,
 				original: time,
-				render: `${time}${' '.repeat(constants.TITLE_MARQUEE_SPACING * constants.TITLE_MARQUEE_SPACING_MULTIPLIER)}`,
+				render: `${time}${' '.repeat(constants.SONG_MARQUEE_SPACING * constants.SONG_MARQUEE_SPACING_MULTIPLIER)}`,
 				frame: null,
 				totalFrames: null
 			}
@@ -62,13 +62,13 @@ export default class SongInformationButton extends Button {
 		this.#marquees[context] = marqueeData
 
 		if (marqueeData.title.frame === null)
-			marqueeData.title.frame = (title.length / 2) + constants.TITLE_MARQUEE_SPACING
+			marqueeData.title.frame = (marqueeData.title.original.length / 2) + constants.SONG_MARQUEE_SPACING
 
 		if (marqueeData.artists.frame === null)
-			marqueeData.artists.frame = (artists.length / 2) + constants.TITLE_MARQUEE_SPACING
+			marqueeData.artists.frame = (marqueeData.artists.original.length / 2) + constants.SONG_MARQUEE_SPACING
 
 		if (marqueeData.time.frame === null)
-			marqueeData.time.frame = (time.length / 2) + constants.TITLE_MARQUEE_SPACING
+			marqueeData.time.frame = (marqueeData.time.original.length / 2) + constants.SONG_MARQUEE_SPACING
 		
 		if (marqueeData.title.totalFrames === null)
 			marqueeData.title.totalFrames = marqueeData.title.render.length
@@ -79,7 +79,7 @@ export default class SongInformationButton extends Button {
 		if (marqueeData.time.totalFrames === null)
 			marqueeData.time.totalFrames = marqueeData.time.render.length
 
-		this.setTitle(context, `${this.#getTextSpacingWidth(marqueeData.title.original) > constants.TITLE_MARQUEE_SPACING ? `${marqueeData.title.render.slice(marqueeData.title.frame)}${marqueeData.title.render.slice(0, marqueeData.title.frame)}` : marqueeData.title.original}\n${this.#getTextSpacingWidth(marqueeData.artists.original) > constants.TITLE_MARQUEE_SPACING ? `${marqueeData.artists.render.slice(marqueeData.artists.frame)}${marqueeData.artists.render.slice(0, marqueeData.artists.frame)}` : marqueeData.artists.original}\n${this.#getTextSpacingWidth(marqueeData.time.fake) > constants.TITLE_MARQUEE_SPACING ? `${marqueeData.time.render.slice(marqueeData.time.frame)}${marqueeData.time.render.slice(0, marqueeData.time.frame)}` : marqueeData.time.original}`)
+		this.setTitle(context, `${this.#getTextSpacingWidth(marqueeData.title.original) > constants.SONG_MARQUEE_SPACING ? `${marqueeData.title.render.slice(marqueeData.title.frame)}${marqueeData.title.render.slice(0, marqueeData.title.frame)}` : marqueeData.title.original}\n${this.#getTextSpacingWidth(marqueeData.artists.original) > constants.SONG_MARQUEE_SPACING ? `${marqueeData.artists.render.slice(marqueeData.artists.frame)}${marqueeData.artists.render.slice(0, marqueeData.artists.frame)}` : marqueeData.artists.original}\n${this.#getTextSpacingWidth(marqueeData.time.fake) > constants.SONG_MARQUEE_SPACING ? `${marqueeData.time.render.slice(marqueeData.time.frame)}${marqueeData.time.render.slice(0, marqueeData.time.frame)}` : marqueeData.time.original}`)
 
 		if ((!this.#marquees[context]) || this.#marquees[context].id !== id)
 			return
@@ -97,13 +97,13 @@ export default class SongInformationButton extends Button {
 		if (marqueeData.time.frame >= marqueeData.time.totalFrames)
 			marqueeData.time.frame = 0
 
-		marqueeData.timeout = setTimeout(() => this.#marqueeTitle(id, marqueeData.title.original, marqueeData.artists.original, marqueeData.time.original, context), isInitial ? constants.TITLE_MARQUEE_INTERVAL_INITIAL : constants.TITLE_MARQUEE_INTERVAL)
+		marqueeData.timeout = setTimeout(() => this.#marqueeTitle(id, marqueeData.title.original, marqueeData.artists.original, marqueeData.time.original, context), isInitial ? constants.SONG_MARQUEE_INTERVAL_INITIAL : constants.SONG_MARQUEE_INTERVAL)
 	}
 
 	#updateMarqueeTime(context: string, time: string) {
 		if (this.#marquees[context]) {
 			this.#marquees[context].time.original = time
-			this.#marquees[context].time.render = `${time}${' '.repeat(constants.TITLE_MARQUEE_SPACING * constants.TITLE_MARQUEE_SPACING_MULTIPLIER)}`
+			this.#marquees[context].time.render = `${time}${' '.repeat(constants.SONG_MARQUEE_SPACING * constants.SONG_MARQUEE_SPACING_MULTIPLIER)}`
 			this.#marquees[context].time.totalFrames = this.#marquees[context].time.render.length
 		}
 	}
@@ -111,7 +111,7 @@ export default class SongInformationButton extends Button {
 	#resumeMarquee(context: string) {
 		if (this.#marquees[context]) {
 			clearTimeout(this.#marquees[context].timeout)
-			this.#marquees[context].timeout = setTimeout(() => this.#marqueeTitle(this.#marquees[context].id, this.#marquees[context].title.original, this.#marquees[context].artists.original, this.#marquees[context].time.original, context), constants.TITLE_MARQUEE_INTERVAL)
+			this.#marquees[context].timeout = setTimeout(() => this.#marqueeTitle(this.#marquees[context].id, this.#marquees[context].title.original, this.#marquees[context].artists.original, this.#marquees[context].time.original, context), constants.SONG_MARQUEE_INTERVAL)
 		}
 	}
 

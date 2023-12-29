@@ -35,13 +35,13 @@ StreamDeck.connect().then(() => {
 		connector.startSetup()
 	})
 
-	setTimeout(() => {
-		connector.fakeOff()
+	// setTimeout(() => {
+	// 	connector.fakeOff()
 
-		// setTimeout(() => {
-		// 	connector.fakeOn()
-		// }, 5000)
-	}, 5000)
+	// 	setTimeout(() => {
+	// 		connector.fakeOn()
+	// 	}, 5000)
+	// }, 5000)
 
 	actions.register()
 }).catch(e => logger.error(`An error occured while connecting to Stream Deck: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))

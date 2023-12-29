@@ -1,5 +1,6 @@
 import {
-	action
+	action,
+	WillDisappearEvent
 } from '@elgato/streamdeck'
 
 import {
@@ -7,7 +8,6 @@ import {
 } from './dial.js'
 
 import images from './../library/images.js'
-import logger from './../library/logger.js'
 import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.playback-control-dial' })
@@ -35,10 +35,6 @@ export default class PlaybackControlDial extends Dial {
 	#updateJointFeedback(contexts = this.contexts) {
 		for (const context of contexts)
 			this.setFeedback(context, {
-				title: {
-					value: wrapper.song ? `${wrapper.song.item.name} - ${wrapper.song.item.artists.map((artist: any) => artist.name).join(', ')}` : 'Playback Control',
-				},
-
 				indicator: {
 					value: wrapper.song ? Math.round((wrapper.song.progress / wrapper.song.item.duration_ms) * 100) : 0,
 					opacity: wrapper.playing ? 1.0 : 0.5
@@ -60,11 +56,27 @@ export default class PlaybackControlDial extends Dial {
 			setImmediate(async () => {
 				this.setUnpressable(context, true)
 
+				const marquee = this.getMarquee(context, 'title')
+
+				if (pending || (song && marquee && marquee.id !== song.item.id) || ((!song) && marquee)) {
+					this.clearMarquee(context, 'title')
+
+					this.setFeedback(context, {
+						title: 'Playback Control'
+					})
+				}
+
 				if (wrapper.song) {
 					if (!images.isSongCached(wrapper.song))
 						this.setIcon(context, 'images/icons/pending.png')
 		
 					const image = await images.getForSong(wrapper.song)
+
+					if ((!marquee) || marquee.id !== song.item.id) {
+						const title = `${song.item.name} - ${song.item.artists.map((artist: any) => artist.name).join(', ')}`
+						this.marquee(song.item.id, 'title', title, title, 16, context)
+					} else
+						this.resumeMarquee(context, 'title')
 		
 					if (image)
 						this.setIcon(context, `data:image/jpeg;base64,${image}`)
@@ -89,6 +101,11 @@ export default class PlaybackControlDial extends Dial {
 			this.#updateJointFeedback([context])
 	}
 
+	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
+		super.onWillDisappear(ev)
+		this.pauseMarquee(ev.action.id, 'title')
+	}
+
 	async resetFeedbackLayout(context: string): Promise<void> {
 		super.resetFeedbackLayout(context, {
 			title: 'Playback Control',
@@ -96,7 +113,7 @@ export default class PlaybackControlDial extends Dial {
 		})
 	}
 
-	async updateFeedback(context: string): Promise<void> {
+	updateFeedback(context: string): void {
 		super.updateFeedback(context)
 		this.#onSongChanged(wrapper.song, false, [context])
 		this.#onSongTimeChanged(wrapper.song?.progress, wrapper.song?.item.duration_ms, false, [context])
