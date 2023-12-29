@@ -123,6 +123,7 @@ export class Dial extends SingletonAction {
 			render: `${value} | `,
 			visible,
 			frame: 0,
+			last: null,
 			totalFrames: null
 		}
 
@@ -130,12 +131,14 @@ export class Dial extends SingletonAction {
 			return
 
 		this.#marquees[marqueeIdentifier] = marqueeData
-
+		
 		if (marqueeData.totalFrames === null)
 			marqueeData.totalFrames = marqueeData.render.length
+	
+		marqueeData.last = countable.length > marqueeData.visible ? `${marqueeData.render.substr(marqueeData.frame, marqueeData.visible)}${marqueeData.frame + marqueeData.visible > marqueeData.render.length ? marqueeData.render.substr(0, (marqueeData.frame + marqueeData.visible) - marqueeData.render.length) : ''}` : marqueeData.original
 
 		this.setFeedback(context, {
-			[marqueeData.key]: countable.length > marqueeData.visible ? `${marqueeData.render.substr(marqueeData.frame, marqueeData.visible)}${marqueeData.frame + marqueeData.visible > marqueeData.render.length ? marqueeData.render.substr(0, (marqueeData.frame + marqueeData.visible) - marqueeData.render.length) : ''}` : marqueeData.original
+			[marqueeData.key]: marqueeData.last
 		})
 
 		if ((!this.#marquees[marqueeIdentifier]) || this.#marquees[marqueeIdentifier].id !== id)

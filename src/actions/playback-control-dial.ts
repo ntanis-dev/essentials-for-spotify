@@ -33,8 +33,12 @@ export default class PlaybackControlDial extends Dial {
 	}
 
 	#updateJointFeedback(contexts = this.contexts) {
-		for (const context of contexts)
+		for (const context of contexts) {
+			const marquee = this.getMarquee(context, 'title')
+
 			this.setFeedback(context, {
+				title: marquee ? marquee.last : 'Playback Control',
+
 				indicator: {
 					value: wrapper.song ? Math.round((wrapper.song.progress / wrapper.song.item.duration_ms) * 100) : 0,
 					opacity: wrapper.playing ? 1.0 : 0.5
@@ -49,6 +53,7 @@ export default class PlaybackControlDial extends Dial {
 					opacity: wrapper.playing ? 1.0 : 0.5
 				}
 			})
+		}
 	}
 
 	#onSongChanged(song: any, pending: boolean = false, contexts = this.contexts) {
