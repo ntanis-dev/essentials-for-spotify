@@ -555,6 +555,10 @@ class Wrapper extends EventEmitter {
 		return this.#lastSong
 	}
 
+	get device() {
+		return this.#lastDevice
+	}
+
 	get pendingSongChange() {
 		return this.#lastPendingSong
 	}

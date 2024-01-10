@@ -2,15 +2,9 @@
 
 // Dial support
 // Feedback support
-
 // Device hot-swapping handling
 // Disable song-based buttons when something non-song is playing
-
-// Device supports_volume flag // NOT_AVAILABLE
 // actions.disallows flags // NOT_AVAILABLE
-
-// State buttons should de-state when setup is not available and re-state when it is
-
 // Settings
 // Setup
 
@@ -34,14 +28,6 @@ StreamDeck.connect().then(() => {
 		logger.error(`An error occurred while getting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
 		connector.startSetup()
 	})
-
-	// setTimeout(() => {
-	// 	connector.fakeOff()
-
-	// 	setTimeout(() => {
-	// 		connector.fakeOn()
-	// 	}, 5000)
-	// }, 5000)
 
 	actions.register()
 }).catch(e => logger.error(`An error occured while connecting to Stream Deck: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))

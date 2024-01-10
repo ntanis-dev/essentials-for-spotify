@@ -7,16 +7,21 @@ import {
 	Dial
 } from './dial.js'
 
+import constants from './../library/constants.js'
+import logger from './../library/logger.js'
 import images from './../library/images.js'
 import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.playback-control-dial' })
 export default class PlaybackControlDial extends Dial {
+	static readonly HOLDABLE = true
+
 	constructor() {
 		super('playback-control-layout.json', 'images/icons/playback-control.png')
 		wrapper.on('songChanged', this.#onSongChanged.bind(this))
 		wrapper.on('songTimeChanged', this.#onSongTimeChanged.bind(this))
 		wrapper.on('playbackStateChanged', this.#onPlaybackStateChanged.bind(this))
+		wrapper.on('deviceChanged', this.#onDeviceChanged.bind(this))
 	}
 
 	#beautifyTime(progressMs: number, durationMs: number) {
@@ -33,6 +38,9 @@ export default class PlaybackControlDial extends Dial {
 	}
 
 	#updateJointFeedback(contexts = this.contexts) {
+		if (!wrapper.device)
+			return
+
 		for (const context of contexts) {
 			const marquee = this.getMarquee(context, 'title')
 
@@ -45,7 +53,7 @@ export default class PlaybackControlDial extends Dial {
 				},
 
 				icon: {
-					opacity: 1
+					opacity: 1.0
 				},
 
 				text: {
@@ -74,7 +82,7 @@ export default class PlaybackControlDial extends Dial {
 				if (wrapper.song) {
 					if (!images.isSongCached(wrapper.song))
 						this.setIcon(context, 'images/icons/pending.png')
-		
+
 					const image = await images.getForSong(wrapper.song)
 
 					if ((!marquee) || marquee.id !== song.item.id) {
@@ -106,6 +114,68 @@ export default class PlaybackControlDial extends Dial {
 			this.#updateJointFeedback([context])
 	}
 
+	#onDeviceChanged(device: any, contexts = this.contexts) {
+		if (!device) {
+			for (const context of contexts)
+				this.resetFeedbackLayout(context)
+
+			return
+		}
+
+		for (const context of contexts)
+			this.#updateJointFeedback([context])
+	}
+
+	async invokeWrapperAction(type: symbol) {
+		if (type === Dial.TYPES.ROTATE_CLOCKWISE) {
+			if (wrapper.song)
+				if (wrapper.song.progress + constants.SEEK_STEP_SIZE < wrapper.song.item.duration_ms)
+					return wrapper.forwardSeek(Object.assign({}, wrapper.song), constants.SEEK_STEP_SIZE)
+				else
+					return constants.WRAPPER_RESPONSE_SUCCESS
+			else if (wrapper.pendingSongChange)
+				return constants.WRAPPER_RESPONSE_SUCCESS
+			else
+				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+		} else if (type === Dial.TYPES.ROTATE_COUNTERCLOCKWISE) {
+			if (wrapper.song)
+				return wrapper.backwardSeek(Object.assign({}, wrapper.song), constants.SEEK_STEP_SIZE)
+			else if (wrapper.pendingSongChange)
+				return constants.WRAPPER_RESPONSE_SUCCESS
+			else
+				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+		} else if (type === Dial.TYPES.TAP) {
+			if (!wrapper.song)
+				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
+			if (wrapper.playing)
+				return wrapper.pausePlayback()
+			else
+				return wrapper.resumePlayback()
+		} else
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+	}
+
+	async invokeHoldWrapperAction() {
+		if (!wrapper.song)
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
+		if (wrapper.playing)
+			return wrapper.pausePlayback()
+		else
+			return constants.WRAPPER_RESPONSE_SUCCESS
+	}
+
+	async invokeHoldReleaseWrapperAction() {
+		if (!wrapper.song)
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
+		if (!wrapper.playing)
+			return wrapper.resumePlayback()
+		else
+			return constants.WRAPPER_RESPONSE_SUCCESS
+	}
+
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
 		super.onWillDisappear(ev)
 		this.pauseMarquee(ev.action.id, 'title')
@@ -123,5 +193,6 @@ export default class PlaybackControlDial extends Dial {
 		this.#onSongChanged(wrapper.song, false, [context])
 		this.#onSongTimeChanged(wrapper.song?.progress, wrapper.song?.item.duration_ms, false, [context])
 		this.#onPlaybackStateChanged(wrapper.playing, [context])
+		this.#onDeviceChanged(wrapper.device, [context])
 	}
 }

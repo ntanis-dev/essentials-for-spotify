@@ -17,6 +17,7 @@ export default class VolumeControlDial extends Dial {
 		super('volume-control-layout.json', 'images/icons/volume-control.png')
 		wrapper.on('mutedStateChanged', this.#onMutedStateChanged.bind(this))
 		wrapper.on('volumePercentChanged', this.#onVolumePercentChanged.bind(this))
+		wrapper.on('deviceChanged', this.#onDeviceChanged.bind(this))
 	}
 
 	#updateJointFeedback(contexts = this.contexts) {
@@ -52,6 +53,18 @@ export default class VolumeControlDial extends Dial {
 		this.#updateJointFeedback(contexts)
 	}
 
+	#onDeviceChanged(device: any, contexts = this.contexts) {
+		if (!device) {
+			for (const context of contexts)
+				this.resetFeedbackLayout(context)
+
+			return
+		}
+
+		for (const context of contexts)
+			this.#updateJointFeedback([context])
+	}
+
 	async invokeWrapperAction(type: symbol) {
 		if (type === Dial.TYPES.ROTATE_CLOCKWISE) {
 			if (wrapper.volumePercent === null)
@@ -67,6 +80,9 @@ export default class VolumeControlDial extends Dial {
 
 			return wrapper.setPlaybackVolume(wrapper.volumePercent - constants.VOLUME_STEP_SIZE)
 		} else if (type === Dial.TYPES.TAP) {
+			if (wrapper.volumePercent === null)
+				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 			if (wrapper.muted)
 				return wrapper.unmuteVolume()
 			else
@@ -76,6 +92,9 @@ export default class VolumeControlDial extends Dial {
 	}
 
 	async invokeHoldWrapperAction() {
+		if (wrapper.volumePercent === null)
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 		if (!wrapper.muted)
 			return wrapper.muteVolume()
 		else
@@ -83,6 +102,9 @@ export default class VolumeControlDial extends Dial {
 	}
 
 	async invokeHoldReleaseWrapperAction() {
+		if (wrapper.volumePercent === null)
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 		if (wrapper.muted)
 			return wrapper.unmuteVolume()
 		else
@@ -99,5 +121,6 @@ export default class VolumeControlDial extends Dial {
 		super.updateFeedback(context)
 		this.#onMutedStateChanged(wrapper.muted, [context])
 		this.#onVolumePercentChanged(wrapper.volumePercent, [context])
+		this.#onDeviceChanged(wrapper.device, [context])
 	}
 }
