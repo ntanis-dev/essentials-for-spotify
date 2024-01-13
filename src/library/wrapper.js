@@ -518,7 +518,7 @@ class Wrapper extends EventEmitter {
 				item: recommendations.tracks[0],
 				liked: (await connector.callSpotifyApi(`me/tracks/contains?ids=${recommendations.tracks[0].id}`))[0],
 				progress: 0,
-				surprise: this.#lastSong.surprise || (!this.#lastPlaying)
+				surprise: this.#lastSong?.surprise || (!this.#lastPlaying)
 			})
 
 			this.#setPlaying(true)

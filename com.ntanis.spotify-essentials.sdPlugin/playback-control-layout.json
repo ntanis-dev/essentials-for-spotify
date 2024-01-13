@@ -5,7 +5,7 @@
 		{
 			"key": "title",
 			"type": "text",
-			"rect": [16, 10, 136, 24],
+			"rect": [16, 10, 144, 24],
 
 			"font": {
 				"size": 16,

@@ -134,6 +134,17 @@ export class Dial extends SingletonAction {
 		
 		if (marqueeData.totalFrames === null)
 			marqueeData.totalFrames = marqueeData.render.length
+
+		if (marqueeData.last && countable.length > marqueeData.visible)
+			while (marqueeData.last[1] === ' ') {
+				marqueeData.last = marqueeData.last.substr(1)
+				marqueeData.frame++
+
+				if (marqueeData.frame >= marqueeData.totalFrames) {
+					marqueeData.frame = 0
+					marqueeData.last = marqueeData.original
+				}
+			}
 	
 		marqueeData.last = countable.length > marqueeData.visible ? `${marqueeData.render.substr(marqueeData.frame, marqueeData.visible)}${marqueeData.frame + marqueeData.visible > marqueeData.render.length ? marqueeData.render.substr(0, (marqueeData.frame + marqueeData.visible) - marqueeData.render.length) : ''}` : marqueeData.original
 
@@ -222,11 +233,12 @@ export class Dial extends SingletonAction {
 			await StreamDeck.client.setFeedback(context, feedback).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
-	updateMarquee(context: string, key: string, value: string) {
+	updateMarquee(context: string, key: string, value: string, countable: string) {
 		const marqueeIdentifier = `${context}-${key}`
 
 		if (this.#marquees[marqueeIdentifier]) {
 			this.#marquees[marqueeIdentifier].original = value
+			this.#marquees[marqueeIdentifier].countable = countable
 			this.#marquees[marqueeIdentifier].render = `${value} | `
 			this.#marquees[marqueeIdentifier].totalFrames = this.#marquees[marqueeIdentifier].render.length
 		}

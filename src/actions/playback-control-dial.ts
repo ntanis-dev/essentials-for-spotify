@@ -8,7 +8,6 @@ import {
 } from './dial.js'
 
 import constants from './../library/constants.js'
-import logger from './../library/logger.js'
 import images from './../library/images.js'
 import wrapper from './../library/wrapper.js'
 
@@ -42,10 +41,11 @@ export default class PlaybackControlDial extends Dial {
 			return
 
 		for (const context of contexts) {
-			const marquee = this.getMarquee(context, 'title')
+			const titleMarquee = this.getMarquee(context, 'title')
+			const timeMarquee = this.getMarquee(context, 'time')
 
 			this.setFeedback(context, {
-				title: marquee ? marquee.last : 'Playback Control',
+				title: titleMarquee ? titleMarquee.last : 'Playback Control',
 
 				indicator: {
 					value: wrapper.song ? Math.round((wrapper.song.progress / wrapper.song.item.duration_ms) * 100) : 0,
@@ -57,7 +57,7 @@ export default class PlaybackControlDial extends Dial {
 				},
 
 				text: {
-					value: wrapper.song ? `${this.#beautifyTime(wrapper.song.progress, wrapper.song.item.duration_ms)}` : '??:?? / ??:??',
+					value: timeMarquee ? timeMarquee.last : '??:?? / ??:??',
 					opacity: wrapper.playing ? 1.0 : 0.5
 				}
 			})
@@ -69,10 +69,12 @@ export default class PlaybackControlDial extends Dial {
 			setImmediate(async () => {
 				this.setUnpressable(context, true)
 
-				const marquee = this.getMarquee(context, 'title')
+				const titleMarquee = this.getMarquee(context, 'title')
+				const timeMarquee = this.getMarquee(context, 'time')
 
-				if (pending || (song && marquee && marquee.id !== song.item.id) || ((!song) && marquee)) {
+				if (pending || (song && ((titleMarquee && titleMarquee.id !== song.item.id) || (timeMarquee && timeMarquee.id !== song.item.id))) || ((!song) && titleMarquee && timeMarquee)) {
 					this.clearMarquee(context, 'title')
+					this.clearMarquee(context, 'time')
 
 					this.setFeedback(context, {
 						title: 'Playback Control'
@@ -85,12 +87,18 @@ export default class PlaybackControlDial extends Dial {
 
 					const image = await images.getForSong(wrapper.song)
 
-					if ((!marquee) || marquee.id !== song.item.id) {
+					if ((!titleMarquee) || titleMarquee.id !== song.item.id) {
 						const title = `${song.item.name} - ${song.item.artists.map((artist: any) => artist.name).join(', ')}`
 						this.marquee(song.item.id, 'title', title, title, 16, context)
 					} else
 						this.resumeMarquee(context, 'title')
-		
+
+					if ((!timeMarquee) || timeMarquee.id !== song.item.id) {
+						const time = this.#beautifyTime(song.progress, song.item.duration_ms)
+						this.marquee(song.item.id, 'time', time, time, 14, context)
+					} else
+						this.resumeMarquee(context, 'time')
+
 					if (image)
 						this.setIcon(context, `data:image/jpeg;base64,${image}`)
 					else
@@ -105,8 +113,16 @@ export default class PlaybackControlDial extends Dial {
 	}
 
 	#onSongTimeChanged(progress: number, duration: number, pending: boolean = false, contexts = this.contexts) {
-		for (const context of contexts)
+		for (const context of contexts) {
+			const timeMarquee = this.getMarquee(context, 'time')
+
+			if (timeMarquee) {
+				const time = this.#beautifyTime(progress, duration)
+				this.updateMarquee(context, 'time', time, time)
+			}
+
 			this.#updateJointFeedback([context])
+		}
 	}
 
 	#onPlaybackStateChanged(state: boolean, contexts = this.contexts) {
@@ -179,6 +195,7 @@ export default class PlaybackControlDial extends Dial {
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
 		super.onWillDisappear(ev)
 		this.pauseMarquee(ev.action.id, 'title')
+		this.pauseMarquee(ev.action.id, 'time')
 	}
 
 	async resetFeedbackLayout(context: string): Promise<void> {
