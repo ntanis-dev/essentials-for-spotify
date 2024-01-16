@@ -47,7 +47,43 @@ const getForSong = async song => {
 
 const isSongCached = song => !!imageCache[`song:${song.item.id}`]
 
+const getForPlaylist = async playlist => {
+	if (imageCache[`playlist:${playlist.id}`])
+		return imageCache[`playlist:${playlist.id}`]
+
+	if (pendingResults[`playlist:${playlist.id}`])
+		return pendingResults[`playlist:${playlist.id}`]
+
+	pendingResults[`playlist:${playlist.id}`] = new Promise(async (resolve, reject) => {
+		try {
+			if (imageCache[`playlist:${playlist.id}`])
+				return imageCache[`playlist:${playlist.id}`]
+
+			const url = playlist.images.length > 0 ? playlist.images[0].url : undefined
+
+			if (!url) {
+				resolve(null)
+				return
+			}
+
+			imageCache[`playlist:${playlist.id}`] = Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')
+			resolve(imageCache[`playlist:${playlist.id}`])
+		} catch (e) {
+			logger.error(`Failed to get image for playlist "${playlist.id}": "${e.message}"`)
+		}
+	}).finally(result => {
+		delete pendingResults[`playlist:${playlist.id}`]
+		return result
+	})
+
+	return pendingResults[`playlist:${playlist.id}`]
+}
+
+const isPlaylistCached = playlist => !!imageCache[`playlist:${playlist.id}`]
+
 export default {
 	getForSong,
-	isSongCached
+	getForPlaylist,
+	isSongCached,
+	isPlaylistCached
 }

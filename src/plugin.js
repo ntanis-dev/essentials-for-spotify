@@ -7,6 +7,7 @@
 // actions.disallows flags // NOT_AVAILABLE
 // Settings
 // Setup
+// On button / dial destroy: clear marquees completely
 
 import StreamDeck from '@elgato/streamdeck'
 import logger from './library/logger'

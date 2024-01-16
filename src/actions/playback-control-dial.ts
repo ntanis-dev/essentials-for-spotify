@@ -69,12 +69,15 @@ export default class PlaybackControlDial extends Dial {
 			setImmediate(async () => {
 				this.setUnpressable(context, true)
 
-				const titleMarquee = this.getMarquee(context, 'title')
-				const timeMarquee = this.getMarquee(context, 'time')
+				let titleMarquee = this.getMarquee(context, 'title')
+				let timeMarquee = this.getMarquee(context, 'time')
 
 				if (pending || (song && ((titleMarquee && titleMarquee.id !== song.item.id) || (timeMarquee && timeMarquee.id !== song.item.id))) || ((!song) && titleMarquee && timeMarquee)) {
 					this.clearMarquee(context, 'title')
 					this.clearMarquee(context, 'time')
+
+					titleMarquee = null
+					timeMarquee = null
 
 					this.setFeedback(context, {
 						title: 'Playback Control'
@@ -95,7 +98,7 @@ export default class PlaybackControlDial extends Dial {
 
 					if ((!timeMarquee) || timeMarquee.id !== song.item.id) {
 						const time = this.#beautifyTime(song.progress, song.item.duration_ms)
-						this.marquee(song.item.id, 'time', time, time, 14, context)
+						this.marquee(song.item.id, 'time', time, `${'8'.repeat(time.length - 5)}: : /`, 14, context)
 					} else
 						this.resumeMarquee(context, 'time')
 
@@ -118,7 +121,7 @@ export default class PlaybackControlDial extends Dial {
 
 			if (timeMarquee) {
 				const time = this.#beautifyTime(progress, duration)
-				this.updateMarquee(context, 'time', time, time)
+				this.updateMarquee(context, 'time', time, `${'8'.repeat(time.length - 5)}: : /`)
 			}
 
 			this.#updateJointFeedback([context])

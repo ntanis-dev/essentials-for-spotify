@@ -456,7 +456,8 @@
 
 				"TriggerDescription": {
 					"Rotate": "Navigate",
-					"Push": "Play"
+					"Push": "Play",
+					"Touch": "Refresh"
 				}
 			}
 		}

@@ -54,26 +54,6 @@ export class Dial extends SingletonAction {
 				this.updateFeedback(context)
 	}
 
-	async #flashIcon(action: any, icon: string, alert = true, duration: number = 500, times = 1) {
-		for (let i = 0; i < times; i++) {
-			if (alert)
-				await action.showAlert().catch((e: any) => logger.error(`An error occurred while showing the Stream Deck alert of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
-
-			await action.setFeedback({
-				icon
-			}).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
-
-			await new Promise(resolve => setTimeout(resolve, duration))
-
-			await action.setFeedback({
-				icon: connector.set ? this.icon : this.originalIcon
-			}).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
-
-			if (i + 1 < times)
-				await new Promise(resolve => setTimeout(resolve, duration))
-		}
-	}
-
 	async #processAction(action: any, type: symbol) {
 		if (this.#busy[action.id] || this.#unpressable[action.id] || (type === Dial.TYPES.UP && ((!(this.constructor as typeof Dial).HOLDABLE) || (!this.#holding[action.id]))) || (type === Dial.TYPES.DOWN && this.#holding[action.id]))
 			return
@@ -84,7 +64,7 @@ export class Dial extends SingletonAction {
 		this.#busy[action.id] = true
 
 		if (!connector.set)
-			await this.#flashIcon(action, 'images/icons/setup-error.png')
+			await this.flashIcon(action.id, 'images/icons/setup-error.png')
 		else {
 			const response = ((this.constructor as typeof Dial).HOLDABLE && (type === Dial.TYPES.DOWN || type === Dial.TYPES.UP)) ? (type === Dial.TYPES.DOWN ? await this.invokeHoldWrapperAction() : await this.invokeHoldReleaseWrapperAction()) : await this.invokeWrapperAction(type)
 
@@ -92,22 +72,61 @@ export class Dial extends SingletonAction {
 				this.#holding[action.id] = true
 
 			if (response === constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)
-				await this.#flashIcon(action, 'images/icons/success.png', false)
+				await this.flashIcon(action.id, 'images/icons/success.png', false)
 			else if (response === constants.WRAPPER_RESPONSE_NOT_AVAILABLE)
-				await this.#flashIcon(action, 'images/icons/not-available.png')
+				await this.flashIcon(action.id, 'images/icons/not-available.png')
 			else if (response === constants.WRAPPER_RESPONSE_API_RATE_LIMITED)
-				await this.#flashIcon(action, 'images/icons/api-rate-limited.png')
+				await this.flashIcon(action.id, 'images/icons/api-rate-limited.png')
 			else if (response === constants.WRAPPER_RESPONSE_API_ERROR)
-				await this.#flashIcon(action, 'images/icons/api-error.png')
+				await this.flashIcon(action.id, 'images/icons/api-error.png')
 			else if (response === constants.WRAPPER_RESPONSE_FATAL_ERROR)
-				await this.#flashIcon(action, 'images/icons/fatal-error.png')
+				await this.flashIcon(action.id, 'images/icons/fatal-error.png')
 			else if (response === constants.WRAPPER_RESPONSE_NO_DEVICE_ERROR)
-				await this.#flashIcon(action, 'images/icons/no-device-error.png')
+				await this.flashIcon(action.id, 'images/icons/no-device-error.png')
 			else if (response === constants.WRAPPER_RESPONSE_BUSY)
-				await this.#flashIcon(action, 'images/icons/busy.png')
+				await this.flashIcon(action.id, 'images/icons/busy.png')
 		}
 
 		delete this.#busy[action.id]
+	}
+
+	getIconForStatus(status: Symbol) {
+		if (!connector.set)
+			return 'images/icons/setup-error.png'
+		else if (status === constants.WRAPPER_RESPONSE_SUCCESS)
+			return 'images/icons/success.png'
+		else if (status === constants.WRAPPER_RESPONSE_NOT_AVAILABLE)
+			return 'images/icons/not-available.png'
+		else if (status === constants.WRAPPER_RESPONSE_API_RATE_LIMITED)
+			return 'images/icons/api-rate-limited.png'
+		else if (status === constants.WRAPPER_RESPONSE_API_ERROR)
+			return 'images/icons/api-error.png'
+		else if (status === constants.WRAPPER_RESPONSE_FATAL_ERROR)
+			return 'images/icons/fatal-error.png'
+		else if (status === constants.WRAPPER_RESPONSE_NO_DEVICE_ERROR)
+			return 'images/icons/no-device-error.png'
+		else if (status === constants.WRAPPER_RESPONSE_BUSY)
+			return 'images/icons/busy.png'
+	}
+
+	async flashIcon(context: string, icon: string, alert = true, duration: number = 500, times = 1) {
+		for (let i = 0; i < times; i++) {
+			if (alert)
+				await this.showAlert(context).catch((e: any) => logger.error(`An error occurred while showing the Stream Deck alert of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+
+			await this.setFeedback(context, {
+				icon
+			}).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+
+			await new Promise(resolve => setTimeout(resolve, duration))
+
+			await this.setFeedback(context, {
+				icon: connector.set ? this.icon : this.originalIcon
+			}).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+
+			if (i + 1 < times)
+				await new Promise(resolve => setTimeout(resolve, duration))
+		}
 	}
 
 	async marquee(id: string, key: string, value: string, countable: string, visible: number, context: string) {
@@ -213,6 +232,10 @@ export class Dial extends SingletonAction {
 			return
 
 		await StreamDeck.client.setFeedback(context, feedback).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+	}
+
+	async showAlert(context: string) {
+		await StreamDeck.client.showAlert(context).catch((e: any) => logger.error(`An error occurred while showing the Stream Deck alert of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
 	async setIcon(context: string, icon: string) {

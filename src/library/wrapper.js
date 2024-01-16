@@ -527,6 +527,25 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
+	async getPlaylists(page = 1) {
+		return this.#wrapCall(async () => {
+			const playlists = await connector.callSpotifyApi(`me/playlists?limit=${constants.WRAPPER_PLAYLISTS_PER_PAGE}&offset=${(page - 1) * constants.WRAPPER_PLAYLISTS_PER_PAGE}`)
+
+			return {
+				status: constants.WRAPPER_RESPONSE_SUCCESS,
+
+				items: playlists.items.map(playlist => ({
+					id: playlist.id,
+					name: playlist.name,
+					owner: playlist.owner.display_name,
+					images: playlist.images
+				})),
+
+				total: playlists.total
+			}
+		})
+	}
+
 	get playing() {
 		return this.#lastPlaying
 	}
