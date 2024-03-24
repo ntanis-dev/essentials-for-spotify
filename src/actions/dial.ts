@@ -142,6 +142,7 @@ export class Dial extends SingletonAction {
 			render: `${value} | `,
 			visible,
 			frame: 0,
+			context,
 			last: null,
 			totalFrames: null
 		}
@@ -250,6 +251,9 @@ export class Dial extends SingletonAction {
 	}
 
 	async resetFeedbackLayout(context: string, feedback: any = null) {
+		for (const key in this.#marquees)
+			this.pauseMarquee(context, this.#marquees[key].key)
+
 		await StreamDeck.client.setFeedbackLayout(context, this.layout).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback layout of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 		if (feedback)

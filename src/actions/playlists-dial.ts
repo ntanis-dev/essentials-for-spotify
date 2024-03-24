@@ -22,31 +22,6 @@ export default class PlaylistsDial extends Dial {
 		super('playlists-layout.json', 'images/icons/playlists.png')
 	}
 
-	async #refreshPage(context: string) {
-		const nameMarquee = this.getMarquee(context, 'name')
-
-		if (nameMarquee)
-			this.pauseMarquee(context, 'name')
-
-		this.setFeedback(context, {
-			name: {
-				value: '??????'
-			}
-		})
-
-		this.setIcon(context, 'images/icons/pending.png')
-		this.#refreshCount(context)
-
-		const refreshPlaylists = await this.#refreshPlaylists(context)
-
-		if (refreshPlaylists) {
-			await this.#refreshLayout(true, context)
-			return false
-		}
-
-		return true
-	}
-
 	async #refreshPlaylists(context: string) {
 		if (this.#playlistsPage[context] === undefined)
 			this.#playlistsPage[context] = 1
@@ -72,29 +47,60 @@ export default class PlaylistsDial extends Dial {
 		return lastTotal !== this.#lastTotal
 	}
 
+	async #refreshPage(context: string) {
+		const nameMarquee = this.getMarquee(context, 'name')
+
+		if (nameMarquee)
+			this.pauseMarquee(context, 'name')
+
+		this.setFeedback(context, {
+			name: {
+				value: '??????'
+			}
+		})
+
+		this.setIcon(context, 'images/icons/pending.png')
+		this.#refreshCount(context)
+
+		const refreshPlaylists = await this.#refreshPlaylists(context)
+
+		if (refreshPlaylists) {
+			await this.#refreshLayout(true, context)
+			return false
+		}
+
+		return true
+	}
+
 	async #refreshLayout(refreshPlaylists = false, context: string) {
+		const nameMarquee = this.getMarquee(context, 'name')
+
 		if (refreshPlaylists) {
 			this.resetFeedbackLayout(context)
+
+			this.setFeedback(context, {
+				name: {
+					opacity: 1.0
+				},
+
+				icon: {
+					opacity: 1.0
+				},
+
+				count: {
+					opacity: 1.0
+				}
+			})
+
+			this.setIcon(context, 'images/icons/pending.png')
+
 			this.#playlistsPage = {}
 			this.#currentPlaylist = {}
 			this.#playlists = {}
 			await this.#refreshPlaylists(context)
 
 			if (this.#playlists.total === 0) {
-				this.setFeedback(context, {
-					name: {
-						opacity: 1.0
-					},
-
-					icon: {
-						opacity: 1.0
-					},
-
-					count: {
-						opacity: 1.0
-					}
-				})
-
+				this.setIcon(context, this.originalIcon)
 				return
 			}
 		} else if (this.#playlists.items[this.#currentPlaylist[context]] && (!images.isPlaylistCached(this.#playlists.items[this.#currentPlaylist[context]])))
@@ -110,15 +116,10 @@ export default class PlaylistsDial extends Dial {
 
 			icon: {
 				opacity: 1.0
-			},
-
-			count: {
-				value: `${((this.#playlistsPage[context] - 1) * constants.WRAPPER_PLAYLISTS_PER_PAGE) + this.#currentPlaylist[context] + 1} / ${this.#playlists.total}`,
-				opacity: 1.0
 			}
 		})
 
-		const nameMarquee = this.getMarquee(context, 'name')
+		this.#refreshCount(context)
 
 		if (nameMarquee) {
 			this.updateMarquee(context, 'name', this.#playlists.items[this.#currentPlaylist[context]].name, this.#playlists.items[this.#currentPlaylist[context]].name)
@@ -146,7 +147,7 @@ export default class PlaylistsDial extends Dial {
 	async invokeWrapperAction(context: string, type: symbol) {
 		if (type === Dial.TYPES.ROTATE_CLOCKWISE) {
 			if (this.#playlists.total <= 1)
-				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+				return constants.WRAPPER_RESPONSE_SUCCESS
 
 			this.pauseMarquee(context, 'name')
 			this.#currentPlaylist[context]++
@@ -167,7 +168,7 @@ export default class PlaylistsDial extends Dial {
 			this.#refreshLayout(false, context)
 		} else if (type === Dial.TYPES.ROTATE_COUNTERCLOCKWISE) {
 			if (this.#playlists.total <= 1)
-				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+				return constants.WRAPPER_RESPONSE_SUCCESS
 
 			this.pauseMarquee(context, 'name')
 			this.#currentPlaylist[context]--
@@ -185,13 +186,7 @@ export default class PlaylistsDial extends Dial {
 					return constants.WRAPPER_RESPONSE_API_ERROR
 			}
 
-			this.setFeedback(context, {
-				count: {
-					value: `${((this.#playlistsPage[context] - 1) * constants.WRAPPER_PLAYLISTS_PER_PAGE) + this.#currentPlaylist[context] + 1} / ${this.#playlists.total}`,
-					opacity: 1.0
-				}
-			})
-
+			this.#refreshCount(context)
 			this.#refreshLayout(false, context)
 		} else if (type === Dial.TYPES.TAP) {
 			await this.#refreshLayout(true, context)
