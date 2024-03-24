@@ -149,7 +149,7 @@ export default class UpNextDial extends Dial {
 	async invokeWrapperAction(context: string, type: symbol) {
 		if (type === Dial.TYPES.TAP) {
 			await this.#refreshQueue(context)
-			return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
+			return constants.WRAPPER_RESPONSE_SUCCESS
 		} else
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}

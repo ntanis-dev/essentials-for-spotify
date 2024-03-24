@@ -217,7 +217,7 @@ export default class PlaylistsDial extends Dial {
 			this.#refreshLayout(false, context)
 		} else if (type === Dial.TYPES.TAP) {
 			await this.#refreshLayout(true, context)
-			return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
+			return constants.WRAPPER_RESPONSE_SUCCESS
 		} else if (type === Dial.TYPES.DOWN)
 			return constants.WRAPPER_RESPONSE_SUCCESS
 		else if (type === Dial.TYPES.UP) {
@@ -231,7 +231,7 @@ export default class PlaylistsDial extends Dial {
 					if (apiCall !== constants.WRAPPER_RESPONSE_SUCCESS && apiCall !== constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)
 						await this.#refreshLayout(true, context)
 					else
-						return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
+						return constants.WRAPPER_RESPONSE_SUCCESS
 				} else
 					await this.#refreshLayout(true, context)
 

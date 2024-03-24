@@ -1,3 +1,4 @@
+import constants from './constants'
 import logger from './logger'
 import wrapper from './wrapper'
 
@@ -49,6 +50,14 @@ const getForSong = async song => {
 const isSongCached = song => !!imageCache[`song:${song.item.id}`]
 
 const getForPlaylist = async playlist => {
+	if (Object.keys(imageCache).length > constants.WRAPPER_PLAYLISTS_PER_PAGE)
+		imageCache = Object.keys(imageCache).reduce((acc, key) => {
+			if (!key.startsWith('playlist:'))
+				acc[key] = imageCache[key]
+
+			return acc
+		}, {})
+
 	if (imageCache[`playlist:${playlist.id}`])
 		return imageCache[`playlist:${playlist.id}`]
 
