@@ -10,7 +10,7 @@ import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.previous-song-button' })
 export default class PreviousSongButton extends Button {
-	async invokeWrapperAction() {
+	async invokeWrapperAction(context: string) {
 		return wrapper.previousSong()
 	}
 }

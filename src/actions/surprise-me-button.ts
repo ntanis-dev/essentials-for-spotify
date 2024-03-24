@@ -12,7 +12,7 @@ import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.surprise-me-button' })
 export default class SurpriseMeButton extends Button {
-	async invokeWrapperAction() {
+	async invokeWrapperAction(context: string) {
 		for (const context of this.contexts) {
 			this.setUnpressable(context, true)
 			this.setImage(context, 'images/states/pending')

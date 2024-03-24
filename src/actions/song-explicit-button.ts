@@ -33,7 +33,7 @@ export default class SongExplicitButton extends Button {
 		}
 	}
 
-	async invokeWrapperAction() {
+	async invokeWrapperAction(context: string) {
 		return constants.WRAPPER_RESPONSE_DO_NOTHING
 	}
 

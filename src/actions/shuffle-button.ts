@@ -23,7 +23,7 @@ export default class ShuffleButton extends Button {
 			this.setState(context, state ? 1 : 0)
 	}
 
-	async invokeWrapperAction() {
+	async invokeWrapperAction(context: string) {
 		if (wrapper.shuffleState)
 			return wrapper.turnOffShuffle()
 		else

@@ -13,7 +13,7 @@ import wrapper from './../library/wrapper.js'
 export default class ForwardSeekButton extends Button {
 	static readonly HOLDABLE = true
 
-	async invokeWrapperAction() {
+	async invokeWrapperAction(context: string) {
 		if (wrapper.song)
 			if (wrapper.song.progress + constants.SEEK_STEP_SIZE < wrapper.song.item.duration_ms)
 				return wrapper.forwardSeek(Object.assign({}, wrapper.song), constants.SEEK_STEP_SIZE)

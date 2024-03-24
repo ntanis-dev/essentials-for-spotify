@@ -69,7 +69,7 @@ export class Button extends SingletonAction {
 			await this.#flashImage(ev.action, 'images/states/setup-error', constants.LONG_FLASH_DURATION, constants.LONG_FLASH_TIMES)
 		else {
 			const startedInvokingAt = Date.now()
-			const response = await this.invokeWrapperAction()
+			const response = await this.invokeWrapperAction(ev.action.id)
 
 			if (response === constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)
 				await this.#flashImage(ev.action, 'images/states/success', constants.SHORT_FLASH_DURATION, constants.SHORT_FLASH_TIMES)
@@ -124,7 +124,7 @@ export class Button extends SingletonAction {
 		this.contexts.splice(this.contexts.indexOf(ev.action.id), 1)
 	}
 
-	async invokeWrapperAction(): Promise<Symbol> {
+	async invokeWrapperAction(context: string): Promise<Symbol> {
 		return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 

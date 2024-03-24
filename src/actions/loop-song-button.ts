@@ -23,7 +23,7 @@ export default class LoopSongButton extends Button {
 			this.setState(context, state === 'track' ? 1 : 0)
 	}
 
-	async invokeWrapperAction() {
+	async invokeWrapperAction(context: string) {
 		if (wrapper.repeatState === 'track')
 			return wrapper.turnOffRepeat()
 		else

@@ -55,18 +55,18 @@ export class Dial extends SingletonAction {
 	}
 
 	async #processAction(action: any, type: symbol) {
-		if (this.#busy[action.id] || this.#unpressable[action.id] || (type === Dial.TYPES.UP && ((!(this.constructor as typeof Dial).HOLDABLE) || (!this.#holding[action.id]))) || (type === Dial.TYPES.DOWN && this.#holding[action.id]))
+		if (this.#busy[action.id] || this.#unpressable[action.id] || (type === Dial.TYPES.DOWN && this.#holding[action.id]))
 			return
+
+		this.#busy[action.id] = true
 
 		if (type === Dial.TYPES.UP && this.#holding[action.id])
 			delete this.#holding[action.id]
 
-		this.#busy[action.id] = true
-
 		if (!connector.set)
 			await this.flashIcon(action.id, 'images/icons/setup-error.png')
 		else {
-			const response = ((this.constructor as typeof Dial).HOLDABLE && (type === Dial.TYPES.DOWN || type === Dial.TYPES.UP)) ? (type === Dial.TYPES.DOWN ? await this.invokeHoldWrapperAction() : await this.invokeHoldReleaseWrapperAction()) : await this.invokeWrapperAction(type)
+			const response = ((this.constructor as typeof Dial).HOLDABLE && (type === Dial.TYPES.DOWN || type === Dial.TYPES.UP)) ? (type === Dial.TYPES.DOWN ? await this.invokeHoldWrapperAction(action.id) : await this.invokeHoldReleaseWrapperAction(action.id)) : await this.invokeWrapperAction(action.id, type)
 
 			if ((response === constants.WRAPPER_RESPONSE_SUCCESS || response === constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE) && type === Dial.TYPES.DOWN && (this.constructor as typeof Dial).HOLDABLE)
 				this.#holding[action.id] = true
@@ -213,16 +213,16 @@ export class Dial extends SingletonAction {
 		this.contexts.splice(this.contexts.indexOf(ev.action.id), 1)
 	}
 
-	async invokeWrapperAction(type: symbol): Promise<Symbol> {
+	async invokeWrapperAction(context: string, type: symbol): Promise<Symbol> {
 		return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 
-	async invokeHoldWrapperAction(): Promise<Symbol | void> {
+	async invokeHoldWrapperAction(context: string): Promise<Symbol | void> {
 		if ((this.constructor as typeof Dial).HOLDABLE)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 
-	async invokeHoldReleaseWrapperAction(): Promise<Symbol | void> {
+	async invokeHoldReleaseWrapperAction(context: string): Promise<Symbol | void> {
 		if ((this.constructor as typeof Dial).HOLDABLE)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
@@ -260,6 +260,7 @@ export class Dial extends SingletonAction {
 		const marqueeIdentifier = `${context}-${key}`
 
 		if (this.#marquees[marqueeIdentifier]) {
+			this.#marquees[marqueeIdentifier].frame = 0
 			this.#marquees[marqueeIdentifier].original = value
 			this.#marquees[marqueeIdentifier].countable = countable
 			this.#marquees[marqueeIdentifier].render = `${value} | `
@@ -272,7 +273,7 @@ export class Dial extends SingletonAction {
 
 		if (this.#marquees[marqueeIdentifier]) {
 			clearTimeout(this.#marquees[marqueeIdentifier].timeout)
-			this.#marquees[marqueeIdentifier].timeout = setTimeout(() => this.marquee(this.#marquees[marqueeIdentifier].id, this.#marquees[marqueeIdentifier].key, this.#marquees[marqueeIdentifier].original, this.#marquees[marqueeIdentifier].countable, this.#marquees[marqueeIdentifier].visible, context), constants.DIAL_MARQUEE_INTERVAL)
+			this.marquee(this.#marquees[marqueeIdentifier].id, this.#marquees[marqueeIdentifier].key, this.#marquees[marqueeIdentifier].original, this.#marquees[marqueeIdentifier].countable, this.#marquees[marqueeIdentifier].visible, context)
 		}
 	}
 

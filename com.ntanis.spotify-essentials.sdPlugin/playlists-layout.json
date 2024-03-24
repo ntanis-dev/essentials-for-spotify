@@ -42,7 +42,7 @@
 		{
 			"key": "count",
 			"type": "text",
-			"value": "?? / ??",
+			"value": "???? / ????",
 			"rect": [72, 64, 112, 24],
 
 			"font": {

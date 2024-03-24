@@ -65,7 +65,7 @@ export default class VolumeControlDial extends Dial {
 			this.#updateJointFeedback([context])
 	}
 
-	async invokeWrapperAction(type: symbol) {
+	async invokeWrapperAction(context: string, type: symbol) {
 		if (type === Dial.TYPES.ROTATE_CLOCKWISE) {
 			if (wrapper.volumePercent === null)
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
@@ -91,7 +91,7 @@ export default class VolumeControlDial extends Dial {
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 
-	async invokeHoldWrapperAction() {
+	async invokeHoldWrapperAction(context: string) {
 		if (wrapper.volumePercent === null)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
@@ -101,7 +101,7 @@ export default class VolumeControlDial extends Dial {
 			return constants.WRAPPER_RESPONSE_SUCCESS
 	}
 
-	async invokeHoldReleaseWrapperAction() {
+	async invokeHoldReleaseWrapperAction(context: string) {
 		if (wrapper.volumePercent === null)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 

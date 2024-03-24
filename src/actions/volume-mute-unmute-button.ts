@@ -25,7 +25,7 @@ export default class VolumeMuteUnmuteButton extends Button {
 			this.setState(context, state ? 1 : 0)
 	}
 
-	async invokeWrapperAction() {
+	async invokeWrapperAction(context: string) {
 		if (wrapper.volumePercent === null)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 

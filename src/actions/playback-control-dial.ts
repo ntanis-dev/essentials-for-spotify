@@ -145,7 +145,7 @@ export default class PlaybackControlDial extends Dial {
 			this.#updateJointFeedback([context])
 	}
 
-	async invokeWrapperAction(type: symbol) {
+	async invokeWrapperAction(context: string, type: symbol) {
 		if (type === Dial.TYPES.ROTATE_CLOCKWISE) {
 			if (wrapper.song)
 				if (wrapper.song.progress + constants.SEEK_STEP_SIZE < wrapper.song.item.duration_ms)
@@ -175,7 +175,7 @@ export default class PlaybackControlDial extends Dial {
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 
-	async invokeHoldWrapperAction() {
+	async invokeHoldWrapperAction(context: string) {
 		if (!wrapper.song)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
@@ -185,7 +185,7 @@ export default class PlaybackControlDial extends Dial {
 			return constants.WRAPPER_RESPONSE_SUCCESS
 	}
 
-	async invokeHoldReleaseWrapperAction() {
+	async invokeHoldReleaseWrapperAction(context: string) {
 		if (!wrapper.song)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 

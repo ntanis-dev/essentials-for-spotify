@@ -36,6 +36,7 @@ const getForSong = async song => {
 			resolve(imageCache[`song:${song.item.id}`])
 		} catch (e) {
 			logger.error(`Failed to get image for song "${song.item.id}": "${e.message}"`)
+			resolve(null)
 		}
 	}).finally(result => {
 		delete pendingResults[`song:${song.item.id}`]
@@ -70,6 +71,7 @@ const getForPlaylist = async playlist => {
 			resolve(imageCache[`playlist:${playlist.id}`])
 		} catch (e) {
 			logger.error(`Failed to get image for playlist "${playlist.id}": "${e.message}"`)
+			resolve(null)
 		}
 	}).finally(result => {
 		delete pendingResults[`playlist:${playlist.id}`]

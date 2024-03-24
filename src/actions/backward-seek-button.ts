@@ -13,7 +13,7 @@ import wrapper from './../library/wrapper.js'
 export default class BackwardSeekButton extends Button {
 	static readonly HOLDABLE = true
 
-	async invokeWrapperAction() {
+	async invokeWrapperAction(context: string) {
 		if (wrapper.song)
 			return wrapper.backwardSeek(Object.assign({}, wrapper.song), constants.SEEK_STEP_SIZE)
 		else if (wrapper.pendingSongChange)

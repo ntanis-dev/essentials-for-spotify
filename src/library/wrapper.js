@@ -18,6 +18,7 @@ class Wrapper extends EventEmitter {
 	#lastSong = null
 	#previousSong = null
 	#lastSongTimeUpdateAt = null
+	#lastPlaybackContext = null
 	#lastPlaybackStateUpdate = null
 	#songChangeForceUpdatePlaybackStateTimeout = null
 	#lastRepeatState = null
@@ -130,6 +131,7 @@ class Wrapper extends EventEmitter {
 			this.#setRepeatState(response?.repeat_state || 'off')
 			this.#setShuffleState(response?.shuffle_state || false)
 			this.#setVolumePercent(response?.device.supports_volume ? (typeof(response?.device.volume_percent) !== 'number' ? 100 : response.device.volume_percent) : null)
+			this.#setPlaybackContext(response?.context?.uri || null)
 
 			this.#setSong(response?.item ? {
 				item: response.item,
@@ -176,6 +178,15 @@ class Wrapper extends EventEmitter {
 		this.#updatePlaybackStateStatus = 'skip'
 		this.#lastShuffleState = shuffleState
 		this.emit('shuffleStateChanged', shuffleState)
+	}
+
+	#setPlaybackContext(context) {
+		if (this.#lastPlaybackContext === context)
+			return
+
+		this.#updatePlaybackStateStatus = 'skip'
+		this.#lastPlaybackContext = context
+		this.emit('playbackContextChanged', context)
 	}
 
 	#setVolumePercent(volumePercent) {
@@ -509,6 +520,7 @@ class Wrapper extends EventEmitter {
 
 			await this.#deviceCall('me/player/play', {
 				method: 'PUT',
+
 				body: JSON.stringify({
 					uris: recommendations.tracks.map(track => track.uri)
 				})
@@ -546,6 +558,22 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
+	async playPlaylist(playlistId, deviceId = this.#lastDevice) {
+		return this.#wrapCall(async () => {
+			await this.#deviceCall('me/player/play', {
+				method: 'PUT',
+
+				body: JSON.stringify({
+					context_uri: `spotify:playlist:${playlistId}`
+				})
+			}, deviceId)
+
+			this.#onSongChangeExpected()
+
+			return constants.WRAPPER_RESPONSE_SUCCESS
+		})
+	}
+
 	get playing() {
 		return this.#lastPlaying
 	}
@@ -556,6 +584,10 @@ class Wrapper extends EventEmitter {
 
 	get shuffleState() {
 		return this.#lastShuffleState
+	}
+
+	get playbackContext() {
+		return this.#lastPlaybackContext
 	}
 
 	get volumePercent() {

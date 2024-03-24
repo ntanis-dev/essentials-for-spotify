@@ -36,6 +36,7 @@ const SEEK_STEP_SIZE = 5000
 const CONNECTOR_DEFAULT_SCOPES = [
 	'user-read-playback-state',
 	'user-modify-playback-state',
+	'user-library-read',
 	'user-library-modify'
 ]
 

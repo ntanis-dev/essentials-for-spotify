@@ -23,7 +23,7 @@ export default class LoopContextButton extends Button {
 			this.setState(context, state === 'context' ? 1 : 0)
 	}
 
-	async invokeWrapperAction() {
+	async invokeWrapperAction(context: string) {
 		if (wrapper.repeatState === 'context')
 			return wrapper.turnOffRepeat()
 		else

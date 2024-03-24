@@ -32,7 +32,7 @@ export default class LikeUnlikeButton extends Button {
 		}
 	}
 
-	async invokeWrapperAction() {
+	async invokeWrapperAction(context: string) {
 		if (!wrapper.song)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
