@@ -1,12 +1,9 @@
 // TODO
 
-// Dial support
-// Feedback support
 // Device hot-swapping handling
 // Disable song-based buttons when something non-song is playing
 // actions.disallows flags // NOT_AVAILABLE
 // Settings
-// Setup
 // On button / dial destroy: clear marquees completely
 
 import StreamDeck from '@elgato/streamdeck'
@@ -18,13 +15,13 @@ StreamDeck.connect().then(() => {
 	logger.info('Connected to Stream Deck.')
 
 	StreamDeck.client.getGlobalSettings().then(settings => {
-		// if (settings.clientId && settings.clientSecret && settings.refreshToken) {
-		// 	logger.info('Found global settings.')
-		// 	connector.startSetup(settings.clientId, settings.clientSecret, settings.refreshToken)
-		// } else {
+		if (settings.clientId && settings.clientSecret && settings.refreshToken) {
+			logger.info('Found global settings.')
+			connector.startSetup(settings.clientId, settings.clientSecret, settings.refreshToken)
+		} else {
 			logger.info('No global settings found.')
 			connector.startSetup()
-		// }
+		}
 	}).catch(e => {
 		logger.error(`An error occurred while getting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
 		connector.startSetup()
