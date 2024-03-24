@@ -16,6 +16,7 @@ import logger from './../library/logger.js'
 export class Button extends Action {
 	static HOLDABLE = false
 	static STATABLE = false
+	static SETUPLESS = false
 
 	#pressed: any = {}
 	#holding: any = {}
@@ -68,7 +69,7 @@ export class Button extends Action {
 				}
 			}, constants.BUTTON_HOLD_DELAY)
 
-		if (!connector.set)
+		if ((!connector.set) && (!(this.constructor as typeof Button).SETUPLESS))
 			await this.#flashImage(ev.action, 'images/states/setup-error', constants.LONG_FLASH_DURATION, constants.LONG_FLASH_TIMES)
 		else {
 			const startedInvokingAt = Date.now()

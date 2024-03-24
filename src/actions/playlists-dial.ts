@@ -246,6 +246,12 @@ export default class PlaylistsDial extends Dial {
 		super.onWillAppear(ev)
 	}
 
+	async resetFeedbackLayout(context: string, feedback = {}): Promise<void> {
+		super.resetFeedbackLayout(context, Object.assign({
+			icon: this.originalIcon
+		}, feedback))
+	}
+
 	updateFeedback(context: string): void {
 		super.updateFeedback(context)
 		this.#refreshLayout(true, context)

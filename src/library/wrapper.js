@@ -29,7 +29,16 @@ class Wrapper extends EventEmitter {
 
 		connector.on('setupStateChanged', state => {
 			if (state)
-				this.#updatePlaybackState()
+				this.#updatePlaybackState(true)
+			else {
+				this.#setPlaying(false)
+				this.#setRepeatState('off')
+				this.#setShuffleState(false)
+				this.#setVolumePercent(null)
+				this.#setPlaybackContext(null)
+				this.#setSong(null)
+				this.#setDevices(null, [])
+			}
 		})
 
 		if (connector.set)

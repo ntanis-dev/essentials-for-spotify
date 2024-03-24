@@ -7,7 +7,6 @@ import {
 } from './button.js'
 
 import constants from '../library/constants.js'
-import logger from './../library/logger.js'
 import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.surprise-me-button' })

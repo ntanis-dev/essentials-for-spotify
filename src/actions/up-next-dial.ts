@@ -18,6 +18,7 @@ export default class UpNextDial extends Dial {
 	constructor() {
 		super('up-next-layout.json', 'images/icons/up-next.png')
 		wrapper.on('songChanged', this.#onSongChanged.bind(this))
+		wrapper.on('deviceChanged', this.#onDeviceChanged.bind(this))
 	}
 	async #refreshQueue(context: string) {
 		this.setIcon(context, 'images/icons/pending.png')
@@ -146,6 +147,15 @@ export default class UpNextDial extends Dial {
 				this.#refreshQueue(context)
 	}
 
+	#onDeviceChanged(device: any, contexts = this.contexts) {
+		if (!device) {
+			for (const context of contexts)
+				this.resetFeedbackLayout(context)
+
+			return
+		}
+	}
+
 	async invokeWrapperAction(context: string, type: symbol) {
 		if (type === Dial.TYPES.TAP) {
 			await this.#refreshQueue(context)
@@ -158,8 +168,16 @@ export default class UpNextDial extends Dial {
 		super.onWillAppear(ev)
 	}
 
+	async resetFeedbackLayout(context: string, feedback = {}): Promise<void> {
+		super.resetFeedbackLayout(context, Object.assign({
+			icon: this.originalIcon
+		}, feedback))
+	}
+
 	updateFeedback(context: string): void {
 		super.updateFeedback(context)
-		this.#refreshQueue(context)
+
+		if (wrapper.song)
+			this.#refreshQueue(context)
 	}
 }

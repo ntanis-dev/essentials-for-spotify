@@ -347,6 +347,31 @@
 		},
 		
 		{
+			"Name": "Setup",
+			"UUID": "com.ntanis.spotify-essentials.setup-button",
+			"Icon": "images/actions/setup",
+			"Tooltip": "Start here to setup Spotify Essentials.",
+			"DisableAutomaticStates": true,
+			"SupportedInMultiActions": false,
+
+			"Controllers": [
+				"Keypad"
+			],
+
+			"States": [
+				{
+					"Image": "images/states/no-setup",
+					"TitleAlignment": "middle"
+				},
+				
+				{
+					"Image": "images/states/setup",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		
+		{
 			"Name": "Playback Control",
 			"UUID": "com.ntanis.spotify-essentials.playback-control-dial",
 			"Icon": "images/actions/playback-control",
