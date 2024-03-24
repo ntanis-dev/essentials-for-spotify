@@ -180,7 +180,7 @@ const SETUP_HTML = `
 
 				<ol class="main">
 					<li>Navigate to <a href="https://developer.spotify.com/dashboard/create" target="_blank" rel="noopener">Create app - Spotify for Developers</a>.</li>
-					<li>Set <code id="url">http://localhost:{PORT}</code> as <b>"Redirect URI"</b>.</li>
+					<li>Set <code id="url">http://localhost:{{PORT}}</code> as <b>"Redirect URI"</b>.</li>
 					<li>Tick <b>"Web API"</b> in <b>"Which API/SDKs are you planning to use?"</b>.</li>
 					<li>Fill the rest of the form to your liking, <b>"Website"</b> field can be left empty.</li>
 					<li>Create the app and navigate to the app's dashboard.</li>
@@ -256,7 +256,8 @@ const CONNECTOR_DEFAULT_SCOPES = [
 	'user-read-playback-state',
 	'user-modify-playback-state',
 	'user-library-read',
-	'user-library-modify'
+	'user-library-modify',
+	'playlist-read-private'
 ]
 
 const CHARACTER_WIDTH_MAP = {

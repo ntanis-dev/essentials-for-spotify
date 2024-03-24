@@ -430,10 +430,10 @@
 		},
 		
 		{
-			"Name": "Up Next",
-			"UUID": "com.ntanis.spotify-essentials.up-next-dial",
-			"Icon": "images/actions/up-next",
-			"Tooltip": "Shows the upcoming song.",
+			"Name": "My Playlists",
+			"UUID": "com.ntanis.spotify-essentials.my-playlists-dial",
+			"Icon": "images/actions/playlists",
+			"Tooltip": "Navigate and play your playlists.",
 
 			"Controllers": [
 				"Encoder"
@@ -441,26 +441,28 @@
 
 			"States": [
 				{
-					"Image": "images/states/up-next",
+					"Image": "images/states/playlists",
 					"TitleAlignment": "left"
 				}
 			],
 
 			"Encoder": {
-				"layout": "up-next-layout.json",
+				"layout": "playlists-layout.json",
 				"StackColor": "#FFF",
 
 				"TriggerDescription": {
+					"Rotate": "Navigate",
+					"Push": "Play",
 					"Touch": "Refresh"
 				}
 			}
 		},
 		
 		{
-			"Name": "Playlists",
-			"UUID": "com.ntanis.spotify-essentials.playlists-dial",
+			"Name": "Featured Playlists",
+			"UUID": "com.ntanis.spotify-essentials.featured-playlists-dial",
 			"Icon": "images/actions/playlists",
-			"Tooltip": "Navigate and play your playlists.",
+			"Tooltip": "Navigate and play featured playlists.",
 
 			"Controllers": [
 				"Encoder"

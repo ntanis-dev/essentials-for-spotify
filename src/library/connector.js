@@ -107,19 +107,20 @@ class Connector extends EventEmitter {
 
 			const code = req.query.code
 
-			if ((!this.#clientId) || (!this.#clientSecret) || (this.#offloaded && (!code) && ((!req.query.clientId) || (!req.query.clientSecret)))) {
-				if (req.query.clientId && req.query.clientSecret) {
-					this.#clientId = req.query.clientId
-					this.#clientSecret = req.query.clientSecret
-					res.redirect('/')
-					return
-				}
+			if (req.query.clientId)
+				this.#clientId = req.query.clientId
 
-				res.send(constants.SETUP_HTML.replace(/{{PORT}}/g, this.#port))
+			if (req.query.clientSecret)
+				this.#clientSecret = req.query.clientSecret
+
+			if ((!this.#clientId) || (!this.#clientSecret)) {
+				if (req.query.clientId || req.query.clientSecret)
+					res.redirect('/?error=1')
+				else
+					res.send(constants.SETUP_HTML.replace(/{{PORT}}/g, this.#port))
 
 				return
 			} else if (!code) {
-				this.#offloaded = true
 				res.redirect(`https://accounts.spotify.com/authorize?response_type=code&client_id=${this.#clientId}&scope=${encodeURIComponent(constants.CONNECTOR_DEFAULT_SCOPES.join(' '))}&redirect_uri=${encodeURIComponent(`http://localhost:${this.#port}`)}`);
 				return
 			}
@@ -148,7 +149,6 @@ class Connector extends EventEmitter {
 				this.#refreshToken = data.refresh_token
 				this.#accessToken = data.access_token
 				this.#setSetup(true)
-
 
 				StreamDeck.client.setGlobalSettings({
 					clientId: this.#clientId,
@@ -179,8 +179,11 @@ class Connector extends EventEmitter {
 			return
 
 		this.#setSetup(false)
+
 		this.#accessToken = null
 		this.#refreshToken = null
+		this.#clientId = null
+		this.#clientSecret = null
 
 		this.#server = this.#app.listen(this.#port, () => logger.info(`Connector setup server listening on port "${this.#port}".`))
 

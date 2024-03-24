@@ -18,8 +18,8 @@ import SongExplicitButton from './../actions/song-explicit-button'
 import SetupButton from './../actions/setup-button'
 import VolumeControlDial from './../actions/volume-control-dial'
 import PlaybackControlDial from './../actions/playback-control-dial'
-import UpNextDial from './../actions/up-next-dial'
-import PlaylistsDial from './../actions/playlists-dial'
+import MyPlaylistsDial from './../actions/my-playlists-dial'
+import FeaturedPlaylistsDial from './../actions/featured-playlists-dial'
 
 export default {
 	register: () => {
@@ -42,7 +42,7 @@ export default {
 		StreamDeck.actions.registerAction(new SetupButton())
 		StreamDeck.actions.registerAction(new VolumeControlDial())
 		StreamDeck.actions.registerAction(new PlaybackControlDial())
-		StreamDeck.actions.registerAction(new UpNextDial())
-		StreamDeck.actions.registerAction(new PlaylistsDial())
+		StreamDeck.actions.registerAction(new MyPlaylistsDial())
+		StreamDeck.actions.registerAction(new FeaturedPlaylistsDial())
 	}
 }

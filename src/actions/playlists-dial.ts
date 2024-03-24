@@ -12,21 +12,17 @@ import images from './../library/images.js'
 import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.playlists-dial' })
-export default class PlaylistsDial extends Dial {
+export class PlaylistsDial extends Dial {
 	#currentPlaylist: any = {}
 	#playlistsPage: any = {}
 	#playlists: any = []
 	#lastTotal: number = 0
 
-	constructor() {
-		super('playlists-layout.json', 'images/icons/playlists.png')
-	}
-
 	async #refreshPlaylists(context: string) {
 		if (this.#playlistsPage[context] === undefined)
 			this.#playlistsPage[context] = 1
 
-		const apiCall = await wrapper.getPlaylists(this.#playlistsPage[context])
+		const apiCall = await this.fetchPlaylists(this.#playlistsPage[context])
 
 		if (typeof apiCall !== 'object' || (apiCall.status !== constants.WRAPPER_RESPONSE_SUCCESS && apiCall.status !== constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)) {
 			this.resetFeedbackLayout(context, {
@@ -250,6 +246,10 @@ export default class PlaylistsDial extends Dial {
 		super.resetFeedbackLayout(context, Object.assign({
 			icon: this.originalIcon
 		}, feedback))
+	}
+
+	async fetchPlaylists(page: number): Promise<any> {
+		throw new Error('fetchPlaylists() must be implemented in the subclass.')
 	}
 
 	updateFeedback(context: string): void {
