@@ -138,23 +138,10 @@ export default class SongInformationButton extends Button {
 		return totalWidth;
 	}
 
-	#beautifyTime(progressMs: number, durationMs: number) {
-		const progress = Math.floor(progressMs / 1000)
-		const duration = Math.floor(durationMs / 1000)
-
-		const progressMinutes = Math.floor(progress / 60)
-		const progressSeconds = progress - (progressMinutes * 60)
-
-		const durationMinutes = Math.floor(duration / 60)
-		const durationSeconds = duration - (durationMinutes * 60)
-
-		return `${progressMinutes}:${progressSeconds.toString().padStart(2, '0')} / ${durationMinutes}:${durationSeconds.toString().padStart(2, '0')}`
-	}
-
 	#onSongTimeChanged(progress: number, duration: number, pending: boolean = false, contexts = this.contexts) {
 		for (const context of contexts)
 			if (this.#marquees[context])
-				this.#updateMarqueeTime(context, this.#beautifyTime(progress, duration))
+				this.#updateMarqueeTime(context, this.beautifyTime(progress, duration))
 	}
 
 	#onSongChanged(song: any, pending: boolean = false, contexts = this.contexts) {
@@ -174,7 +161,7 @@ export default class SongInformationButton extends Button {
 					const image = await images.getForSong(song)
 
 					if ((!this.#marquees[context]) || this.#marquees[context].id !== song.item.id)
-						this.#marqueeTitle(song.item.id, song.item.name, song.item.artists.map((artist: any) => artist.name).join(', '), this.#beautifyTime(song.progress, song.item.duration_ms), context)
+						this.#marqueeTitle(song.item.id, song.item.name, song.item.artists.map((artist: any) => artist.name).join(', '), this.beautifyTime(song.progress, song.item.duration_ms), context)
 					else
 						this.#resumeMarquee(context)
 

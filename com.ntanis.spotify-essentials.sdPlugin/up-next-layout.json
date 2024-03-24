@@ -1,5 +1,5 @@
 {
-	"id": "com.ntanis.spotify-essentials.layouts.queue",
+	"id": "com.ntanis.spotify-essentials.layouts.up-next",
 
 	"items": [
 		{
@@ -21,7 +21,7 @@
 			"type": "pixmap",
 			"rect": [16, 40, 48, 48],
 			"opacity": 0.3,
-			"value": "images/icons/queue.png"
+			"value": "images/icons/up-next.png"
 		},
 
 		{
@@ -40,9 +40,9 @@
 		},
 
 		{
-			"key": "count",
+			"key": "text",
 			"type": "text",
-			"value": "?? / ??",
+			"value": "??:??",
 			"rect": [72, 64, 112, 24],
 
 			"font": {

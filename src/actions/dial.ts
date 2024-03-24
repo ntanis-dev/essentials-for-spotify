@@ -2,17 +2,20 @@ import StreamDeck, {
 	DialUpEvent,
 	DialDownEvent,
 	DialRotateEvent,
-	SingletonAction,
 	TouchTapEvent,
 	WillAppearEvent,
 	WillDisappearEvent
 } from '@elgato/streamdeck'
 
+import {
+	Action
+} from './action.js'
+
 import connector from './../library/connector.js'
 import constants from './../library/constants.js'
 import logger from './../library/logger.js'
 
-export class Dial extends SingletonAction {
+export class Dial extends Action {
 	static HOLDABLE = false
 
 	static TYPES = {

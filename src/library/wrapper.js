@@ -60,12 +60,14 @@ class Wrapper extends EventEmitter {
 		}, constants.INTERVAL_CHECK_UPDATE_SONG_TIME)
 	}
 
-	async #wrapCall(fn) {
-		if (this.#pendingWrappedCall)
-			return constants.WRAPPER_RESPONSE_BUSY
+	async #wrapCall(fn, parallel = false) {
+		if (!parallel) {
+			if (this.#pendingWrappedCall)
+				return constants.WRAPPER_RESPONSE_BUSY
 
-		this.#updatePlaybackStateStatus = 'pause'
-		this.#pendingWrappedCall = true
+			this.#updatePlaybackStateStatus = 'pause'
+			this.#pendingWrappedCall = true
+		}
 
 		try {
 			return await fn()
@@ -82,9 +84,11 @@ class Wrapper extends EventEmitter {
 
 			return response
 		} finally {
-			this.#updatePlaybackStateStatus = 'idle'
-			this.#lastPlaybackStateUpdate = Date.now()
-			this.#pendingWrappedCall = false
+			if (!parallel) {
+				this.#updatePlaybackStateStatus = 'idle'
+				this.#lastPlaybackStateUpdate = Date.now()
+				this.#pendingWrappedCall = false
+			}
 		}
 	}
 
@@ -261,8 +265,8 @@ class Wrapper extends EventEmitter {
 			if (timeChanged)
 				this.emit('songTimeChanged', song.progress, song.item.duration_ms, pending)
 
-			if (this.#lastSong.progress >= this.#lastSong.item.duration_ms)
-				this.#onSongChangeExpected()
+			if (this.#lastSong.progress > this.#lastSong.item.duration_ms)
+				this.#onSongChangeExpected(true)
 		}
 	}
 
@@ -282,10 +286,10 @@ class Wrapper extends EventEmitter {
 		this.emit('devicesChanged', devices)
 	}
 
-	#onSongChangeExpected() {
+	#onSongChangeExpected(byTime = false) {
 		clearTimeout(this.#songChangeForceUpdatePlaybackStateTimeout)
 		this.#setSong(null, true)
-		this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(() => this.#updatePlaybackState(true), constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
+		this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(() => this.#updatePlaybackState(true), byTime ? constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_TIME_SLEEP : constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
 	}
 
 	async resumePlayback(deviceId = this.#lastDevice) {
@@ -539,22 +543,26 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async getPlaylists(page = 1) {
+	async playSong(song, deviceId = this.#lastDevice) {
 		return this.#wrapCall(async () => {
-			const playlists = await connector.callSpotifyApi(`me/playlists?limit=${constants.WRAPPER_PLAYLISTS_PER_PAGE}&offset=${(page - 1) * constants.WRAPPER_PLAYLISTS_PER_PAGE}`)
+			await this.#deviceCall('me/player/play', {
+				method: 'PUT',
 
-			return {
-				status: constants.WRAPPER_RESPONSE_SUCCESS,
+				body: JSON.stringify({
+					uris: [song.item.uri]
+				})
+			}, deviceId)
 
-				items: playlists.items.map(playlist => ({
-					id: playlist.id,
-					name: playlist.name,
-					owner: playlist.owner.display_name,
-					images: playlist.images
-				})),
+			this.#setSong({
+				item: song.item,
+				liked: (await connector.callSpotifyApi(`me/tracks/contains?ids=${song.item.id}`))[0],
+				progress: 0,
+				surprise: this.#lastSong?.surprise || (!this.#lastPlaying)
+			})
 
-				total: playlists.total
-			}
+			this.#setPlaying(true)
+
+			return constants.WRAPPER_RESPONSE_SUCCESS
 		})
 	}
 
@@ -572,6 +580,38 @@ class Wrapper extends EventEmitter {
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
 		})
+	}
+
+	async getQueue() {
+		return this.#wrapCall(async () => {
+			const queue = await connector.callSpotifyApi('me/player/queue', {
+				method: 'GET'
+			})
+
+			return {
+				status: constants.WRAPPER_RESPONSE_SUCCESS,
+				items: queue.queue
+			}
+		}, true)
+	}
+
+	async getPlaylists(page = 1) {
+		return this.#wrapCall(async () => {
+			const playlists = await connector.callSpotifyApi(`me/playlists?limit=${constants.WRAPPER_PLAYLISTS_PER_PAGE}&offset=${(page - 1) * constants.WRAPPER_PLAYLISTS_PER_PAGE}`)
+
+			return {
+				status: constants.WRAPPER_RESPONSE_SUCCESS,
+
+				items: playlists.items.map(playlist => ({
+					id: playlist.id,
+					name: playlist.name,
+					owner: playlist.owner.display_name,
+					images: playlist.images
+				})),
+
+				total: playlists.total
+			}
+		}, true)
 	}
 
 	get playing() {

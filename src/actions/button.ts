@@ -1,16 +1,19 @@
 import StreamDeck, {
 	KeyDownEvent,
 	KeyUpEvent,
-	SingletonAction,
 	WillAppearEvent,
 	WillDisappearEvent
 } from '@elgato/streamdeck'
+
+import {
+	Action
+} from './action.js'
 
 import constants from './../library/constants.js'
 import connector from './../library/connector.js'
 import logger from './../library/logger.js'
 
-export class Button extends SingletonAction {
+export class Button extends Action {
 	static HOLDABLE = false
 	static STATABLE = false
 

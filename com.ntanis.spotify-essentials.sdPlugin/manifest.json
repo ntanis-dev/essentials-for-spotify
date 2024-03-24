@@ -405,10 +405,10 @@
 		},
 		
 		{
-			"Name": "Queue",
-			"UUID": "com.ntanis.spotify-essentials.queue-dial",
-			"Icon": "images/actions/queue",
-			"Tooltip": "Controls the playback queue.",
+			"Name": "Up Next",
+			"UUID": "com.ntanis.spotify-essentials.up-next-dial",
+			"Icon": "images/actions/up-next",
+			"Tooltip": "Shows the upcoming song.",
 
 			"Controllers": [
 				"Encoder"
@@ -416,19 +416,17 @@
 
 			"States": [
 				{
-					"Image": "images/states/queue",
+					"Image": "images/states/up-next",
 					"TitleAlignment": "left"
 				}
 			],
 
 			"Encoder": {
-				"layout": "queue-layout.json",
+				"layout": "up-next-layout.json",
 				"StackColor": "#FFF",
 
 				"TriggerDescription": {
-					"Rotate": "Previous / Next",
-					"Push": "Loop",
-					"Touch": "Shuffle"
+					"Touch": "Refresh"
 				}
 			}
 		},

@@ -17,7 +17,7 @@ import ForwardSeekButton from './../actions/forward-seek-button'
 import SongExplicitButton from './../actions/song-explicit-button'
 import VolumeControlDial from './../actions/volume-control-dial'
 import PlaybackControlDial from './../actions/playback-control-dial'
-import QueueDial from './../actions/queue-dial'
+import UpNextDial from './../actions/up-next-dial'
 import PlaylistsDial from './../actions/playlists-dial'
 
 export default {
@@ -40,7 +40,7 @@ export default {
 		StreamDeck.actions.registerAction(new SongExplicitButton())
 		StreamDeck.actions.registerAction(new VolumeControlDial())
 		StreamDeck.actions.registerAction(new PlaybackControlDial())
-		StreamDeck.actions.registerAction(new QueueDial())
+		StreamDeck.actions.registerAction(new UpNextDial())
 		StreamDeck.actions.registerAction(new PlaylistsDial())
 	}
 }

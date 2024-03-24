@@ -23,19 +23,6 @@ export default class PlaybackControlDial extends Dial {
 		wrapper.on('deviceChanged', this.#onDeviceChanged.bind(this))
 	}
 
-	#beautifyTime(progressMs: number, durationMs: number) {
-		const progress = Math.floor(progressMs / 1000)
-		const duration = Math.floor(durationMs / 1000)
-
-		const progressMinutes = Math.floor(progress / 60)
-		const progressSeconds = progress - (progressMinutes * 60)
-
-		const durationMinutes = Math.floor(duration / 60)
-		const durationSeconds = duration - (durationMinutes * 60)
-
-		return `${progressMinutes}:${progressSeconds.toString().padStart(2, '0')} / ${durationMinutes}:${durationSeconds.toString().padStart(2, '0')}`
-	}
-
 	#updateJointFeedback(contexts = this.contexts) {
 		if (!wrapper.device)
 			return
@@ -89,11 +76,18 @@ export default class PlaybackControlDial extends Dial {
 					})
 				}
 
-				if (wrapper.song) {
-					if (!images.isSongCached(wrapper.song))
+				if (song) {
+					if (!images.isSongCached(song))
 						this.setIcon(context, 'images/icons/pending.png')
 
-					const image = await images.getForSong(wrapper.song)
+					const image = await images.getForSong(song)
+					const time = this.beautifyTime(song.progress, song.item.duration_ms)
+
+					this.setFeedback(context, {
+						text: {
+							value: time
+						}
+					})
 
 					if ((!titleMarquee) || titleMarquee.id !== song.item.id) {
 						const title = `${song.item.name} - ${song.item.artists.map((artist: any) => artist.name).join(', ')}`
@@ -101,10 +95,9 @@ export default class PlaybackControlDial extends Dial {
 					} else
 						this.resumeMarquee(context, 'title')
 
-					if ((!timeMarquee) || timeMarquee.id !== song.item.id) {
-						const time = this.#beautifyTime(song.progress, song.item.duration_ms)
+					if ((!timeMarquee) || timeMarquee.id !== song.item.id)
 						this.marquee(song.item.id, 'time', time, `${'8'.repeat(time.length - 5)}: : /`, 14, context)
-					} else
+					else
 						this.resumeMarquee(context, 'time')
 
 					if (image)
@@ -125,7 +118,7 @@ export default class PlaybackControlDial extends Dial {
 			const timeMarquee = this.getMarquee(context, 'time')
 
 			if (timeMarquee) {
-				const time = this.#beautifyTime(progress, duration)
+				const time = this.beautifyTime(progress, duration)
 				this.updateMarquee(context, 'time', time, `${'8'.repeat(time.length - 5)}: : /`)
 			}
 

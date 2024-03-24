@@ -29,7 +29,21 @@ export default class PlaylistsDial extends Dial {
 		const apiCall = await wrapper.getPlaylists(this.#playlistsPage[context])
 
 		if (typeof apiCall !== 'object' || (apiCall.status !== constants.WRAPPER_RESPONSE_SUCCESS && apiCall.status !== constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)) {
-			await this.resetFeedbackLayout(context)
+			this.resetFeedbackLayout(context)
+
+			this.setFeedback(context, {
+				name: {
+					opacity: 1.0
+				},
+
+				icon: {
+					opacity: 1.0
+				},
+
+				count: {
+					opacity: 1.0
+				}
+			})
 
 			const icon = this.getIconForStatus(typeof apiCall === 'object' ? apiCall.status : apiCall)
 
@@ -97,10 +111,18 @@ export default class PlaylistsDial extends Dial {
 			this.#playlistsPage = {}
 			this.#currentPlaylist = {}
 			this.#playlists = {}
+
 			await this.#refreshPlaylists(context)
 
 			if (this.#playlists.total === 0) {
 				this.setIcon(context, this.originalIcon)
+
+				this.setFeedback(context, {
+					count: {
+						value: '0 / 0'
+					}
+				})
+
 				return
 			}
 		} else if (this.#playlists.items[this.#currentPlaylist[context]] && (!images.isPlaylistCached(this.#playlists.items[this.#currentPlaylist[context]])))
@@ -115,6 +137,10 @@ export default class PlaylistsDial extends Dial {
 			},
 
 			icon: {
+				opacity: 1.0
+			},
+
+			count: {
 				opacity: 1.0
 			}
 		})
@@ -138,8 +164,7 @@ export default class PlaylistsDial extends Dial {
 	async #refreshCount(context: string) {
 		this.setFeedback(context, {
 			count: {
-				value: `${((this.#playlistsPage[context] - 1) * constants.WRAPPER_PLAYLISTS_PER_PAGE) + this.#currentPlaylist[context] + 1} / ${this.#playlists.total}`,
-				opacity: 1.0
+				value: `${((this.#playlistsPage[context] - 1) * constants.WRAPPER_PLAYLISTS_PER_PAGE) + this.#currentPlaylist[context] + 1} / ${this.#playlists.total}`
 			}
 		})
 	}
@@ -216,7 +241,7 @@ export default class PlaylistsDial extends Dial {
 
 				return constants.WRAPPER_RESPONSE_API_ERROR
 		} else
-			return constants.WRAPPER_RESPONSE_API_ERROR
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 
 	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
