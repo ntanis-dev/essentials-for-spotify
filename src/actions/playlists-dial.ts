@@ -29,9 +29,7 @@ export default class PlaylistsDial extends Dial {
 		const apiCall = await wrapper.getPlaylists(this.#playlistsPage[context])
 
 		if (typeof apiCall !== 'object' || (apiCall.status !== constants.WRAPPER_RESPONSE_SUCCESS && apiCall.status !== constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)) {
-			this.resetFeedbackLayout(context)
-
-			this.setFeedback(context, {
+			this.resetFeedbackLayout(context, {
 				name: {
 					opacity: 1.0
 				},
@@ -90,9 +88,7 @@ export default class PlaylistsDial extends Dial {
 		const nameMarquee = this.getMarquee(context, 'name')
 
 		if (refreshPlaylists) {
-			this.resetFeedbackLayout(context)
-
-			this.setFeedback(context, {
+			this.resetFeedbackLayout(context, {
 				name: {
 					opacity: 1.0
 				},

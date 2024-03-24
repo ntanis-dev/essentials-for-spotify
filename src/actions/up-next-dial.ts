@@ -22,9 +22,7 @@ export default class UpNextDial extends Dial {
 	async #refreshQueue(context: string) {
 		this.setIcon(context, 'images/icons/pending.png')
 
-		this.resetFeedbackLayout(context)
-
-		this.setFeedback(context, {
+		this.resetFeedbackLayout(context, {
 			name: {
 				opacity: 1.0
 			},
@@ -43,9 +41,7 @@ export default class UpNextDial extends Dial {
 		this.setIcon(context, this.originalIcon)
 
 		if (typeof apiCall !== 'object' || (apiCall.status !== constants.WRAPPER_RESPONSE_SUCCESS && apiCall.status !== constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)) {
-			this.resetFeedbackLayout(context)
-
-			this.setFeedback(context, {
+			this.resetFeedbackLayout(context, {
 				name: {
 					opacity: 1.0
 				},
@@ -70,15 +66,13 @@ export default class UpNextDial extends Dial {
 		delete apiCall.status
 		this.#queue = apiCall.items
 
-		await this.#refreshLayout(context)
+		if (this.#queue.length === 0)
+			this.resetFeedbackLayout(context)
+		else
+			await this.#refreshLayout(context)
 	}
 
 	async #refreshLayout(context: string) {
-		if (this.#queue.length === 0) {
-			this.resetFeedbackLayout(context)
-			return
-		}
-
 		const queueEl = this.#queue[0]
 
 		this.setIcon(context, 'images/icons/pending.png')
@@ -144,16 +138,19 @@ export default class UpNextDial extends Dial {
 			}
 		else if (!song)
 			for (const context of contexts)
-				this.resetFeedbackLayout(context)
+				this.resetFeedbackLayout(context, {
+					icon: this.originalIcon
+				})
 		else
 			for (const context of contexts)
 				this.#refreshQueue(context)
 	}
 
 	async invokeWrapperAction(context: string, type: symbol) {
-		if (type === Dial.TYPES.TAP)
-			this.#refreshQueue(context)
-		else
+		if (type === Dial.TYPES.TAP) {
+			await this.#refreshQueue(context)
+			return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
+		} else
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 
