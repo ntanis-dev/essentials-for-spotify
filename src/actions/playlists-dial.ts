@@ -189,7 +189,8 @@ export default class PlaylistsDial extends Dial {
 			}
 
 			this.#refreshCount(context)
-			this.#refreshLayout(false, context)
+
+			await this.#refreshLayout(false, context)
 		} else if (type === Dial.TYPES.ROTATE_COUNTERCLOCKWISE) {
 			if (this.#playlists.total <= 1)
 				return constants.WRAPPER_RESPONSE_SUCCESS
@@ -214,7 +215,8 @@ export default class PlaylistsDial extends Dial {
 			}
 
 			this.#refreshCount(context)
-			this.#refreshLayout(false, context)
+
+			await this.#refreshLayout(false, context)
 		} else if (type === Dial.TYPES.TAP) {
 			await this.#refreshLayout(true, context)
 			return constants.WRAPPER_RESPONSE_SUCCESS
