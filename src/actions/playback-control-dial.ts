@@ -80,7 +80,12 @@ export default class PlaybackControlDial extends Dial {
 					timeMarquee = null
 
 					this.setFeedback(context, {
-						title: 'Playback Control'
+						title: 'Playback Control',
+
+						text: {
+							value: '??:?? / ??:??',
+							opacity: wrapper.playing ? 1.0 : 0.5
+						}
 					})
 				}
 
@@ -147,17 +152,21 @@ export default class PlaybackControlDial extends Dial {
 
 	async invokeWrapperAction(context: string, type: symbol) {
 		if (type === Dial.TYPES.ROTATE_CLOCKWISE) {
-			if (wrapper.song)
-				if (wrapper.song.progress + constants.SEEK_STEP_SIZE < wrapper.song.item.duration_ms)
+			if (wrapper.song) {
+				if (!this.isHolding(context))
+					return wrapper.nextSong()
+				else if (wrapper.song.progress + constants.SEEK_STEP_SIZE < wrapper.song.item.duration_ms)
 					return wrapper.forwardSeek(Object.assign({}, wrapper.song), constants.SEEK_STEP_SIZE)
 				else
 					return constants.WRAPPER_RESPONSE_SUCCESS
-			else if (wrapper.pendingSongChange)
+			} else if (wrapper.pendingSongChange)
 				return constants.WRAPPER_RESPONSE_SUCCESS
 			else
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 		} else if (type === Dial.TYPES.ROTATE_COUNTERCLOCKWISE) {
-			if (wrapper.song)
+			if (!this.isHolding(context))
+				return wrapper.previousSong()
+			else if (wrapper.song)
 				return wrapper.backwardSeek(Object.assign({}, wrapper.song), constants.SEEK_STEP_SIZE)
 			else if (wrapper.pendingSongChange)
 				return constants.WRAPPER_RESPONSE_SUCCESS
@@ -176,23 +185,11 @@ export default class PlaybackControlDial extends Dial {
 	}
 
 	async invokeHoldWrapperAction(context: string) {
-		if (!wrapper.song)
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-
-		if (wrapper.playing)
-			return wrapper.pausePlayback()
-		else
-			return constants.WRAPPER_RESPONSE_SUCCESS
+		return constants.WRAPPER_RESPONSE_SUCCESS
 	}
 
 	async invokeHoldReleaseWrapperAction(context: string) {
-		if (!wrapper.song)
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-
-		if (!wrapper.playing)
-			return wrapper.resumePlayback()
-		else
-			return constants.WRAPPER_RESPONSE_SUCCESS
+		return constants.WRAPPER_RESPONSE_SUCCESS
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {

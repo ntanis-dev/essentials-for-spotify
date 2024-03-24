@@ -155,13 +155,16 @@ export default class PlaylistsDial extends Dial {
 			if (this.#currentPlaylist[context] >= this.#playlists.items.length) {
 				this.#currentPlaylist[context] = 0
 
+				const lastPage = this.#playlistsPage[context]
+
 				if (this.#playlistsPage[context] < Math.ceil(this.#playlists.total / constants.WRAPPER_PLAYLISTS_PER_PAGE))
 					this.#playlistsPage[context]++
 				else
 					this.#playlistsPage[context] = 1
 
-				if (!(await this.#refreshPage(context)))
-					return constants.WRAPPER_RESPONSE_API_ERROR
+				if (lastPage !== this.#playlistsPage[context])
+					if (!(await this.#refreshPage(context)))
+						return constants.WRAPPER_RESPONSE_API_ERROR
 			}
 
 			this.#refreshCount(context)
@@ -174,6 +177,8 @@ export default class PlaylistsDial extends Dial {
 			this.#currentPlaylist[context]--
 
 			if (this.#currentPlaylist[context] < 0) {
+				const lastPage = this.#playlistsPage[context]
+
 				if (this.#playlistsPage[context] > 1) {
 					this.#playlistsPage[context]--
 					this.#currentPlaylist[context] = constants.WRAPPER_PLAYLISTS_PER_PAGE - 1
@@ -182,8 +187,9 @@ export default class PlaylistsDial extends Dial {
 					this.#currentPlaylist[context] = this.#playlists.total - ((this.#playlistsPage[context] - 1) * constants.WRAPPER_PLAYLISTS_PER_PAGE) - 1
 				}
 
-				if (!(await this.#refreshPage(context)))
-					return constants.WRAPPER_RESPONSE_API_ERROR
+				if (lastPage !== this.#playlistsPage[context])
+					if (!(await this.#refreshPage(context)))
+						return constants.WRAPPER_RESPONSE_API_ERROR
 			}
 
 			this.#refreshCount(context)
@@ -192,7 +198,7 @@ export default class PlaylistsDial extends Dial {
 			await this.#refreshLayout(true, context)
 			return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
 		} else if (type === Dial.TYPES.DOWN)
-			return constants.WRAPPER_RESPONSE_DO_NOTHING
+			return constants.WRAPPER_RESPONSE_SUCCESS
 		else if (type === Dial.TYPES.UP) {
 			if (this.#playlists.total === 0)
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE

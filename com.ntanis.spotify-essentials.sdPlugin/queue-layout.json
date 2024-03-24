@@ -1,5 +1,5 @@
 {
-	"id": "com.ntanis.spotify-essentials.layouts.queue-control",
+	"id": "com.ntanis.spotify-essentials.layouts.queue",
 
 	"items": [
 		{
@@ -21,7 +21,7 @@
 			"type": "pixmap",
 			"rect": [16, 40, 48, 48],
 			"opacity": 0.3,
-			"value": "images/icons/queue-control.png"
+			"value": "images/icons/queue.png"
 		},
 
 		{

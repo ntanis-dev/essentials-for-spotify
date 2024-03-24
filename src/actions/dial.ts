@@ -260,6 +260,10 @@ export class Dial extends SingletonAction {
 			await StreamDeck.client.setFeedback(context, feedback).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
+	isHolding(context: string) {
+		return this.#holding[context]
+	}
+
 	updateMarquee(context: string, key: string, value: string, countable: string) {
 		const marqueeIdentifier = `${context}-${key}`
 

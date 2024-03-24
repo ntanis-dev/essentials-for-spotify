@@ -198,7 +198,7 @@ export default class SongInformationButton extends Button {
 	}
 
 	async invokeWrapperAction(context: string) {
-		return constants.WRAPPER_RESPONSE_DO_NOTHING
+		return constants.WRAPPER_RESPONSE_SUCCESS
 	}
 
 	onStateSettled(context: string) {

@@ -347,6 +347,35 @@
 		},
 		
 		{
+			"Name": "Playback Control",
+			"UUID": "com.ntanis.spotify-essentials.playback-control-dial",
+			"Icon": "images/actions/playback-control",
+			"Tooltip": "Controls the playback of the current song.",
+
+			"Controllers": [
+				"Encoder"
+			],
+
+			"States": [
+				{
+					"Image": "images/states/playback-control",
+					"TitleAlignment": "left"
+				}
+			],
+
+			"Encoder": {
+				"layout": "playback-control-layout.json",
+				"StackColor": "#FFF",
+
+				"TriggerDescription": {
+					"Rotate": "Previous / Next",
+					"Push": "Rotate Seek",
+					"Touch": "Play / Pause"
+				}
+			}
+		},
+		
+		{
 			"Name": "Volume Control",
 			"UUID": "com.ntanis.spotify-essentials.volume-control-dial",
 			"Icon": "images/actions/volume-control",
@@ -376,38 +405,9 @@
 		},
 		
 		{
-			"Name": "Playback Control",
-			"UUID": "com.ntanis.spotify-essentials.playback-control-dial",
-			"Icon": "images/actions/playback-control",
-			"Tooltip": "Controls the playback of the current song.",
-
-			"Controllers": [
-				"Encoder"
-			],
-
-			"States": [
-				{
-					"Image": "images/states/playback-control",
-					"TitleAlignment": "left"
-				}
-			],
-
-			"Encoder": {
-				"layout": "playback-control-layout.json",
-				"StackColor": "#FFF",
-
-				"TriggerDescription": {
-					"Rotate": "Seek",
-					"Push": "Hold Pause",
-					"Touch": "Play / Pause"
-				}
-			}
-		},
-		
-		{
-			"Name": "Queue Control",
-			"UUID": "com.ntanis.spotify-essentials.queue-control-dial",
-			"Icon": "images/actions/queue-control",
+			"Name": "Queue",
+			"UUID": "com.ntanis.spotify-essentials.queue-dial",
+			"Icon": "images/actions/queue",
 			"Tooltip": "Controls the playback queue.",
 
 			"Controllers": [
@@ -416,13 +416,13 @@
 
 			"States": [
 				{
-					"Image": "images/states/queue-control",
+					"Image": "images/states/queue",
 					"TitleAlignment": "left"
 				}
 			],
 
 			"Encoder": {
-				"layout": "queue-control-layout.json",
+				"layout": "queue-layout.json",
 				"StackColor": "#FFF",
 
 				"TriggerDescription": {
