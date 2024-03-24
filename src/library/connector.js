@@ -13,6 +13,7 @@ class Connector extends EventEmitter {
 	#port = null
 	#server = null
 	#setup = false
+	#offloaded = false
 
 	#setSetup(state) {
 		this.#setup = state
@@ -40,26 +41,6 @@ class Connector extends EventEmitter {
 		this.#accessToken = (await response.json()).access_token
 
 		logger.info('The access token has been refreshed.')
-	}
-
-	#invalidateSetup() {
-		if (!this.#setup)
-			return
-
-		this.#setSetup(false)
-		this.#accessToken = null
-		this.#refreshToken = null
-
-		this.#server = this.#app.listen(this.#port, () => logger.info(`Connector setup server listening on port "${this.#port}".`))
-
-		StreamDeck.client.setGlobalSettings({
-			clientId: null,
-			clientSecret: null,
-			refreshToken: null,
-			accessToken: null
-		}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
-
-		logger.warn('The connector setup has been invalidated.')
 	}
 
 	async callSpotifyApi(path, options = {}, allowResponses = []) {
@@ -102,30 +83,31 @@ class Connector extends EventEmitter {
 			return response.text()
 	}
 
-	fakeOff() {
-		this.#setup = false
-		this.emit('setupStateChanged', false)
-	}
-
-	fakeOn() {
-		this.#setup = true
-		this.emit('setupStateChanged', true)
-	}
-
-	startSetup(clientId = null, clientSecret = null, refreshToken = null, port = constants.CONNECTOR_DEFAULT_PORT) {
+	startSetup(clientId = null, clientSecret = null, refreshToken = null) {
 		logger.info('Starting connector setup.')
 
 		this.#clientId = clientId
 		this.#clientSecret = clientSecret
+		this.#offloaded = false
 		this.#refreshToken = refreshToken
-		this.#port = port
+		this.#port = constants.CONNECTOR_DEFAULT_PORT
 
 		this.#app = express()
 
 		this.#app.get('/', async (req, res) => {
+			if (req.query.success) {
+				res.send(constants.SETUP_HTML.replace(/{{PORT}}/g, this.#port))
+				this.#server.close()
+				this.#server = null
+				return
+			} else if (req.query.error) {
+				res.send(constants.SETUP_HTML.replace(/{{PORT}}/g, this.#port))
+				return
+			}
+
 			const code = req.query.code
 
-			if ((!this.#clientId) || (!this.#clientSecret)) {
+			if ((!this.#clientId) || (!this.#clientSecret) || (this.#offloaded && (!code) && ((!req.query.clientId) || (!req.query.clientSecret)))) {
 				if (req.query.clientId && req.query.clientSecret) {
 					this.#clientId = req.query.clientId
 					this.#clientSecret = req.query.clientSecret
@@ -133,20 +115,11 @@ class Connector extends EventEmitter {
 					return
 				}
 
-				res.send(`
-					<form action="/" method="GET">
-						<label for="clientId">Client ID:</label>
-						<input type="text" id="clientId" name="clientId" /><br />
-						<label for="clientSecret">Client Secret:</label>
-						<input type="text" id="clientSecret" name="clientSecret" /><br />
-						<input type="submit" value="Submit" />
-					</form>
-				`)
+				res.send(constants.SETUP_HTML.replace(/{{PORT}}/g, this.#port))
 
 				return
-			}
-
-			if (!code) {
+			} else if (!code) {
+				this.#offloaded = true
 				res.redirect(`https://accounts.spotify.com/authorize?response_type=code&client_id=${this.#clientId}&scope=${encodeURIComponent(constants.CONNECTOR_DEFAULT_SCOPES.join(' '))}&redirect_uri=${encodeURIComponent(`http://localhost:${this.#port}`)}`);
 				return
 			}
@@ -156,7 +129,7 @@ class Connector extends EventEmitter {
 					method: 'POST',
 
 					body: new URLSearchParams({
-						code: code,
+						code,
 						redirect_uri: `http://localhost:${this.#port}`,
 						grant_type: 'authorization_code'
 					}),
@@ -176,6 +149,7 @@ class Connector extends EventEmitter {
 				this.#accessToken = data.access_token
 				this.#setSetup(true)
 
+
 				StreamDeck.client.setGlobalSettings({
 					clientId: this.#clientId,
 					clientSecret: this.#clientSecret,
@@ -183,36 +157,41 @@ class Connector extends EventEmitter {
 					accessToken: this.#accessToken
 				}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
-				res.send('OK! You may close this page now!')
-
-				this.#server.close()
-				this.#server = null
-
+				res.redirect('/?success=1')
 				logger.info('The connector setup has been completed.')
 			} catch (e) {
 				logger.error(`An error occured while setting up the connector: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
-
-				res.send(`
-					Something went wrong! Please make sure you have entered the correct client ID and secret in the setup settings and try again.
-
-					<form action="/" method="GET">
-						<label for="clientId">Client ID:</label>
-						<input type="text" id="clientId" name="clientId" /><br />
-						<label for="clientSecret">Client Secret:</label>
-						<input type="text" id="clientSecret" name="clientSecret" /><br />
-						<input type="submit" value="Submit" />
-					</form>
-				`)
+				res.redirect('/?error=1')
 			}
 		})
 
 		if (this.#refreshToken)
 			this.#refreshAccessToken().then(() => this.#setSetup(true)).catch(e => {
 				logger.error(`An error occured while setting up the connector: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
-				this.#invalidateSetup()
+				this.invalidateSetup()
 			})
 		else
-			this.#server = this.#app.listen(port, () => logger.info(`Connector setup server listening on port "${port}".`))
+			this.#server = this.#app.listen(this.#port, () => logger.info(`Connector setup server listening on port "${this.#port}".`))
+	}
+
+	invalidateSetup() {
+		if (!this.#setup)
+			return
+
+		this.#setSetup(false)
+		this.#accessToken = null
+		this.#refreshToken = null
+
+		this.#server = this.#app.listen(this.#port, () => logger.info(`Connector setup server listening on port "${this.#port}".`))
+
+		StreamDeck.client.setGlobalSettings({
+			clientId: null,
+			clientSecret: null,
+			refreshToken: null,
+			accessToken: null
+		}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+
+		logger.warn('The connector setup has been invalidated.')
 	}
 
 	get set() {

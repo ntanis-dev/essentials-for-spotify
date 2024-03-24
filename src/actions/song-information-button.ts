@@ -15,6 +15,7 @@ import wrapper from '../library/wrapper.js'
 @action({ UUID: 'com.ntanis.spotify-essentials.song-information-button' })
 export default class SongInformationButton extends Button {
 	static readonly STATABLE = true
+	static readonly ACTIONLESS = true
 
 	#marquees: any = {}
 
@@ -182,10 +183,6 @@ export default class SongInformationButton extends Button {
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
 		super.onWillDisappear(ev)
 		this.#pauseMarquee(ev.action.id)
-	}
-
-	async invokeWrapperAction(context: string) {
-		return constants.WRAPPER_RESPONSE_SUCCESS
 	}
 
 	onStateSettled(context: string) {

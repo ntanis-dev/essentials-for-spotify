@@ -7,12 +7,12 @@ import {
 	Button
 } from './button.js'
 
-import constants from '../library/constants.js'
 import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.song-explicit-button' })
 export default class SongExplicitButton extends Button {
 	static readonly STATABLE = true
+	static readonly ACTIONLESS = true
 
 	constructor() {
 		super()
@@ -30,10 +30,6 @@ export default class SongExplicitButton extends Button {
 				this.setUnpressable(context, false)
 			}
 		}
-	}
-
-	async invokeWrapperAction(context: string) {
-		return constants.WRAPPER_RESPONSE_SUCCESS
 	}
 
 	onStateSettled(context: string) {

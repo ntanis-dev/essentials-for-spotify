@@ -14,9 +14,10 @@ import connector from './../library/connector.js'
 import logger from './../library/logger.js'
 
 export class Button extends Action {
+	static ACTIONLESS = false
 	static HOLDABLE = false
-	static STATABLE = false
 	static SETUPLESS = false
+	static STATABLE = false
 
 	#pressed: any = {}
 	#holding: any = {}
@@ -55,7 +56,7 @@ export class Button extends Action {
 	}
 
 	async onKeyDown(ev: KeyDownEvent<any>) {
-		if (this.#busy[ev.action.id] || this.#unpressable[ev.action.id])
+		if (this.#busy[ev.action.id] || this.#unpressable[ev.action.id] || (this.constructor as typeof Button).ACTIONLESS)
 			return
 
 		this.#busy[ev.action.id] = true

@@ -485,6 +485,7 @@
 			}
 		}
 	],
+
 	"Category": "Spotify Essentials",
 	"CategoryIcon": "images/plugin/category",
 	"CodePath": "bin/plugin.js",
