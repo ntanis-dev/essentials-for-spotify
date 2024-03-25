@@ -1,9 +1,4 @@
-# Node.js
+*.sdPlugin/bin/
+*.sdPlugin/logs/
 node_modules/
-
-# Stream Deck files
-*.sdPlugin/bin
-*.sdPlugin/logs
-
-# VSCode
 .vscode/
