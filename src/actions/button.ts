@@ -146,10 +146,70 @@ export class Button extends Action {
 		await StreamDeck.client.setState(context, state).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck state of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
+	async marqueeTitle(id: string, data: Array<any>, context: string) {
+		const isInitial = !this.marquees[context]
+
+		const marqueeData = this.marquees[context] || {
+			timeout: null,
+			id,
+			data,
+			entries: {}
+		}
+
+		if (!this.marquees[context])
+			for (let i = 0; i < data.length; i++) {
+				marqueeData.entries[data[i].key] = {
+					original: data[i].value,
+					render: `${data[i].value}${' '.repeat(constants.BUTTON_MARQUEE_SPACING * constants.BUTTON_MARQUEE_SPACING_MULTIPLIER)}`,
+					frame: null,
+					totalFrames: null
+				}
+			}
+
+		if (this.marquees[context] && this.marquees[context].id !== id)
+			return
+
+		this.marquees[context] = marqueeData
+
+		let finalText = ''
+
+		for (let i = 0; i < data.length; i++) {
+			if (marqueeData.entries[data[i].key].frame === null)
+				marqueeData.entries[data[i].key].frame = (marqueeData.entries[data[i].key].original.length / 2) + constants.BUTTON_MARQUEE_SPACING
+
+			if (marqueeData.entries[data[i].key].totalFrames === null)
+				marqueeData.entries[data[i].key].totalFrames = marqueeData.entries[data[i].key].render.length
+
+			finalText += `${this.getTextSpacingWidth(marqueeData.entries[data[i].key].original) > constants.BUTTON_MARQUEE_SPACING ? `${marqueeData.entries[data[i].key].render.slice(marqueeData.entries[data[i].key].frame)}${marqueeData.entries[data[i].key].render.slice(0, marqueeData.entries[data[i].key].frame)}` : marqueeData.entries[data[i].key].original}\n`
+		}
+
+		this.setTitle(context, finalText.slice(0, -1))
+
+		if ((!this.marquees[context]) || this.marquees[context].id !== id)
+			return
+
+		for (let i = 0; i < data.length; i++) {
+			marqueeData.entries[data[i].key].frame++
+
+			if (marqueeData.entries[data[i].key].frame >= marqueeData.entries[data[i].key].totalFrames)
+				marqueeData.entries[data[i].key].frame = 0
+		}
+
+		marqueeData.timeout = setTimeout(() => this.marqueeTitle(id, marqueeData.data, context), isInitial ? constants.BUTTON_MARQUEE_INTERVAL_INITIAL : constants.BUTTON_MARQUEE_INTERVAL)
+	}
+
+	updateMarqueeEntry(context: string, key: string, value: string) {
+		if (this.marquees[context] && this.marquees[context].entries[key]) {
+			this.marquees[context].entries[key].original = value
+			this.marquees[context].entries[key].render = `${value}${' '.repeat(constants.BUTTON_MARQUEE_SPACING * constants.BUTTON_MARQUEE_SPACING_MULTIPLIER)}`
+			this.marquees[context].entries[key].totalFrames = this.marquees[context].entries[key].render.length
+		}
+	}
+
 	resumeMarquee(context: string) {
 		if (this.marquees[context]) {
 			clearTimeout(this.marquees[context].timeout)
-			this.marquees[context].timeout = setTimeout(() => this.marqueeTitle(this.marquees[context].id, this.marquees[context].title.original, this.marquees[context].artists.original, this.marquees[context].time.original, context), constants.SONG_MARQUEE_INTERVAL)
+			this.marquees[context].timeout = setTimeout(() => this.marqueeTitle(this.marquees[context].id, this.marquees[context].data, context), constants.BUTTON_MARQUEE_INTERVAL)
 		}
 	}
 
@@ -165,10 +225,6 @@ export class Button extends Action {
 			clearTimeout(this.marquees[context].timeout)
 			delete this.marquees[context]
 		}
-	}
-
-	marqueeTitle(...args: any[]) {
-		throw new Error('marqueeTitle() must be implemented in the child class.')
 	}
 
 	getTextSpacingWidth(text: string) {

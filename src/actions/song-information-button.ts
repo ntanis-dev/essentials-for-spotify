@@ -8,7 +8,6 @@ import {
 	Button
 } from './button.js'
 
-import constants from '../library/constants.js'
 import images from '../library/images.js'
 import wrapper from '../library/wrapper.js'
 
@@ -24,93 +23,10 @@ export default class SongInformationButton extends Button {
 		wrapper.on('songTimeChanged', this.#onSongTimeChanged.bind(this))
 	}
 
-	async marqueeTitle(id: string, title: string, artists: string, time: string, context: string) {
-		const isInitial = !this.marquees[context]
-
-		const marqueeData = this.marquees[context] || {
-			timeout: null,
-
-			id,
-
-			title: {
-				original: title,
-				render: `${title}${' '.repeat(constants.SONG_MARQUEE_SPACING * constants.SONG_MARQUEE_SPACING_MULTIPLIER)}`,
-				frame: null,
-				totalFrames: null
-			},
-
-			artists: {
-				original: artists,
-				render: `${artists}${' '.repeat(constants.SONG_MARQUEE_SPACING * constants.SONG_MARQUEE_SPACING_MULTIPLIER)}`,
-				frame: null,
-				totalFrames: null
-			},
-
-			time: {
-				fake: `${'8'.repeat(time.length - 5)}: : /`,
-				original: time,
-				render: `${time}${' '.repeat(constants.SONG_MARQUEE_SPACING * constants.SONG_MARQUEE_SPACING_MULTIPLIER)}`,
-				frame: null,
-				totalFrames: null
-			}
-		}
-
-		if (this.marquees[context] && this.marquees[context].id !== id)
-			return
-
-		this.marquees[context] = marqueeData
-
-		if (marqueeData.title.frame === null)
-			marqueeData.title.frame = (marqueeData.title.original.length / 2) + constants.SONG_MARQUEE_SPACING
-
-		if (marqueeData.artists.frame === null)
-			marqueeData.artists.frame = (marqueeData.artists.original.length / 2) + constants.SONG_MARQUEE_SPACING
-
-		if (marqueeData.time.frame === null)
-			marqueeData.time.frame = (marqueeData.time.original.length / 2) + constants.SONG_MARQUEE_SPACING
-		
-		if (marqueeData.title.totalFrames === null)
-			marqueeData.title.totalFrames = marqueeData.title.render.length
-
-		if (marqueeData.artists.totalFrames === null)
-			marqueeData.artists.totalFrames = marqueeData.artists.render.length
-
-		if (marqueeData.time.totalFrames === null)
-			marqueeData.time.totalFrames = marqueeData.time.render.length
-
-		this.setTitle(context, `${this.getTextSpacingWidth(marqueeData.title.original) > constants.SONG_MARQUEE_SPACING ? `${marqueeData.title.render.slice(marqueeData.title.frame)}${marqueeData.title.render.slice(0, marqueeData.title.frame)}` : marqueeData.title.original}\n${this.getTextSpacingWidth(marqueeData.artists.original) > constants.SONG_MARQUEE_SPACING ? `${marqueeData.artists.render.slice(marqueeData.artists.frame)}${marqueeData.artists.render.slice(0, marqueeData.artists.frame)}` : marqueeData.artists.original}\n${this.getTextSpacingWidth(marqueeData.time.fake) > constants.SONG_MARQUEE_SPACING ? `${marqueeData.time.render.slice(marqueeData.time.frame)}${marqueeData.time.render.slice(0, marqueeData.time.frame)}` : marqueeData.time.original}`)
-
-		if ((!this.marquees[context]) || this.marquees[context].id !== id)
-			return
-
-		marqueeData.title.frame++
-		marqueeData.artists.frame++
-		marqueeData.time.frame++
-
-		if (marqueeData.title.frame >= marqueeData.title.totalFrames)
-			marqueeData.title.frame = 0
-
-		if (marqueeData.artists.frame >= marqueeData.artists.totalFrames)
-			marqueeData.artists.frame = 0
-
-		if (marqueeData.time.frame >= marqueeData.time.totalFrames)
-			marqueeData.time.frame = 0
-
-		marqueeData.timeout = setTimeout(() => this.marqueeTitle(id, marqueeData.title.original, marqueeData.artists.original, marqueeData.time.original, context), isInitial ? constants.SONG_MARQUEE_INTERVAL_INITIAL : constants.SONG_MARQUEE_INTERVAL)
-	}
-
-	#updateMarqueeTime(context: string, time: string) {
-		if (this.marquees[context]) {
-			this.marquees[context].time.original = time
-			this.marquees[context].time.render = `${time}${' '.repeat(constants.SONG_MARQUEE_SPACING * constants.SONG_MARQUEE_SPACING_MULTIPLIER)}`
-			this.marquees[context].time.totalFrames = this.marquees[context].time.render.length
-		}
-	}
-
 	#onSongTimeChanged(progress: number, duration: number, pending: boolean = false, contexts = this.contexts) {
 		for (const context of contexts)
 			if (this.marquees[context])
-				this.#updateMarqueeTime(context, this.beautifyTime(progress, duration))
+				this.updateMarqueeEntry(context, 'time', this.beautifyTime(progress, duration))
 	}
 
 	#onSongChanged(song: any, pending: boolean = false, contexts = this.contexts) {
@@ -130,7 +46,22 @@ export default class SongInformationButton extends Button {
 					const image = await images.getForSong(song)
 
 					if ((!this.marquees[context]) || this.marquees[context].id !== song.item.id)
-						this.marqueeTitle(song.item.id, song.item.name, song.item.artists.map((artist: any) => artist.name).join(', '), this.beautifyTime(song.progress, song.item.duration_ms), context)
+						this.marqueeTitle(song.item.id, [
+							{
+								key: 'title',
+								value: song.item.name
+							},
+
+							{
+								key: 'artists',
+								value: song.item.artists.map((artist: any) => artist.name).join(', ')
+							},
+
+							{
+								key: 'time',
+								value: this.beautifyTime(song.progress, song.item.duration_ms)
+							}
+						], context)
 					else
 						this.resumeMarquee(context)
 
