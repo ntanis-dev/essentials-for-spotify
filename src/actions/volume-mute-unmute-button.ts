@@ -22,7 +22,12 @@ export default class VolumeMuteUnmuteButton extends Button {
 
 	#onMutedStateChanged(state: boolean, contexts = this.contexts) {
 		for (const context of contexts)
-			this.setState(context, state ? 1 : 0)
+			if (wrapper.volumePercent === null)
+				this.setImage(context, 'images/states/volume-mute-unknown')
+			else {
+				this.setImage(context)
+				this.setState(context, state ? 1 : 0)
+			}
 	}
 
 	async invokeWrapperAction(context: string) {

@@ -21,8 +21,12 @@ export default class VolumeControlDial extends Dial {
 	}
 
 	#updateJointFeedback(contexts = this.contexts) {
-		if (wrapper.volumePercent === null)
+		if (wrapper.volumePercent === null) {
+			for (const context of contexts)
+				this.resetFeedbackLayout(context)
+
 			return
+		}
 
 		for (const context of contexts) {
 			this.setIcon(context, wrapper.muted ? 'images/icons/volume-control-muted.png' : 'images/icons/volume-control.png')

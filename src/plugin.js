@@ -1,6 +1,5 @@
 // TODO
 
-// Device hot-swapping handling
 // check for premium
 // Settings
 

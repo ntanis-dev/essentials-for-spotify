@@ -247,7 +247,7 @@ class Wrapper extends EventEmitter {
 
 			this.#lastSong = null
 
-			if (hadSong) {
+			if (hadSong || this.#lastCurrentlyPlayingType !== 'track') {
 				this.emit('songChanged', null, pending)
 				this.emit('songLikedStateChanged', false, pending)
 				this.emit('songTimeChanged', 0, 0, pending)
