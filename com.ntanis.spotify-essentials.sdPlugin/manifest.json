@@ -527,6 +527,7 @@
 			"Platform": "mac",
 			"MinimumVersion": "10.11"
 		},
+
 		{
 			"Platform": "windows",
 			"MinimumVersion": "10"
@@ -534,8 +535,7 @@
 	],
 
 	"Nodejs": {
-		"Version": "20",
-		"Debug": "disabled"
+		"Version": "20"
 	},
 
 	"UUID": "com.ntanis.spotify-essentials"
