@@ -20,6 +20,7 @@ class Wrapper extends EventEmitter {
 	#lastPlaybackContext = null
 	#lastPlaybackStateUpdate = null
 	#lastRepeatState = null
+	#lastCurrentlyPlayingType = null
 	#songChangeForceUpdatePlaybackStateTimeout = null
 	#lastDevices = []
 	#lastDisallowFlags = []
@@ -157,6 +158,7 @@ class Wrapper extends EventEmitter {
 
 			this.#setDevices(response?.device.id || null, (await connector.callSpotifyApi('me/player/devices')).devices)
 			this.#setDisallowFlags(response?.actions?.disallows ? Object.keys(response.actions.disallows).filter(flag => response.actions.disallows[flag]) : [])
+			this.#setCurrentlyPlayingType(response?.currently_playing_type || null)
 		} catch (e) {
 			logger.error(`An error occured while updating playback state: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
 		} finally {
@@ -174,7 +176,6 @@ class Wrapper extends EventEmitter {
 
 		this.#updatePlaybackStateStatus = 'skip'
 		this.#lastPlaying = playing
-
 		this.emit('playbackStateChanged', playing)
 	}
 
@@ -294,7 +295,6 @@ class Wrapper extends EventEmitter {
 
 		this.#updatePlaybackStateStatus = 'skip'
 		this.#lastDevices = devices
-
 		this.emit('devicesChanged', devices)
 	}
 
@@ -304,8 +304,16 @@ class Wrapper extends EventEmitter {
 
 		this.#updatePlaybackStateStatus = 'skip'
 		this.#lastDisallowFlags = disallowFlags
-
 		this.emit('disallowFlagsChanged', disallowFlags)
+	}
+
+	#setCurrentlyPlayingType(type) {
+		if (this.#lastCurrentlyPlayingType === type)
+			return
+
+		this.#updatePlaybackStateStatus = 'skip'
+		this.#lastCurrentlyPlayingType = type
+		this.emit('currentlyPlayingTypeChanged', type)
 	}
 
 	#onSongChangeExpected(byTime = false) {
@@ -362,9 +370,10 @@ class Wrapper extends EventEmitter {
 				method: 'POST'
 			}, deviceId)
 
-			this.#onSongChangeExpected()
+			if (this.#lastCurrentlyPlayingType === 'track')
+				this.#onSongChangeExpected()
 
-			return constants.WRAPPER_RESPONSE_SUCCESS
+			return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
 		})
 	}
 
@@ -377,9 +386,10 @@ class Wrapper extends EventEmitter {
 				method: 'POST'
 			}, deviceId)
 
-			this.#onSongChangeExpected()
+			if (this.#lastCurrentlyPlayingType === 'track')
+				this.#onSongChangeExpected()
 
-			return constants.WRAPPER_RESPONSE_SUCCESS
+			return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
 		})
 	}
 

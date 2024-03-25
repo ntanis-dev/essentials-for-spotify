@@ -20,7 +20,7 @@ export default class ForwardSeekButton extends Button {
 			else
 				return constants.WRAPPER_RESPONSE_SUCCESS
 		else if (wrapper.pendingSongChange)
-			return constants.WRAPPER_RESPONSE_SUCCESS
+			return constants.WRAPPER_RESPONSE_BUSY
 		else
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}

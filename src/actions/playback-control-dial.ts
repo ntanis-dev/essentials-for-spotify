@@ -24,7 +24,7 @@ export default class PlaybackControlDial extends Dial {
 	}
 
 	#updateJointFeedback(contexts = this.contexts) {
-		if ((!wrapper.device) || (!wrapper.song))
+		if (!wrapper.device)
 			return
 
 		for (const context of contexts) {
@@ -145,24 +145,21 @@ export default class PlaybackControlDial extends Dial {
 
 	async invokeWrapperAction(context: string, type: symbol) {
 		if (type === Dial.TYPES.ROTATE_CLOCKWISE) {
-			if (wrapper.song) {
-				if (!this.isHolding(context))
-					return wrapper.nextSong()
-				else if (wrapper.song.progress + constants.SEEK_STEP_SIZE < wrapper.song.item.duration_ms)
-					return wrapper.forwardSeek(Object.assign({}, wrapper.song), constants.SEEK_STEP_SIZE)
-				else
-					return constants.WRAPPER_RESPONSE_SUCCESS
-			} else if (wrapper.pendingSongChange)
-				return constants.WRAPPER_RESPONSE_SUCCESS
+			if ((!wrapper.song) && wrapper.pendingSongChange)
+				return constants.WRAPPER_RESPONSE_BUSY
+			else if (!this.isHolding(context))
+				return wrapper.nextSong()
+			else if (wrapper.song && wrapper.song.progress + constants.SEEK_STEP_SIZE < wrapper.song.item.duration_ms)
+				return wrapper.forwardSeek(Object.assign({}, wrapper.song), constants.SEEK_STEP_SIZE)
 			else
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 		} else if (type === Dial.TYPES.ROTATE_COUNTERCLOCKWISE) {
-			if (wrapper.song && (!this.isHolding(context)))
+			if ((!wrapper.song) && wrapper.pendingSongChange)
+				return constants.WRAPPER_RESPONSE_BUSY
+			else if (!this.isHolding(context))
 				return wrapper.previousSong()
 			else if (wrapper.song)
 				return wrapper.backwardSeek(Object.assign({}, wrapper.song), constants.SEEK_STEP_SIZE)
-			else if (wrapper.pendingSongChange)
-				return constants.WRAPPER_RESPONSE_SUCCESS
 			else
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 		} else if (type === Dial.TYPES.TAP)
