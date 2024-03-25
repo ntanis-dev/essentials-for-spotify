@@ -6,6 +6,7 @@ import {
 	Button
 } from './button.js'
 
+import constants from '../library/constants.js'
 import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.shuffle-button' })
@@ -28,7 +29,9 @@ export default class ShuffleButton extends Button {
 	}
 
 	async invokeWrapperAction(context: string) {
-		if (wrapper.shuffleState)
+		if (!wrapper.song)
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+		else if (wrapper.shuffleState)
 			return wrapper.turnOffShuffle()
 		else
 			return wrapper.turnOnShuffle()

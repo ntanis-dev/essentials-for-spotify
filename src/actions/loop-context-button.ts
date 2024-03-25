@@ -6,6 +6,7 @@ import {
 	Button
 } from './button.js'
 
+import constants from '../library/constants.js'
 import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.loop-context-button' })
@@ -28,7 +29,9 @@ export default class LoopContextButton extends Button {
 	}
 
 	async invokeWrapperAction(context: string) {
-		if (wrapper.repeatState === 'context')
+		if (!wrapper.song)
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+		else if (wrapper.repeatState === 'context')
 			return wrapper.turnOffRepeat()
 		else
 			return wrapper.turnOnContextRepeat()

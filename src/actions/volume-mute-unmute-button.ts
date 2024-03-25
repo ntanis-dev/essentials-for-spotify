@@ -28,8 +28,7 @@ export default class VolumeMuteUnmuteButton extends Button {
 	async invokeWrapperAction(context: string) {
 		if (wrapper.volumePercent === null)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-
-		if (wrapper.muted)
+		else if (wrapper.muted)
 			return wrapper.unmuteVolume()
 		else
 			return wrapper.muteVolume()
