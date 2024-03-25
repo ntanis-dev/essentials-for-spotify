@@ -8,9 +8,8 @@ import logger from './logger'
 
 class Wrapper extends EventEmitter {
 	#pendingWrappedCall = false
-	#lastDevices = null
-	#lastMuted = null
 	#lastPlaying = null
+	#lastMuted = null
 	#lastShuffleState = null
 	#lastPendingSong = null
 	#lastVolumePercent = null
@@ -20,8 +19,10 @@ class Wrapper extends EventEmitter {
 	#lastSongTimeUpdateAt = null
 	#lastPlaybackContext = null
 	#lastPlaybackStateUpdate = null
-	#songChangeForceUpdatePlaybackStateTimeout = null
 	#lastRepeatState = null
+	#songChangeForceUpdatePlaybackStateTimeout = null
+	#lastDevices = []
+	#lastDisallowFlags = []
 	#updatePlaybackStateStatus = 'idle'
 
 	constructor() {
@@ -38,6 +39,7 @@ class Wrapper extends EventEmitter {
 				this.#setPlaybackContext(null)
 				this.#setSong(null)
 				this.#setDevices(null, [])
+				this.#setDisallowFlags([])
 			}
 		})
 
@@ -154,6 +156,7 @@ class Wrapper extends EventEmitter {
 			} : null)
 
 			this.#setDevices(response?.device.id || null, (await connector.callSpotifyApi('me/player/devices')).devices)
+			this.#setDisallowFlags(response?.actions?.disallows || [])
 		} catch (e) {
 			logger.error(`An error occured while updating playback state: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
 		} finally {
@@ -295,6 +298,16 @@ class Wrapper extends EventEmitter {
 		this.emit('devicesChanged', devices)
 	}
 
+	#setDisallowFlags(disallowFlags) {
+		if (this.#lastDisallowFlags && this.#lastDisallowFlags.length === disallowFlags.length && this.#lastDisallowFlags.every((flag, index) => flag === disallowFlags[index]))
+			return
+
+		this.#updatePlaybackStateStatus = 'skip'
+		this.#lastDisallowFlags = disallowFlags
+
+		this.emit('disallowFlagsChanged', disallowFlags)
+	}
+
 	#onSongChangeExpected(byTime = false) {
 		clearTimeout(this.#songChangeForceUpdatePlaybackStateTimeout)
 		this.#setSong(null, true)
@@ -308,6 +321,9 @@ class Wrapper extends EventEmitter {
 	}
 
 	async resumePlayback(deviceId = this.#lastDevice) {
+		if (this.#lastDisallowFlags.includes('resuming'))
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 		return this.#wrapCall(async () => {
 			await this.#deviceCall('me/player/play', {
 				method: 'PUT'
@@ -323,6 +339,9 @@ class Wrapper extends EventEmitter {
 	}
 
 	async pausePlayback(deviceId = this.#lastDevice) {
+		if (this.#lastDisallowFlags.includes('pausing') || this.#lastDisallowFlags.includes('interrupting_playback'))
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 		return this.#wrapCall(async () => {
 			await this.#deviceCall('me/player/pause', {
 				method: 'PUT'
@@ -335,6 +354,9 @@ class Wrapper extends EventEmitter {
 	}
 
 	async nextSong(deviceId = this.#lastDevice) {
+		if (this.#lastDisallowFlags.includes('skipping_next') || this.#lastDisallowFlags.includes('interrupting_playback'))
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 		return this.#wrapCall(async () => {
 			await this.#deviceCall('me/player/next', {
 				method: 'POST'
@@ -347,6 +369,9 @@ class Wrapper extends EventEmitter {
 	}
 
 	async previousSong(deviceId = this.#lastDevice) {
+		if (this.#lastDisallowFlags.includes('skipping_prev') || this.#lastDisallowFlags.includes('interrupting_playback'))
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 		return this.#wrapCall(async () => {
 			await this.#deviceCall('me/player/previous', {
 				method: 'POST'
@@ -359,6 +384,9 @@ class Wrapper extends EventEmitter {
 	}
 
 	async turnOnShuffle(deviceId = this.#lastDevice) {
+		if (this.#lastDisallowFlags.includes('toggling_shuffle'))
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 		return this.#wrapCall(async () => {
 			await this.#deviceCall('me/player/shuffle?state=true', {
 				method: 'PUT'
@@ -371,6 +399,9 @@ class Wrapper extends EventEmitter {
 	}
 
 	async turnOffShuffle(deviceId = this.#lastDevice) {
+		if (this.#lastDisallowFlags.includes('toggling_shuffle'))
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 		return this.#wrapCall(async () => {
 			await this.#deviceCall('me/player/shuffle?state=false', {
 				method: 'PUT'
@@ -383,6 +414,9 @@ class Wrapper extends EventEmitter {
 	}
 
 	async turnOnContextRepeat(deviceId = this.#lastDevice) {
+		if (this.#lastDisallowFlags.includes('toggling_repeat_context'))
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 		return this.#wrapCall(async () => {
 			await this.#deviceCall('me/player/repeat?state=context', {
 				method: 'PUT'
@@ -395,6 +429,9 @@ class Wrapper extends EventEmitter {
 	}
 
 	async turnOnTrackRepeat(deviceId = this.#lastDevice) {
+		if (this.#lastDisallowFlags.includes('toggling_repeat_track'))
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 		return this.#wrapCall(async () => {
 			await this.#deviceCall('me/player/repeat?state=track', {
 				method: 'PUT'
@@ -407,6 +444,9 @@ class Wrapper extends EventEmitter {
 	}
 
 	async turnOffRepeat(deviceId = this.#lastDevice) {
+		if ((this.#lastDisallowFlags.includes('toggling_repeat_context') && this.#lastRepeatState === 'context') || (this.#lastDisallowFlags.includes('toggling_repeat_track') && this.#lastRepeatState === 'track'))
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 		return this.#wrapCall(async () => {
 			await this.#deviceCall('me/player/repeat?state=off', {
 				method: 'PUT'
@@ -419,6 +459,9 @@ class Wrapper extends EventEmitter {
 	}
 
 	async setPlaybackVolume(volumePercent, deviceId = this.#lastDevice) {
+		if (this.#lastDisallowFlags.includes('interrupting_playback') && volumePercent <= 0)
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 		return this.#wrapCall(async () => {
 			volumePercent = Math.max(0, Math.min(100, volumePercent))
 
@@ -433,8 +476,11 @@ class Wrapper extends EventEmitter {
 	}
 
 	async muteVolume(deviceId = this.#lastDevice) {
-		this.#setMuted(this.#lastVolumePercent)
-		return this.setPlaybackVolume(0, deviceId)
+		const lastVolumePercent = this.#lastVolumePercent
+
+		return this.setPlaybackVolume(0, deviceId).then(() => {
+			this.#setMuted(lastVolumePercent)
+		})
 	}
 
 	async unmuteVolume(deviceId = this.#lastDevice) {
@@ -476,6 +522,9 @@ class Wrapper extends EventEmitter {
 	}
 
 	async forwardSeek(song, time, deviceId = this.#lastDevice) {
+		if (this.#lastDisallowFlags.includes('seeking') || this.#lastDisallowFlags.includes('interrupting_playback'))
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 		return this.#wrapCall(async () => {
 			await this.#deviceCall(`me/player/seek?position_ms=${song.progress + time}`, {
 				method: 'PUT'
@@ -493,6 +542,9 @@ class Wrapper extends EventEmitter {
 	}
 
 	async backwardSeek(song, time, deviceId = this.#lastDevice) {
+		if (this.#lastDisallowFlags.includes('seeking') || this.#lastDisallowFlags.includes('interrupting_playback'))
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 		return this.#wrapCall(async () => {
 			const newProgress = Math.max(0, song.progress - time)
 

@@ -198,6 +198,12 @@ export default class PlaybackControlDial extends Dial {
 		})
 	}
 
+	onStateLoss(context: string) {
+		super.onStateLoss(context)
+		this.clearMarquee(context, 'title')
+		this.clearMarquee(context, 'time')
+	}
+
 	updateFeedback(context: string): void {
 		super.updateFeedback(context)
 		this.#onSongChanged(wrapper.song, false, [context])

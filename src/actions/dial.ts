@@ -17,6 +17,7 @@ import logger from './../library/logger.js'
 
 export class Dial extends Action {
 	static HOLDABLE = false
+	static STATABLE = false
 
 	static TYPES = {
 		ROTATE_CLOCKWISE: Symbol('ROTATE_CLOCKWISE'),
@@ -44,12 +45,21 @@ export class Dial extends Action {
 		this.originalIcon = icon
 
 		connector.on('setupStateChanged', (state: boolean) => {
+			if ((this.constructor as typeof Dial).STATABLE)
+				if (!state)
+					for (const context of this.contexts)
+						this.onStateLoss(context)
+				else
+					for (const context of this.contexts)
+						this.onStateSettled(context)
+
 			if (!state)
 				for (const context of this.contexts)
 					this.resetFeedbackLayout(context)
 			else
 				for (const context of this.contexts)
 					this.updateFeedback(context)
+			
 		})
 
 		if (connector.set)
@@ -317,5 +327,7 @@ export class Dial extends Action {
 			this.#unpressable[context] = busy
 	}
 
+	onStateSettled(context: string) { }
+	onStateLoss(context: string) { }
 	updateFeedback(context: string) { }
 }

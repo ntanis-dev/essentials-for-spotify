@@ -13,7 +13,7 @@ class Connector extends EventEmitter {
 	#port = null
 	#server = null
 	#setup = false
-	#offloaded = false
+	#faked = false
 
 	#setSetup(state) {
 		this.#setup = state
@@ -88,7 +88,6 @@ class Connector extends EventEmitter {
 
 		this.#clientId = clientId
 		this.#clientSecret = clientSecret
-		this.#offloaded = false
 		this.#refreshToken = refreshToken
 		this.#port = constants.CONNECTOR_DEFAULT_PORT
 
@@ -195,6 +194,21 @@ class Connector extends EventEmitter {
 		}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 		logger.warn('The connector setup has been invalidated.')
+	}
+
+	fakeOff() {
+		this.#faked = true
+		this.#setup = false
+		this.emit('setupStateChanged', false)
+	}
+
+	fakeOn() {
+		if (!this.#faked)
+			return
+
+		this.#faked = false
+		this.#setup = true
+		this.emit('setupStateChanged', true)
 	}
 
 	get set() {

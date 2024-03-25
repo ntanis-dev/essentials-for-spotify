@@ -1,6 +1,7 @@
 
 import {
 	action,
+	WillAppearEvent,
 	WillDisappearEvent
 } from '@elgato/streamdeck'
 
@@ -52,6 +53,11 @@ export default class UserInformationButton extends Button {
 					value: `${user.followers.total} Follower${user.followers.total === 1 ? '' : 's'}`
 				}
 			], context)
+	}
+
+	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
+		await super.onWillAppear(ev)
+		this.#refreshUser(ev.action.id)
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {

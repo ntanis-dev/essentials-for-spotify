@@ -1,10 +1,8 @@
 // TODO
 
 // Device hot-swapping handling
-// Disable song-based buttons when something non-song is playing
-// actions.disallows flags // NOT_AVAILABLE
+// Disable song-based buttons when something non-song is playing // check for premium
 // Settings
-// On button / dial destroy: clear marquees completely
 
 import StreamDeck from '@elgato/streamdeck'
 import logger from './library/logger'

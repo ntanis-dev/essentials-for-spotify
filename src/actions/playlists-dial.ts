@@ -248,9 +248,7 @@ export class PlaylistsDial extends Dial {
 		}, feedback))
 	}
 
-	async fetchPlaylists(page: number): Promise<any> {
-		throw new Error('fetchPlaylists() must be implemented in the subclass.')
-	}
+	async fetchPlaylists(page: number): Promise<any> { }
 
 	updateFeedback(context: string): void {
 		super.updateFeedback(context)

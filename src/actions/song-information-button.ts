@@ -1,6 +1,7 @@
 
 import {
 	action,
+	WillAppearEvent,
 	WillDisappearEvent
 } from '@elgato/streamdeck'
 
@@ -79,6 +80,12 @@ export default class SongInformationButton extends Button {
 			})
 	}
 
+	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
+		await super.onWillAppear(ev)
+		this.#onSongChanged(wrapper.song, true, [ev.action.id])
+		this.#onSongTimeChanged(wrapper.song?.progress, wrapper.song?.item.duration_ms, wrapper.pendingSongChange, [ev.action.id])
+	}
+
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
 		super.onWillDisappear(ev)
 		this.pauseMarquee(ev.action.id)
@@ -87,7 +94,7 @@ export default class SongInformationButton extends Button {
 	onStateSettled(context: string) {
 		super.onStateSettled(context)
 		this.#onSongChanged(wrapper.song, false, [context])
-		this.#onSongTimeChanged(wrapper.song?.progress, wrapper.song?.item.duration_ms, false, [context])
+		this.#onSongTimeChanged(wrapper.song?.progress, wrapper.song?.item.duration_ms, wrapper.pendingSongChange, [context])
 	}
 
 	onStateLoss(context: string) {

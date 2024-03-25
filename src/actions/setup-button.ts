@@ -19,6 +19,8 @@ export default class SetupButton extends Button {
 	static readonly SETUPLESS = true
 	static readonly STATABLE = true
 
+	#fake = true
+
 	constructor() {
 		super()
 		connector.on('setupStateChanged', this.#onSetupStateChanged.bind(this))
@@ -30,13 +32,20 @@ export default class SetupButton extends Button {
 	}
 
 	async invokeWrapperAction(context: string) {
-		if (connector.set)
-			connector.invalidateSetup()
+		if (this.#fake)
+			if (connector.set)
+				connector.fakeOff()
+			else
+				connector.fakeOn()
+		else {
+			if (connector.set)
+				connector.invalidateSetup()
 
-		exec(`${process.platform == 'darwin' ? 'open' : (process.platform == 'win32' ? 'start' : 'xdg-open')} http://localhost:${constants.CONNECTOR_DEFAULT_PORT}`, (error, stdout, stderr) => {
-			if (error)
-				logger.error(`An error occurred while opening browser: "${error.message || 'No message.'}" @ "${error.stack || 'No stack trace.'}".`)
-		})
+			exec(`${process.platform == 'darwin' ? 'open' : (process.platform == 'win32' ? 'start' : 'xdg-open')} http://localhost:${constants.CONNECTOR_DEFAULT_PORT}`, (error, stdout, stderr) => {
+				if (error)
+					logger.error(`An error occurred while opening browser: "${error.message || 'No message.'}" @ "${error.stack || 'No stack trace.'}".`)
+			})
+		}
 
 		return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
 	}
