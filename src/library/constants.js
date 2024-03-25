@@ -255,6 +255,7 @@ const CONNECTOR_DEFAULT_SCOPES = [
 	'user-read-currently-playing',
 	'user-read-playback-state',
 	'user-modify-playback-state',
+	'user-read-private',
 	'user-library-read',
 	'user-library-modify',
 	'playlist-read-private'

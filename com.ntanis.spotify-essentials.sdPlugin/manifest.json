@@ -246,6 +246,27 @@
 		},
 		
 		{
+			"Name": "User Information",
+			"UUID": "com.ntanis.spotify-essentials.user-information-button",
+			"Icon": "images/actions/user-information",
+			"Tooltip": "Displays the information of the current user.",
+			"DisableAutomaticStates": true,
+			"UserTitleEnabled": false,
+			"SupportedInMultiActions": false,
+
+			"Controllers": [
+				"Keypad"
+			],
+
+			"States": [
+				{
+					"Image": "images/states/user-information",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		
+		{
 			"Name": "Song Clipboard",
 			"UUID": "com.ntanis.spotify-essentials.song-clipboard-button",
 			"Icon": "images/actions/song-clipboard",

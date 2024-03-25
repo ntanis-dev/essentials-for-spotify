@@ -90,9 +90,19 @@ const getForPlaylist = async playlist => {
 	return pendingResults[`playlist:${playlist.id}`]
 }
 
+const getRaw = async url => {
+	try {
+		return Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')
+	} catch (e) {
+		logger.error(`Failed to get image for URL "${url}": "${e.message}"`)
+		return null
+	}
+}
+
 const isPlaylistCached = playlist => !!imageCache[`playlist:${playlist.id}`]
 
 export default {
+	getRaw,
 	getForSong,
 	getForPlaylist,
 	isSongCached,

@@ -10,6 +10,7 @@ import VolumeUpButton from './../actions/volume-up-button'
 import VolumeDownButton from './../actions/volume-down-button'
 import VolumeMuteUnmuteButton from './../actions/volume-mute-unmute-button'
 import SongInformationButton from './../actions/song-information-button'
+import UserInformationButton from './../actions/user-information-button'
 import SongClipboardButton from './../actions/song-clipboard-button'
 import SurpriseMeButton from './../actions/surprise-me-button'
 import BackwardSeekButton from './../actions/backward-seek-button'
@@ -34,6 +35,7 @@ export default {
 		StreamDeck.actions.registerAction(new VolumeDownButton())
 		StreamDeck.actions.registerAction(new VolumeMuteUnmuteButton())
 		StreamDeck.actions.registerAction(new SongInformationButton())
+		StreamDeck.actions.registerAction(new UserInformationButton())
 		StreamDeck.actions.registerAction(new SongClipboardButton())
 		StreamDeck.actions.registerAction(new SurpriseMeButton())
 		StreamDeck.actions.registerAction(new BackwardSeekButton())

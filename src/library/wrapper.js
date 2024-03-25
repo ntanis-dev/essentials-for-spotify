@@ -301,6 +301,12 @@ class Wrapper extends EventEmitter {
 		this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(() => this.#updatePlaybackState(true), byTime ? constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_TIME_SLEEP : constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
 	}
 
+	async getUser() {
+		return this.#wrapCall(async () => {
+			return await connector.callSpotifyApi('me')
+		})
+	}
+
 	async resumePlayback(deviceId = this.#lastDevice) {
 		return this.#wrapCall(async () => {
 			await this.#deviceCall('me/player/play', {

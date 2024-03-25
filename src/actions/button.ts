@@ -26,6 +26,7 @@ export class Button extends Action {
 	#statelessImage: string = ''
 
 	contexts: Array<string> = []
+	marquees: any = {}
 
 	constructor() {
 		super()
@@ -143,6 +144,40 @@ export class Button extends Action {
 
 	async setState(context: string, state: any) {
 		await StreamDeck.client.setState(context, state).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck state of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+	}
+
+	resumeMarquee(context: string) {
+		if (this.marquees[context]) {
+			clearTimeout(this.marquees[context].timeout)
+			this.marquees[context].timeout = setTimeout(() => this.marqueeTitle(this.marquees[context].id, this.marquees[context].title.original, this.marquees[context].artists.original, this.marquees[context].time.original, context), constants.SONG_MARQUEE_INTERVAL)
+		}
+	}
+
+	pauseMarquee(context: string) {
+		if (this.marquees[context]) {
+			clearTimeout(this.marquees[context].timeout)
+			this.marquees[context].timeout = null
+		}
+	}
+
+	clearMarquee(context: string) {
+		if (this.marquees[context]) {
+			clearTimeout(this.marquees[context].timeout)
+			delete this.marquees[context]
+		}
+	}
+
+	marqueeTitle(...args: any[]) {
+		throw new Error('marqueeTitle() must be implemented in the child class.')
+	}
+
+	getTextSpacingWidth(text: string) {
+		let totalWidth = 0
+
+		for (const char of text)
+			totalWidth += constants.CHARACTER_WIDTH_MAP[char] || 1
+
+		return totalWidth;
 	}
 
 	onStateSettled(context: string) {
