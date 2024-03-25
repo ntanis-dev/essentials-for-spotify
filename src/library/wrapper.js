@@ -156,7 +156,7 @@ class Wrapper extends EventEmitter {
 			} : null)
 
 			this.#setDevices(response?.device.id || null, (await connector.callSpotifyApi('me/player/devices')).devices)
-			this.#setDisallowFlags(response?.actions?.disallows || [])
+			this.#setDisallowFlags(response?.actions?.disallows ? Object.keys(response.actions.disallows).filter(flag => response.actions.disallows[flag]) : [])
 		} catch (e) {
 			logger.error(`An error occured while updating playback state: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
 		} finally {
@@ -299,7 +299,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	#setDisallowFlags(disallowFlags) {
-		if (this.#lastDisallowFlags && this.#lastDisallowFlags.length === disallowFlags.length && this.#lastDisallowFlags.every((flag, index) => flag === disallowFlags[index]))
+		if (this.#lastDisallowFlags.length === disallowFlags.length && this.#lastDisallowFlags.every((flag, index) => flag === disallowFlags[index]))
 			return
 
 		this.#updatePlaybackStateStatus = 'skip'
@@ -317,7 +317,7 @@ class Wrapper extends EventEmitter {
 	async getUser() {
 		return this.#wrapCall(async () => {
 			return await connector.callSpotifyApi('me')
-		})
+		}, true)
 	}
 
 	async resumePlayback(deviceId = this.#lastDevice) {

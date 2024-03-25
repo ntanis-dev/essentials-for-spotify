@@ -26,7 +26,12 @@ export default class SongExplicitButton extends Button {
 			this.setImage(context, pending ? 'images/states/pending' : undefined)
 
 			if (!pending) {
-				this.setState(context, song?.item.explicit ? 1 : 0)
+				if (song) {
+					this.setImage(context)
+					this.setState(context, song?.item.explicit ? 1 : 0)
+				} else
+					this.setImage(context, 'images/states/song-explicit-unknown')
+
 				this.setUnpressable(context, false)
 			}
 		}

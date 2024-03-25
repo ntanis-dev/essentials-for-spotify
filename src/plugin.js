@@ -1,7 +1,6 @@
 // TODO
 
 // Device hot-swapping handling
-// Disable song-based buttons when something non-song is playing // check for premium
 // Settings
 
 import StreamDeck from '@elgato/streamdeck'

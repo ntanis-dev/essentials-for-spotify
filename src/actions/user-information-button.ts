@@ -9,6 +9,7 @@ import {
 	Button
 } from './button.js'
 
+import connector from '../library/connector.js'
 import images from '../library/images.js'
 import wrapper from '../library/wrapper.js'
 
@@ -27,7 +28,7 @@ export default class UserInformationButton extends Button {
 
 		const user = await wrapper.getUser()
 
-		if (!user) {
+		if (typeof user !== 'object') {
 			this.setImage(context, 'images/states/user-information')
 			this.clearMarquee(context)
 			this.setTitle(context, '')
@@ -57,7 +58,9 @@ export default class UserInformationButton extends Button {
 
 	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
 		await super.onWillAppear(ev)
-		this.#refreshUser(ev.action.id)
+
+		if (connector.set)
+			this.#refreshUser(ev.action.id)
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {

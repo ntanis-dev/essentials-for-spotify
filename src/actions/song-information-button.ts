@@ -9,6 +9,7 @@ import {
 	Button
 } from './button.js'
 
+import connector from '../library/connector.js'
 import images from '../library/images.js'
 import wrapper from '../library/wrapper.js'
 
@@ -73,7 +74,7 @@ export default class SongInformationButton extends Button {
 				} else if (pending)
 					this.setImage(context, 'images/states/pending')
 				else
-					this.setImage(context)
+					this.setImage(context, 'images/states/song-information-unknown')
 
 				if (!pending)
 					this.setUnpressable(context, false)
@@ -82,8 +83,11 @@ export default class SongInformationButton extends Button {
 
 	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
 		await super.onWillAppear(ev)
-		this.#onSongChanged(wrapper.song, true, [ev.action.id])
-		this.#onSongTimeChanged(wrapper.song?.progress, wrapper.song?.item.duration_ms, wrapper.pendingSongChange, [ev.action.id])
+
+		if (connector.set) {
+			this.#onSongChanged(wrapper.song, true, [ev.action.id])
+			this.#onSongTimeChanged(wrapper.song?.progress, wrapper.song?.item.duration_ms, wrapper.pendingSongChange, [ev.action.id])
+		}
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {

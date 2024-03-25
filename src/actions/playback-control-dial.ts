@@ -24,7 +24,7 @@ export default class PlaybackControlDial extends Dial {
 	}
 
 	#updateJointFeedback(contexts = this.contexts) {
-		if (!wrapper.device)
+		if ((!wrapper.device) || (!wrapper.song))
 			return
 
 		for (const context of contexts) {
@@ -157,7 +157,7 @@ export default class PlaybackControlDial extends Dial {
 			else
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 		} else if (type === Dial.TYPES.ROTATE_COUNTERCLOCKWISE) {
-			if (!this.isHolding(context))
+			if (wrapper.song && (!this.isHolding(context)))
 				return wrapper.previousSong()
 			else if (wrapper.song)
 				return wrapper.backwardSeek(Object.assign({}, wrapper.song), constants.SEEK_STEP_SIZE)
@@ -165,15 +165,12 @@ export default class PlaybackControlDial extends Dial {
 				return constants.WRAPPER_RESPONSE_SUCCESS
 			else
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-		} else if (type === Dial.TYPES.TAP) {
-			if (!wrapper.song)
-				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-
+		} else if (type === Dial.TYPES.TAP)
 			if (wrapper.playing)
 				return wrapper.pausePlayback()
 			else
 				return wrapper.resumePlayback()
-		} else
+		else
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 

@@ -20,7 +20,11 @@ export default class ShuffleButton extends Button {
 
 	#onShuffleStateChanged(state: boolean, contexts = this.contexts) {
 		for (const context of contexts)
-			this.setState(context, state ? 1 : 0)
+			if (wrapper.song) {
+				this.setImage(context)
+				this.setState(context, state ? 1 : 0)
+			} else
+				this.setImage(context, 'images/states/shuffle-unknown')
 	}
 
 	async invokeWrapperAction(context: string) {
