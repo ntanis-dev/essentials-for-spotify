@@ -49,7 +49,7 @@ export default class UserInformationButton extends Button {
 
 				{
 					key: 'followers',
-					value: `${user.followers.total} follower${user.followers.total === 1 ? '' : 's'}`
+					value: `${user.followers.total} Follower${user.followers.total === 1 ? '' : 's'}`
 				}
 			], context)
 	}
