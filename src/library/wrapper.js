@@ -21,6 +21,7 @@ class Wrapper extends EventEmitter {
 	#lastPlaybackStateUpdate = null
 	#lastRepeatState = null
 	#lastCurrentlyPlayingType = null
+	#lastUser = null
 	#songChangeForceUpdatePlaybackStateTimeout = null
 	#lastDevices = []
 	#lastDisallowFlags = []
@@ -42,6 +43,7 @@ class Wrapper extends EventEmitter {
 				this.#setDevices(null, [])
 				this.#setDisallowFlags([])
 				this.#setCurrentlyPlayingType(null)
+				this.#setUser(null)
 			}
 		})
 
@@ -139,6 +141,13 @@ class Wrapper extends EventEmitter {
 		this.#updatePlaybackStateStatus = 'updating'
 
 		try {
+			let userResponse = await connector.callSpotifyApi('me')
+
+			if ((!userResponse) || typeof userResponse !== 'object')
+				userResponse = undefined
+
+			this.#setUser(userResponse || null)
+
 			let response = await connector.callSpotifyApi('me/player', undefined, [constants.API_EMPTY_RESPONSE])
 
 			if (response === constants.API_EMPTY_RESPONSE)
@@ -147,7 +156,7 @@ class Wrapper extends EventEmitter {
 			this.#setPlaying(response?.is_playing || false)
 			this.#setRepeatState(response?.repeat_state || 'off')
 			this.#setShuffleState(response?.shuffle_state || false)
-			this.#setVolumePercent(response?.device.supports_volume ? (typeof(response?.device.volume_percent) !== 'number' ? 100 : response.device.volume_percent) : null)
+			this.#setVolumePercent(response?.device.supports_volume ? (typeof response?.device.volume_percent !== 'number' ? 100 : response.device.volume_percent) : null)
 			this.#setPlaybackContext(response?.context?.uri || null)
 
 			this.#setSong(response?.item ? {
@@ -317,20 +326,23 @@ class Wrapper extends EventEmitter {
 		this.emit('currentlyPlayingTypeChanged', type)
 	}
 
+	#setUser(user) {
+		if (this.#lastUser?.id === user?.id)
+			return
+
+		this.#updatePlaybackStateStatus = 'skip'
+		this.#lastUser = user
+		this.emit('userChanged', user)
+	}
+
 	#onSongChangeExpected(byTime = false) {
 		clearTimeout(this.#songChangeForceUpdatePlaybackStateTimeout)
 		this.#setSong(null, true)
 		this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(() => this.#updatePlaybackState(true), byTime ? constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_TIME_SLEEP : constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
 	}
 
-	async getUser() {
-		return this.#wrapCall(async () => {
-			return await connector.callSpotifyApi('me')
-		}, true)
-	}
-
 	async resumePlayback(deviceId = this.#lastDevice) {
-		if (this.#lastPlaying)
+		if (this.#lastPlaying || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		return this.#wrapCall(async () => {
@@ -348,7 +360,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async pausePlayback(deviceId = this.#lastDevice) {
-		if ((!this.#lastPlaying) || this.#lastDisallowFlags.includes('interrupting_playback'))
+		if ((!this.#lastPlaying) || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		return this.#wrapCall(async () => {
@@ -363,7 +375,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async nextSong(deviceId = this.#lastDevice) {
-		if (this.#lastDisallowFlags.includes('skipping_next') || this.#lastDisallowFlags.includes('interrupting_playback'))
+		if (this.#lastDisallowFlags.includes('skipping_next') || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		return this.#wrapCall(async () => {
@@ -381,7 +393,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async previousSong(deviceId = this.#lastDevice) {
-		if (this.#lastDisallowFlags.includes('skipping_prev') || this.#lastDisallowFlags.includes('interrupting_playback'))
+		if (this.#lastDisallowFlags.includes('skipping_prev') || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		return this.#wrapCall(async () => {
@@ -399,7 +411,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async turnOnShuffle(deviceId = this.#lastDevice) {
-		if (this.#lastDisallowFlags.includes('toggling_shuffle'))
+		if (this.#lastDisallowFlags.includes('toggling_shuffle') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		return this.#wrapCall(async () => {
@@ -414,7 +426,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async turnOffShuffle(deviceId = this.#lastDevice) {
-		if (this.#lastDisallowFlags.includes('toggling_shuffle'))
+		if (this.#lastDisallowFlags.includes('toggling_shuffle') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		return this.#wrapCall(async () => {
@@ -429,7 +441,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async turnOnContextRepeat(deviceId = this.#lastDevice) {
-		if (this.#lastDisallowFlags.includes('toggling_repeat_context'))
+		if (this.#lastDisallowFlags.includes('toggling_repeat_context') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		return this.#wrapCall(async () => {
@@ -444,7 +456,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async turnOnTrackRepeat(deviceId = this.#lastDevice) {
-		if (this.#lastDisallowFlags.includes('toggling_repeat_track'))
+		if (this.#lastDisallowFlags.includes('toggling_repeat_track') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		return this.#wrapCall(async () => {
@@ -459,7 +471,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async turnOffRepeat(deviceId = this.#lastDevice) {
-		if ((this.#lastDisallowFlags.includes('toggling_repeat_context') && this.#lastRepeatState === 'context') || (this.#lastDisallowFlags.includes('toggling_repeat_track') && this.#lastRepeatState === 'track'))
+		if ((this.#lastDisallowFlags.includes('toggling_repeat_context') && this.#lastRepeatState === 'context') || (this.#lastDisallowFlags.includes('toggling_repeat_track') && this.#lastRepeatState === 'track') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		return this.#wrapCall(async () => {
@@ -474,7 +486,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async setPlaybackVolume(volumePercent, deviceId = this.#lastDevice) {
-		if (this.#lastDisallowFlags.includes('interrupting_playback') && volumePercent <= 0)
+		if ((this.#lastDisallowFlags.includes('interrupting_playback') && volumePercent <= 0) || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		return this.#wrapCall(async () => {
@@ -537,7 +549,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async forwardSeek(song, time, deviceId = this.#lastDevice) {
-		if (this.#lastDisallowFlags.includes('seeking') || this.#lastDisallowFlags.includes('interrupting_playback'))
+		if (this.#lastDisallowFlags.includes('seeking') || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		return this.#wrapCall(async () => {
@@ -557,7 +569,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async backwardSeek(song, time, deviceId = this.#lastDevice) {
-		if (this.#lastDisallowFlags.includes('seeking') || this.#lastDisallowFlags.includes('interrupting_playback'))
+		if (this.#lastDisallowFlags.includes('seeking') || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		return this.#wrapCall(async () => {
@@ -579,6 +591,9 @@ class Wrapper extends EventEmitter {
 	}
 
 	async surpriseMe(deviceId = this.#lastDevice) {
+		if (this.#lastUser?.product !== 'premium')
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 		return this.#wrapCall(async () => {
 			let recommendations = {
 				tracks: []
@@ -625,30 +640,10 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async playSong(song, deviceId = this.#lastDevice) {
-		return this.#wrapCall(async () => {
-			await this.#deviceCall('me/player/play', {
-				method: 'PUT',
-
-				body: JSON.stringify({
-					uris: [song.item.uri]
-				})
-			}, deviceId)
-
-			this.#setSong({
-				item: song.item,
-				liked: (await connector.callSpotifyApi(`me/tracks/contains?ids=${song.item.id}`))[0],
-				progress: 0,
-				surprise: this.#lastSong?.surprise || (!this.#lastPlaying)
-			})
-
-			this.#setPlaying(true)
-
-			return constants.WRAPPER_RESPONSE_SUCCESS
-		})
-	}
-
 	async playPlaylist(playlistId, deviceId = this.#lastDevice) {
+		if (this.#lastUser?.product !== 'premium')
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
 		return this.#wrapCall(async () => {
 			await this.#deviceCall('me/player/play', {
 				method: 'PUT',
@@ -736,6 +731,10 @@ class Wrapper extends EventEmitter {
 
 	get device() {
 		return this.#lastDevice
+	}
+
+	get user() {
+		return this.#lastUser
 	}
 
 	get pendingSongChange() {

@@ -24,7 +24,7 @@ export class PlaylistsDial extends Dial {
 
 		const apiCall = await this.fetchPlaylists(this.#playlistsPage[context])
 
-		if (typeof apiCall !== 'object' || (apiCall.status !== constants.WRAPPER_RESPONSE_SUCCESS && apiCall.status !== constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)) {
+		if ((!apiCall) || typeof apiCall !== 'object' || (apiCall.status !== constants.WRAPPER_RESPONSE_SUCCESS && apiCall.status !== constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)) {
 			this.resetFeedbackLayout(context, {
 				name: {
 					opacity: 1.0

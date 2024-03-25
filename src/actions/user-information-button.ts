@@ -20,47 +20,48 @@ export default class UserInformationButton extends Button {
 
 	constructor() {
 		super()
+		wrapper.on('userChanged', this.#refreshUser.bind(this))
 		this.setStatelessImage('images/states/user-information-unknown')
 	}
 
-	async #refreshUser(context: string) {
-		this.setImage(context, 'images/states/pending')
+	async #refreshUser(user: any, contexts = this.contexts) {
+		for (const context of contexts) {
+			this.setImage(context, 'images/states/pending')
 
-		const user = await wrapper.getUser()
+			if ((!user) || typeof user !== 'object') {
+				this.setImage(context, 'images/states/user-information')
+				this.clearMarquee(context)
+				this.setTitle(context, '')
+				return
+			}
 
-		if (typeof user !== 'object') {
-			this.setImage(context, 'images/states/user-information')
-			this.clearMarquee(context)
-			this.setTitle(context, '')
-			return
+			const image = await images.getRaw(user.images[0]?.url)
+
+			if (!image)
+				this.setImage(context, 'images/states/user-information')
+			else
+				this.setImage(context, `data:image/jpeg;base64,${image}`)
+
+			if ((!this.marquees[context]) || this.marquees[context].id !== user.id)
+				this.marqueeTitle(user.id, [
+					{
+						key: 'display_name',
+						value: user.display_name || user.id
+					},
+
+					{
+						key: 'followers',
+						value: `${user.followers.total} Follower${user.followers.total === 1 ? '' : 's'}`
+					}
+				], context)
 		}
-
-		const image = await images.getRaw(user.images[0]?.url)
-
-		if (!image)
-			this.setImage(context, 'images/states/user-information')
-		else
-			this.setImage(context, `data:image/jpeg;base64,${image}`)
-
-		if ((!this.marquees[context]) || this.marquees[context].id !== user.id)
-			this.marqueeTitle(user.id, [
-				{
-					key: 'display_name',
-					value: user.display_name
-				},
-
-				{
-					key: 'followers',
-					value: `${user.followers.total} Follower${user.followers.total === 1 ? '' : 's'}`
-				}
-			], context)
 	}
 
 	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
 		await super.onWillAppear(ev)
 
 		if (connector.set)
-			this.#refreshUser(ev.action.id)
+			this.#refreshUser(wrapper.user, ev.action.id)
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
@@ -70,7 +71,7 @@ export default class UserInformationButton extends Button {
 
 	onStateSettled(context: string) {
 		super.onStateSettled(context)
-		this.#refreshUser(context)
+		this.#refreshUser(wrapper.user, context)
 	}
 
 	onStateLoss(context: string) {
