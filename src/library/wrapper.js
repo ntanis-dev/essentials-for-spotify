@@ -329,7 +329,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async resumePlayback(deviceId = this.#lastDevice) {
-		if (this.#lastDisallowFlags.includes('resuming'))
+		if (this.#lastPlaying)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		return this.#wrapCall(async () => {
@@ -347,7 +347,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async pausePlayback(deviceId = this.#lastDevice) {
-		if (this.#lastDisallowFlags.includes('pausing') || this.#lastDisallowFlags.includes('interrupting_playback'))
+		if ((!this.#lastPlaying) || this.#lastDisallowFlags.includes('interrupting_playback'))
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		return this.#wrapCall(async () => {
