@@ -41,6 +41,7 @@ class Wrapper extends EventEmitter {
 				this.#setSong(null)
 				this.#setDevices(null, [])
 				this.#setDisallowFlags([])
+				this.#setCurrentlyPlayingType(null)
 			}
 		})
 
@@ -372,6 +373,8 @@ class Wrapper extends EventEmitter {
 
 			if (this.#lastCurrentlyPlayingType === 'track')
 				this.#onSongChangeExpected()
+			else
+				await this.#updatePlaybackState(true)
 
 			return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
 		})
@@ -388,6 +391,8 @@ class Wrapper extends EventEmitter {
 
 			if (this.#lastCurrentlyPlayingType === 'track')
 				this.#onSongChangeExpected()
+			else
+				await this.#updatePlaybackState(true)
 
 			return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
 		})

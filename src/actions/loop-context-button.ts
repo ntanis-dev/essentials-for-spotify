@@ -21,17 +21,11 @@ export default class LoopContextButton extends Button {
 
 	#onRepeatStateChanged(state: string, contexts = this.contexts) {
 		for (const context of contexts)
-			if (wrapper.song) {
-				this.setImage(context)
-				this.setState(context, state === 'context' ? 1 : 0)
-			} else
-				this.setImage(context, 'images/states/loop-unknown')
+			this.setState(context, state === 'context' ? 1 : 0)
 	}
 
 	async invokeWrapperAction(context: string) {
-		if (!wrapper.song)
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-		else if (wrapper.repeatState === 'context')
+		if (wrapper.repeatState === 'context')
 			return wrapper.turnOffRepeat()
 		else
 			return wrapper.turnOnContextRepeat()

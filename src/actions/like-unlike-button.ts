@@ -17,6 +17,7 @@ export default class LikeUnlikeButton extends Button {
 	constructor() {
 		super()
 		this.setStatelessImage('images/states/like-unknown')
+		wrapper.on('songChanged', (...args: any) => this.#onLikedStateChanged(wrapper.song?.liked, wrapper.pendingSongChange))
 		wrapper.on('songLikedStateChanged', this.#onLikedStateChanged.bind(this))
 	}
 
@@ -40,8 +41,7 @@ export default class LikeUnlikeButton extends Button {
 	async invokeWrapperAction(context: string) {
 		if (!wrapper.song)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-
-		if (wrapper.song.liked)
+		else if (wrapper.song.liked)
 			return wrapper.unlikeSong(Object.assign({}, wrapper.song))
 		else
 			return wrapper.likeSong(Object.assign({}, wrapper.song))
@@ -49,6 +49,6 @@ export default class LikeUnlikeButton extends Button {
 
 	onStateSettled(context: string) {
 		super.onStateSettled(context)
-		this.#onLikedStateChanged(wrapper.song?.liked, false, [context])
+		this.#onLikedStateChanged(wrapper.song?.liked, wrapper.pendingSongChange, [context])
 	}
 }

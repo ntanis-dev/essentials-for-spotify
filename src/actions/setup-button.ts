@@ -19,7 +19,7 @@ export default class SetupButton extends Button {
 	static readonly SETUPLESS = true
 	static readonly STATABLE = true
 
-	#fake = true
+	#fake = false
 
 	constructor() {
 		super()

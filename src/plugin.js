@@ -1,6 +1,7 @@
 // TODO
 
 // Device hot-swapping handling
+// check for premium
 // Settings
 
 import StreamDeck from '@elgato/streamdeck'
