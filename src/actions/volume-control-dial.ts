@@ -1,5 +1,7 @@
-import {
-	action
+import StreamDeck, {
+	action,
+	PropertyInspectorDidAppearEvent,
+	PropertyInspectorDidDisappearEvent
 } from '@elgato/streamdeck'
 
 import {

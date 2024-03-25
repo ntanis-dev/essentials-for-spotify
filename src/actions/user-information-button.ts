@@ -2,7 +2,7 @@
 import {
 	action,
 	WillAppearEvent,
-	WillDisappearEvent
+	WillDisappearEvent,
 } from '@elgato/streamdeck'
 
 import {
@@ -47,11 +47,6 @@ export default class UserInformationButton extends Button {
 					{
 						key: 'display_name',
 						value: user.display_name || user.id
-					},
-
-					{
-						key: 'followers',
-						value: `${user.followers.total} Follower${user.followers.total === 1 ? '' : 's'}`
 					}
 				], context)
 		}

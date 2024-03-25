@@ -62,6 +62,11 @@ const config = {
 				{
 					src: 'src/ui',
 					dest: 'com.ntanis.spotify-essentials.sdPlugin/bin'
+				},
+
+				{
+					src: 'src/localization/*',
+					dest: 'com.ntanis.spotify-essentials.sdPlugin'
 				}
 			]
 		})

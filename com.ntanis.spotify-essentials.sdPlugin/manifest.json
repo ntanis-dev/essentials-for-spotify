@@ -1,6 +1,6 @@
 {
 	"Name": "Spotify Essentials",
-	"Version": "0.1.0",
+	"Version": "1.0.0",
 	"Author": "Ntanis",
 
 	"Actions": [
@@ -516,26 +516,22 @@
 	"Description": "Effortlessly control your Spotify through your Elgato Stream Deck. A Spotify Premium account is required. This plugin leverages the Spotify Web API.",
 	"Icon": "images/plugin/marketplace",
 	"SDKVersion": 2,
+	"URL": "https://github.com/ntanis-dev/spotify-essentials",
 
 	"Software": {
-		"MinimumVersion": "6.4"
+		"MinimumVersion": "5.0"
 	},
 
 	"OS": [
 		{
 			"Platform": "mac",
-			"MinimumVersion": "10.15"
+			"MinimumVersion": "10.11"
 		},
 		{
 			"Platform": "windows",
 			"MinimumVersion": "10"
 		}
 	],
-
-	"Nodejs": {
-		"Version": "20",
-		"Debug": "enabled"
-	},
 
 	"UUID": "com.ntanis.spotify-essentials"
 }

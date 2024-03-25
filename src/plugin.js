@@ -1,8 +1,3 @@
-// TODO
-
-// check for premium
-// Settings
-
 import StreamDeck from '@elgato/streamdeck'
 import logger from './library/logger'
 import connector from './library/connector'
