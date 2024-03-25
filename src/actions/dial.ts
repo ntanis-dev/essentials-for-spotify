@@ -68,7 +68,7 @@ export class Dial extends Action {
 	}
 
 	async #processAction(action: any, type: symbol) {
-		if (this.#busy[action.id] || this.#unpressable[action.id] || (type === Dial.TYPES.DOWN && this.#holding[action.id]))
+		if (this.#busy[action.id] || this.#unpressable[action.id] || (type === Dial.TYPES.DOWN && this.#holding[action.id]) || (type === Dial.TYPES.UP && (this.constructor as typeof Dial).HOLDABLE && (!this.#holding[action.id])))
 			return
 
 		this.#busy[action.id] = true
