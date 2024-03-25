@@ -1,0 +1,112 @@
+body {
+	background-color: #121212;
+	color: #ffffff;
+	font-family: 'Helvetica Neue', sans-serif;
+}
+
+.form-container {
+	max-width: 600px;
+	margin: 50px auto;
+	padding: 20px 40px;
+	background-color: #181818;
+	border: 1px solid #282828;
+	opacity: 0;
+	display: none;
+	transition: opacity 1.5s ease;
+}
+
+.form-container form {
+	text-align: center;
+}
+
+.form-container.visible {
+	opacity: 1;
+}
+
+input[type="text"], input[type="submit"] {
+	box-sizing: border-box;
+	width: calc(100% - 20px);
+	padding: 10px;
+	margin-bottom: 20px;
+	background-color: #282828;
+	border: 1px solid #333;
+	color: #fff;
+}
+
+input[type="submit"] {
+	background-color: #1db954;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+input[type="submit"]:hover {
+	background-color: #1ed760;
+}
+
+.instructions {
+	max-width: 600px;
+	margin: 20px auto;
+	color: #b3b3b3;
+}
+
+a {
+	color: #1db954;
+	text-decoration: none;
+	transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+a:hover, a:focus {
+	color: #1ed760;
+	text-decoration: underline;
+}
+
+ol li {
+	margin-top: 5px;
+}
+
+h2 {
+	position: relative;
+}
+
+h2 img {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
+code {
+	background-color: #282828;
+	padding: 2px 4px;
+	cursor: pointer;
+}
+
+::selection {
+	background-color: #1db954;
+	color: #fff;
+}
+
+::-moz-selection {
+	background-color: #1db954;
+	color: #fff;
+}
+
+::-webkit-selection {
+	background-color: #1db954;
+	color: #fff;
+}
+
+::-webkit-scrollbar {
+	width: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background: #282828;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #333;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: #444;
+}

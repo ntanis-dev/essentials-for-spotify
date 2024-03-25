@@ -61,7 +61,7 @@ export default class UserInformationButton extends Button {
 		await super.onWillAppear(ev)
 
 		if (connector.set)
-			this.#refreshUser(wrapper.user, ev.action.id)
+			this.#refreshUser(wrapper.user, [ev.action.id])
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
@@ -71,7 +71,7 @@ export default class UserInformationButton extends Button {
 
 	onStateSettled(context: string) {
 		super.onStateSettled(context)
-		this.#refreshUser(wrapper.user, context)
+		this.#refreshUser(wrapper.user, [context])
 	}
 
 	onStateLoss(context: string) {

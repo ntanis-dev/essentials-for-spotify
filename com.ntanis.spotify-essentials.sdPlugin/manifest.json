@@ -512,6 +512,7 @@
 	"Category": "Spotify Essentials",
 	"CategoryIcon": "images/plugin/category",
 	"CodePath": "bin/plugin.js",
+    "PropertyInspectorPath": "bin/ui/pi/index.html",
 	"Description": "Effortlessly control your Spotify through your Elgato Stream Deck. A Spotify Premium account is required. This plugin leverages the Spotify Web API.",
 	"Icon": "images/plugin/marketplace",
 	"SDKVersion": 2,

@@ -14,6 +14,7 @@ class Connector extends EventEmitter {
 	#server = null
 	#setup = false
 	#faked = false
+	#error = false
 
 	#setSetup(state) {
 		this.#setup = state
@@ -93,74 +94,99 @@ class Connector extends EventEmitter {
 
 		this.#app = express()
 
+		this.#app.use((req, res, next) => {
+			if (req.path.endsWith('.html')) {
+				res.status(404).send()
+				return
+			}
+
+			next()
+		})
+
+		this.#app.use(express.static('./bin/ui/setup', {
+			index: false
+		}))
+
+		this.#app.use(express.urlencoded({
+			extended: true
+		}))
+
 		this.#app.get('/', async (req, res) => {
-			if (req.query.success) {
-				res.send(constants.SETUP_HTML.replace(/{{PORT}}/g, this.#port))
-				this.#server.close()
-				this.#server = null
-				return
-			} else if (req.query.error) {
-				res.send(constants.SETUP_HTML.replace(/{{PORT}}/g, this.#port))
-				return
-			}
+			logger.info(`Received request with code "${req.query.code}" and clientId "${req.query.clientId}" and clientSecret "${req.query.clientSecret}" and setup "${this.#setup}".`)
 
-			const code = req.query.code
+			if (req.query.error)
+				if (!this.#error)
+					res.redirect('/')
+				else {
+					this.#error = false
+					
+					res.sendFile('./index.html', {
+						root: './bin/ui/setup'
+					})
+				}
+			else if (req.query.code && (!this.#setup) && this.#clientId && this.#clientSecret)
+				try {
+					const response = await fetch('https://accounts.spotify.com/api/token', {
+						method: 'POST',
 
-			if (req.query.clientId)
-				this.#clientId = req.query.clientId
+						body: new URLSearchParams({
+							code: req.query.code,
+							redirect_uri: `http://localhost:${this.#port}`,
+							grant_type: 'authorization_code'
+						}),
 
-			if (req.query.clientSecret)
-				this.#clientSecret = req.query.clientSecret
+						headers: {
+							'Content-Type': 'application/x-www-form-urlencoded',
+							'Authorization': `Basic ${Buffer.from(`${this.#clientId}:${this.#clientSecret}`).toString('base64')}`
+						}
+					})
 
-			if ((!this.#clientId) || (!this.#clientSecret)) {
-				if (req.query.clientId || req.query.clientSecret)
+					if (response.status !== 200)
+						throw new constants.ApiError(response.status, `The access token Spotify API call failed with status "${response.status}".`)
+
+					const data = await response.json()
+
+					this.#refreshToken = data.refresh_token
+					this.#accessToken = data.access_token
+					this.#setSetup(true)
+
+					StreamDeck.client.setGlobalSettings({
+						clientId: this.#clientId,
+						clientSecret: this.#clientSecret,
+						refreshToken: this.#refreshToken,
+						accessToken: this.#accessToken
+					}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+
+					res.redirect('/?success=1')
+					logger.info('The connector setup has been completed.')
+				} catch (e) {
+					logger.error(`An error occured while setting up the connector: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
+					this.#error = true
 					res.redirect('/?error=1')
-				else
-					res.send(constants.SETUP_HTML.replace(/{{PORT}}/g, this.#port))
-
-				return
-			} else if (!code) {
-				res.redirect(`https://accounts.spotify.com/authorize?response_type=code&client_id=${this.#clientId}&scope=${encodeURIComponent(constants.CONNECTOR_DEFAULT_SCOPES.join(' '))}&redirect_uri=${encodeURIComponent(`http://localhost:${this.#port}`)}`);
-				return
-			}
-
-			try {
-				const response = await fetch('https://accounts.spotify.com/api/token', {
-					method: 'POST',
-
-					body: new URLSearchParams({
-						code,
-						redirect_uri: `http://localhost:${this.#port}`,
-						grant_type: 'authorization_code'
-					}),
-
-					headers: {
-						'Content-Type': 'application/x-www-form-urlencoded',
-						'Authorization': `Basic ${Buffer.from(`${this.#clientId}:${this.#clientSecret}`).toString('base64')}`
-					}
+				}
+			else if (req.query.success && (!this.#setup))
+				res.redirect('/')
+			else {
+				res.sendFile('./index.html', {
+					root: './bin/ui/setup'
 				})
 
-				if (response.status !== 200)
-					throw new constants.ApiError(response.status, `The access token Spotify API call failed with status "${response.status}".`)
+				if (req.query.success && this.#setup) {
+					this.#server.close()
+					this.#server = null
+				}
+			}
+		})
 
-				const data = await response.json()
-
-				this.#refreshToken = data.refresh_token
-				this.#accessToken = data.access_token
-				this.#setSetup(true)
-
-				StreamDeck.client.setGlobalSettings({
-					clientId: this.#clientId,
-					clientSecret: this.#clientSecret,
-					refreshToken: this.#refreshToken,
-					accessToken: this.#accessToken
-				}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
-
-				res.redirect('/?success=1')
-				logger.info('The connector setup has been completed.')
-			} catch (e) {
-				logger.error(`An error occured while setting up the connector: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
+		this.#app.post('/', async (req, res) => {
+			if ((!req.body.clientId) || (!req.body.clientSecret)) {
+				this.#error = true
 				res.redirect('/?error=1')
+			} else {
+				logger.info(`Received client ID "${req.body.clientId}" and client secret "${req.body.clientSecret}".`)
+				this.#clientId = req.body.clientId
+				this.#clientSecret = req.body.clientSecret
+				res.redirect(`https://accounts.spotify.com/authorize?response_type=code&client_id=${this.#clientId}&scope=${encodeURIComponent(constants.CONNECTOR_DEFAULT_SCOPES.join(' '))}&redirect_uri=${encodeURIComponent(`http://localhost:${this.#port}`)}`);
 			}
 		})
 

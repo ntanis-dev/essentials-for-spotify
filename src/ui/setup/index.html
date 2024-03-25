@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Installation | Spotify Essentials</title>
+	<link rel="shortcut icon" href="favicon.png" />
+	<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+	<div class="form-container">
+		<h2>
+			Spotify Essentials
+
+			<br />
+
+			<small>
+				<small>Installation</small>
+			</small>
+
+			<img alt="Spotify Essentials" src="logo.png" />
+		</h2>
+
+		<div class="instructions">
+			<span id="success" style="display: none">
+				<span style="color: #1db954">The installation has been <b>completed successfully</b>!</span>
+				<br />
+				You may close this page now.
+			</span>
+
+			<ol class="main">
+				<li>Go to <a href="https://developer.spotify.com/dashboard/create" target="_blank" rel="noopener">Create app - Spotify for Developers</a>.</li>
+				<li>Set <code id="url">http://localhost:{{PORT}}</code> as <b>"Redirect URI"</b>.</li>
+				<li>Tick <b>"Web API"</b> in <b>"Which API/SDKs are you planning to use?"</b>.</li>
+				<li>Fill the rest of the form to your liking, <b>"Website"</b> field can be left empty.</li>
+				<li>Create the app and navigate to the app's dashboard.</li>
+				<li>Click <b>"Settings"</b> in the app's dashboard.</li>
+				<li>Copy the <b>"Client ID"</b> to the form below.</li>
+				<li>Click <b>"View client secret"</b> and copy the <b>"Client Secret"</b> to the form below.</li>
+				<li>Submit the form below.</li>
+			</ol>
+		</div>
+
+		<br />
+
+		<form action="/" method="POST" class="main">
+			<div id="error" style="display: none">
+				<span style="color: #ff2f2f">Something went wrong!</span>
+				<br />
+				<small><b>Please double-check the app information and try again.</b></small>
+				<br /><br><br>
+			</div>
+
+			<input type="text" id="clientId" name="clientId" placeholder="Client ID" required />
+			<input type="text" id="clientSecret" name="clientSecret" placeholder="Client Secret" required />
+			<input type="submit" value="Submit" />
+		</form>
+	</div>
+
+	<script type="text/javascript" src="/script.js"></script>
+</body>
+</html>
