@@ -337,8 +337,12 @@ class Wrapper extends EventEmitter {
 
 	#onSongChangeExpected(byTime = false) {
 		clearTimeout(this.#songChangeForceUpdatePlaybackStateTimeout)
+
+		const wasSongLoaded = !!this.#lastSong
+
 		this.#setSong(null, true)
-		this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(() => this.#updatePlaybackState(true), byTime ? constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_TIME_SLEEP : constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP)
+
+		this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(() => this.#updatePlaybackState(true), wasSongLoaded ? (byTime ? constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_TIME_SLEEP : constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP) : constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_UNLOADED_SLEEP)
 	}
 
 	async resumePlayback(deviceId = this.#lastDevice) {
