@@ -26,16 +26,21 @@ export default class UserInformationButton extends Button {
 
 	async #refreshUser(user: any, contexts = this.contexts) {
 		for (const context of contexts) {
-			this.setImage(context, 'images/states/pending')
+			if ((!user) || typeof(user) !== 'object' || (this.marquees[context] && this.marquees[context].id !== user.id))
+				images.clearRaw('userProfilePicture')
+
+			if (!images.isRawCached('userProfilePicture'))
+				this.setImage(context, 'images/states/pending')
 
 			if ((!user) || typeof user !== 'object') {
 				this.setImage(context, 'images/states/user-information')
 				this.clearMarquee(context)
 				this.setTitle(context, '')
+				images.clearRaw('userProfilePicture')
 				return
 			}
 
-			const image = await images.getRaw(user.images[0]?.url)
+			const image = await images.getRaw(user.images[0]?.url, 'userProfilePicture')
 
 			if (!image)
 				this.setImage(context, 'images/states/user-information')
@@ -49,6 +54,8 @@ export default class UserInformationButton extends Button {
 						value: user.display_name || user.id
 					}
 				], context)
+			else
+				this.resumeMarquee(context)
 		}
 	}
 

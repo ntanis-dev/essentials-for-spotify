@@ -52,6 +52,11 @@ export default class VolumeControlDial extends Dial {
 	}
 
 	#onVolumePercentChanged(percent: number, contexts = this.contexts) {
+		for (const context of contexts)
+		StreamDeck.client.sendToPropertyInspector(context, {
+			test: 'tost'
+		})
+
 		this.#updateJointFeedback(contexts)
 	}
 
@@ -121,6 +126,12 @@ export default class VolumeControlDial extends Dial {
 		super.resetFeedbackLayout(context, {
 			icon: this.originalIcon
 		})
+	}
+
+	async onPropertyInspectorDidAppear(event: PropertyInspectorDidAppearEvent<any>): Promise<void> {
+	}
+
+	async onPropertyInspectorDidDisappear(event: PropertyInspectorDidDisappearEvent<any>): Promise<void> {
 	}
 
 	updateFeedback(context: string): void {

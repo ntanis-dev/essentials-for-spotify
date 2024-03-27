@@ -40,7 +40,7 @@ export default class PlaybackControlDial extends Dial {
 				},
 
 				icon: {
-					opacity: 1.0
+					opacity: wrapper.song || wrapper.pendingSongChange ? 1.0 : 0.5
 				},
 
 				text: {
@@ -58,6 +58,12 @@ export default class PlaybackControlDial extends Dial {
 
 				let titleMarquee = this.getMarquee(context, 'title')
 				let timeMarquee = this.getMarquee(context, 'time')
+
+				this.setFeedback(context, {
+					icon: {
+						opacity: wrapper.device && (wrapper.song || wrapper.pendingSongChange) ? 1.0 : 0.5
+					}
+				})
 
 				if (pending || (song && ((titleMarquee && titleMarquee.id !== song.item.id) || (timeMarquee && timeMarquee.id !== song.item.id))) || ((!song) && titleMarquee && timeMarquee)) {
 					this.clearMarquee(context, 'title')

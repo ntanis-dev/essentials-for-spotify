@@ -112,8 +112,6 @@ class Connector extends EventEmitter {
 		}))
 
 		this.#app.get('/', async (req, res) => {
-			logger.info(`Received request with code "${req.query.code}" and clientId "${req.query.clientId}" and clientSecret "${req.query.clientSecret}" and setup "${this.#setup}".`)
-
 			if (req.query.error)
 				if (!this.#error)
 					res.redirect('/')
@@ -157,8 +155,8 @@ class Connector extends EventEmitter {
 						accessToken: this.#accessToken
 					}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
-					res.redirect('/?success=1')
 					logger.info('The connector setup has been completed.')
+					res.redirect('/?success=1')
 				} catch (e) {
 					logger.error(`An error occured while setting up the connector: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
 					this.#error = true
@@ -183,12 +181,13 @@ class Connector extends EventEmitter {
 				this.#error = true
 				res.redirect('/?error=1')
 			} else {
-				logger.info(`Received client ID "${req.body.clientId}" and client secret "${req.body.clientSecret}".`)
 				this.#clientId = req.body.clientId
 				this.#clientSecret = req.body.clientSecret
 				res.redirect(`https://accounts.spotify.com/authorize?response_type=code&client_id=${this.#clientId}&scope=${encodeURIComponent(constants.CONNECTOR_DEFAULT_SCOPES.join(' '))}&redirect_uri=${encodeURIComponent(`http://localhost:${this.#port}`)}`);
 			}
 		})
+
+		this.#app.get('/port', (req, res) => res.send(this.#port.toString()))
 
 		if (this.#refreshToken)
 			this.#refreshAccessToken().then(() => this.#setSetup(true)).catch(e => {

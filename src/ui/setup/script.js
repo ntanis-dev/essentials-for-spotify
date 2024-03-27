@@ -10,13 +10,15 @@ document.addEventListener('DOMContentLoaded', () => {
 		window.getSelection().addRange(range)
 	})
 
-	mainContainer.style.display = 'block'
-
-	setTimeout(() => mainContainer.classList.add('visible'), 500)
-
 	if (params.has('success')) {
 		document.querySelectorAll('.main').forEach(e => e.style.display = 'none')
 		document.getElementById('success').style.display = 'block'
 	} else if (params.has('error'))
 		document.getElementById('error').style.display = 'block'
+
+	fetch('/port').then(response => response.text()).then(port => {
+		document.querySelectorAll('.port').forEach(e => e.textContent = port)
+		mainContainer.style.display = 'block'
+		setTimeout(() => mainContainer.classList.add('visible'), 500)
+	})
 })
