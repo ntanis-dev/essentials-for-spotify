@@ -220,15 +220,15 @@ class Wrapper extends EventEmitter {
 		if (this.#lastVolumePercent === volumePercent)
 			return
 
+		this.#updatePlaybackStateStatus = 'skip'
+		this.#lastVolumePercent = volumePercent
+		this.emit('volumePercentChanged', volumePercent)
+
 		if (volumePercent !== null)
 			if (volumePercent > 0)
 				this.#setMuted(false)
 			else if (volumePercent === 0 && this.#lastMuted === false)
 				this.#setMuted(0)
-
-		this.#updatePlaybackStateStatus = 'skip'
-		this.#lastVolumePercent = volumePercent
-		this.emit('volumePercentChanged', volumePercent)
 	}
 
 	#setMuted(volumePercent) {
