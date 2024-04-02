@@ -3,6 +3,9 @@ import logger from './library/logger'
 import connector from './library/connector'
 import actions from './library/actions'
 
+// TODO: PI
+// TODO: Fix mute by the player / unmute by SD 
+
 StreamDeck.connect().then(() => {
 	logger.info('Connected to Stream Deck.')
 
