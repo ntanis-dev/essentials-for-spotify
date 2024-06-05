@@ -5,6 +5,9 @@ import actions from './library/actions'
 
 // TODO: PI
 // TODO: Fix mute by the player / unmute by SD 
+// TODO: Copyrights and licensing
+// unmute button doesn't update on setup update
+// hold mute doesn't work on dial
 
 StreamDeck.connect().then(() => {
 	logger.info('Connected to Stream Deck.')

@@ -1,5 +1,5 @@
 {
-	"Name": "Spotify Essentials",
+	"Name": "Essentials for Spotify",
 	"Version": "1.0.0",
 	"Author": "Ntanis",
 
@@ -371,7 +371,7 @@
 			"Name": "Setup",
 			"UUID": "com.ntanis.spotify-essentials.setup-button",
 			"Icon": "images/actions/setup",
-			"Tooltip": "Start here to setup Spotify Essentials.",
+			"Tooltip": "Start here to setup Essentials for Spotify.",
 			"DisableAutomaticStates": true,
 			"SupportedInMultiActions": false,
 
@@ -509,7 +509,7 @@
 		}
 	],
 
-	"Category": "Spotify Essentials",
+	"Category": "Essentials for Spotify",
 	"CategoryIcon": "images/plugin/category",
 	"CodePath": "bin/plugin.js",
     "PropertyInspectorPath": "bin/ui/pi/index.html",

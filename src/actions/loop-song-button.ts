@@ -6,7 +6,6 @@ import {
 	Button
 } from './button.js'
 
-import constants from '../library/constants.js'
 import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.spotify-essentials.loop-song-button' })

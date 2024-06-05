@@ -49,7 +49,7 @@ export default class SongClipboardButton extends Button {
 					return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 			}
 
-			process.stdin.end(text)
+			process.stdin.end(text.replace(/[\x00-\x1F\x7F-\x9F]/g, ''))
 		} catch (e: any) {
 			logger.error(`An error occurred while copying to clipboard: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
 			return constants.WRAPPER_RESPONSE_FATAL_ERROR
