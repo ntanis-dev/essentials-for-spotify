@@ -8,7 +8,7 @@ import {
 
 import wrapper from './../library/wrapper.js'
 
-@action({ UUID: 'com.ntanis.spotify-essentials.loop-song-button' })
+@action({ UUID: 'com.ntanis.essentials-for-spotify.loop-song-button' })
 export default class LoopSongButton extends Button {
 	static readonly STATABLE = true
 

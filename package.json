@@ -1,7 +1,7 @@
 {
 	"scripts": {
 		"build": "rollup -c",
-		"watch": "rollup -c -w --watch.onEnd=\"streamdeck restart com.ntanis.spotify-essentials\""
+		"watch": "rollup -c -w --watch.onEnd=\"streamdeck restart com.ntanis.essentials-for-spotify\""
 	},
 	"type": "module",
 	"devDependencies": {

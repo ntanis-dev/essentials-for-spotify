@@ -11,7 +11,7 @@ import constants from './../library/constants.js'
 import images from './../library/images.js'
 import wrapper from './../library/wrapper.js'
 
-@action({ UUID: 'com.ntanis.spotify-essentials.playback-control-dial' })
+@action({ UUID: 'com.ntanis.essentials-for-spotify.playback-control-dial' })
 export default class PlaybackControlDial extends Dial {
 	static readonly HOLDABLE = true
 

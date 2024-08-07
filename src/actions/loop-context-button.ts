@@ -8,7 +8,7 @@ import {
 
 import wrapper from './../library/wrapper.js'
 
-@action({ UUID: 'com.ntanis.spotify-essentials.loop-context-button' })
+@action({ UUID: 'com.ntanis.essentials-for-spotify.loop-context-button' })
 export default class LoopContextButton extends Button {
 	static readonly STATABLE = true
 

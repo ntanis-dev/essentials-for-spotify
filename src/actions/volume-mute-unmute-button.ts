@@ -10,7 +10,7 @@ import {
 import constants from '../library/constants.js'
 import wrapper from './../library/wrapper.js'
 
-@action({ UUID: 'com.ntanis.spotify-essentials.volume-mute-unmute-button' })
+@action({ UUID: 'com.ntanis.essentials-for-spotify.volume-mute-unmute-button' })
 export default class VolumeMuteUnmuteButton extends Button {
 	static readonly STATABLE = true
 

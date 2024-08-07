@@ -6,7 +6,7 @@
 	"Actions": [
 		{
 			"Name": "Play / Pause",
-			"UUID": "com.ntanis.spotify-essentials.play-pause-button",
+			"UUID": "com.ntanis.essentials-for-spotify.play-pause-button",
 			"Icon": "images/actions/play-pause",
 			"Tooltip": "Toggles between playing and pausing the current song.",
 			"DisableAutomaticStates": true,
@@ -30,7 +30,7 @@
 		
 		{
 			"Name": "Previous Song",
-			"UUID": "com.ntanis.spotify-essentials.previous-song-button",
+			"UUID": "com.ntanis.essentials-for-spotify.previous-song-button",
 			"Icon": "images/actions/previous",
 			"Tooltip": "Skips to the previous song.",
 			"DisableAutomaticStates": true,
@@ -49,7 +49,7 @@
 		
 		{
 			"Name": "Next Song",
-			"UUID": "com.ntanis.spotify-essentials.next-song-button",
+			"UUID": "com.ntanis.essentials-for-spotify.next-song-button",
 			"Icon": "images/actions/next",
 			"Tooltip": "Advances to the next song.",
 			"DisableAutomaticStates": true,
@@ -68,7 +68,7 @@
 		
 		{
 			"Name": "Shuffle",
-			"UUID": "com.ntanis.spotify-essentials.shuffle-button",
+			"UUID": "com.ntanis.essentials-for-spotify.shuffle-button",
 			"Icon": "images/actions/shuffle",
 			"Tooltip": "Activates or deactivates shuffle play.",
 			"DisableAutomaticStates": true,
@@ -92,7 +92,7 @@
 		
 		{
 			"Name": "Loop Context",
-			"UUID": "com.ntanis.spotify-essentials.loop-context-button",
+			"UUID": "com.ntanis.essentials-for-spotify.loop-context-button",
 			"Icon": "images/actions/loop-context",
 			"Tooltip": "Repeats the current playlist or album.",
 			"DisableAutomaticStates": true,
@@ -116,7 +116,7 @@
 		
 		{
 			"Name": "Loop Song",
-			"UUID": "com.ntanis.spotify-essentials.loop-song-button",
+			"UUID": "com.ntanis.essentials-for-spotify.loop-song-button",
 			"Icon": "images/actions/loop-song",
 			"Tooltip": "Repeats the current song.",
 			"DisableAutomaticStates": true,
@@ -140,7 +140,7 @@
 		
 		{
 			"Name": "Like / Unlike",
-			"UUID": "com.ntanis.spotify-essentials.like-unlike-button",
+			"UUID": "com.ntanis.essentials-for-spotify.like-unlike-button",
 			"Icon": "images/actions/like-unlike",
 			"Tooltip": "Adds the current song to your liked songs or removes it if already liked.",
 			"DisableAutomaticStates": true,
@@ -164,7 +164,7 @@
 		
 		{
 			"Name": "Volume Up",
-			"UUID": "com.ntanis.spotify-essentials.volume-up-button",
+			"UUID": "com.ntanis.essentials-for-spotify.volume-up-button",
 			"Icon": "images/actions/volume-up",
 			"Tooltip": "Increases the playback volume.",
 			"DisableAutomaticStates": true,
@@ -183,7 +183,7 @@
 		
 		{
 			"Name": "Volume Down",
-			"UUID": "com.ntanis.spotify-essentials.volume-down-button",
+			"UUID": "com.ntanis.essentials-for-spotify.volume-down-button",
 			"Icon": "images/actions/volume-down",
 			"Tooltip": "Decreases the playback volume.",
 			"DisableAutomaticStates": true,
@@ -202,7 +202,7 @@
 		
 		{
 			"Name": "Volume Mute / Unmute",
-			"UUID": "com.ntanis.spotify-essentials.volume-mute-unmute-button",
+			"UUID": "com.ntanis.essentials-for-spotify.volume-mute-unmute-button",
 			"Icon": "images/actions/volume-mute-unmute",
 			"Tooltip": "Toggles between muting and unmuting the volume.",
 			"DisableAutomaticStates": true,
@@ -226,7 +226,7 @@
 		
 		{
 			"Name": "Song Information",
-			"UUID": "com.ntanis.spotify-essentials.song-information-button",
+			"UUID": "com.ntanis.essentials-for-spotify.song-information-button",
 			"Icon": "images/actions/song-information",
 			"Tooltip": "Displays the information of the current song.",
 			"DisableAutomaticStates": true,
@@ -247,7 +247,7 @@
 		
 		{
 			"Name": "User Information",
-			"UUID": "com.ntanis.spotify-essentials.user-information-button",
+			"UUID": "com.ntanis.essentials-for-spotify.user-information-button",
 			"Icon": "images/actions/user-information",
 			"Tooltip": "Displays the information of the current user.",
 			"DisableAutomaticStates": true,
@@ -268,7 +268,7 @@
 		
 		{
 			"Name": "Song Clipboard",
-			"UUID": "com.ntanis.spotify-essentials.song-clipboard-button",
+			"UUID": "com.ntanis.essentials-for-spotify.song-clipboard-button",
 			"Icon": "images/actions/song-clipboard",
 			"Tooltip": "Copies the information of the current song to the clipboard.",
 			"DisableAutomaticStates": true,
@@ -287,7 +287,7 @@
 		
 		{
 			"Name": "Surprise Me",
-			"UUID": "com.ntanis.spotify-essentials.surprise-me-button",
+			"UUID": "com.ntanis.essentials-for-spotify.surprise-me-button",
 			"Icon": "images/actions/surprise-me",
 			"Tooltip": "Plays a random song that you may like.",
 			"DisableAutomaticStates": true,
@@ -306,7 +306,7 @@
 		
 		{
 			"Name": "Backward Seek",
-			"UUID": "com.ntanis.spotify-essentials.backward-seek-button",
+			"UUID": "com.ntanis.essentials-for-spotify.backward-seek-button",
 			"Icon": "images/actions/backward-seek",
 			"Tooltip": "Seek backward in the current song.",
 			"DisableAutomaticStates": true,
@@ -325,7 +325,7 @@
 		
 		{
 			"Name": "Forward Seek",
-			"UUID": "com.ntanis.spotify-essentials.forward-seek-button",
+			"UUID": "com.ntanis.essentials-for-spotify.forward-seek-button",
 			"Icon": "images/actions/forward-seek",
 			"Tooltip": "Seek forward in the current song.",
 			"DisableAutomaticStates": true,
@@ -344,7 +344,7 @@
 		
 		{
 			"Name": "Explicit Indicator",
-			"UUID": "com.ntanis.spotify-essentials.song-explicit-button",
+			"UUID": "com.ntanis.essentials-for-spotify.song-explicit-button",
 			"Icon": "images/actions/song-explicit",
 			"Tooltip": "Shows whether the current song is explicit or not",
 			"DisableAutomaticStates": true,
@@ -369,7 +369,7 @@
 		
 		{
 			"Name": "Setup",
-			"UUID": "com.ntanis.spotify-essentials.setup-button",
+			"UUID": "com.ntanis.essentials-for-spotify.setup-button",
 			"Icon": "images/actions/setup",
 			"Tooltip": "Start here to setup Essentials for Spotify.",
 			"DisableAutomaticStates": true,
@@ -394,7 +394,7 @@
 		
 		{
 			"Name": "Playback Control",
-			"UUID": "com.ntanis.spotify-essentials.playback-control-dial",
+			"UUID": "com.ntanis.essentials-for-spotify.playback-control-dial",
 			"Icon": "images/actions/playback-control",
 			"Tooltip": "Controls the playback of the current song.",
 
@@ -423,7 +423,7 @@
 		
 		{
 			"Name": "Volume Control",
-			"UUID": "com.ntanis.spotify-essentials.volume-control-dial",
+			"UUID": "com.ntanis.essentials-for-spotify.volume-control-dial",
 			"Icon": "images/actions/volume-control",
 			"Tooltip": "Controls the playback volume.",
 
@@ -452,7 +452,7 @@
 		
 		{
 			"Name": "My Playlists",
-			"UUID": "com.ntanis.spotify-essentials.my-playlists-dial",
+			"UUID": "com.ntanis.essentials-for-spotify.my-playlists-dial",
 			"Icon": "images/actions/playlists",
 			"Tooltip": "Navigate and play your playlists.",
 
@@ -481,7 +481,7 @@
 		
 		{
 			"Name": "Featured Playlists",
-			"UUID": "com.ntanis.spotify-essentials.featured-playlists-dial",
+			"UUID": "com.ntanis.essentials-for-spotify.featured-playlists-dial",
 			"Icon": "images/actions/playlists",
 			"Tooltip": "Navigate and play featured playlists.",
 
@@ -516,7 +516,7 @@
 	"Description": "Effortlessly control your Spotify through your Elgato Stream Deck. A Spotify Premium account is required. This plugin leverages the Spotify Web API.",
 	"Icon": "images/plugin/marketplace",
 	"SDKVersion": 2,
-	"URL": "https://github.com/ntanis-dev/spotify-essentials",
+	"URL": "https://github.com/ntanis-dev/essentials-for-spotify",
 
 	"Software": {
 		"MinimumVersion": "6.4"
@@ -538,5 +538,5 @@
 		"Version": "20"
 	},
 
-	"UUID": "com.ntanis.spotify-essentials"
+	"UUID": "com.ntanis.essentials-for-spotify"
 }

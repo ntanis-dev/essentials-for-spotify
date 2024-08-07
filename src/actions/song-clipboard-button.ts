@@ -16,7 +16,7 @@ import constants from '../library/constants.js'
 import logger from './../library/logger.js'
 import wrapper from './../library/wrapper.js'
 
-@action({ UUID: 'com.ntanis.spotify-essentials.song-clipboard-button' })
+@action({ UUID: 'com.ntanis.essentials-for-spotify.song-clipboard-button' })
 export default class SongClipboardButton extends Button {
 	constructor() {
 		super()

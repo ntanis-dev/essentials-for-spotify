@@ -13,7 +13,7 @@ import connector from '../library/connector.js'
 import images from '../library/images.js'
 import wrapper from '../library/wrapper.js'
 
-@action({ UUID: 'com.ntanis.spotify-essentials.song-information-button' })
+@action({ UUID: 'com.ntanis.essentials-for-spotify.song-information-button' })
 export default class SongInformationButton extends Button {
 	static readonly STATABLE = true
 	static readonly ACTIONLESS = true

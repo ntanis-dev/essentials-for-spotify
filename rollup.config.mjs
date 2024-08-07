@@ -13,7 +13,7 @@ const config = {
 	input: 'src/plugin.js',
 
 	output: {
-		file: 'com.ntanis.spotify-essentials.sdPlugin/bin/plugin.js',
+		file: 'com.ntanis.essentials-for-spotify.sdPlugin/bin/plugin.js',
 		sourcemap: isWatching,
 
 		sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => {
@@ -61,12 +61,12 @@ const config = {
 			targets: [
 				{
 					src: 'src/ui',
-					dest: 'com.ntanis.spotify-essentials.sdPlugin/bin'
+					dest: 'com.ntanis.essentials-for-spotify.sdPlugin/bin'
 				},
 
 				{
 					src: 'src/localization/*',
-					dest: 'com.ntanis.spotify-essentials.sdPlugin'
+					dest: 'com.ntanis.essentials-for-spotify.sdPlugin'
 				}
 			]
 		})

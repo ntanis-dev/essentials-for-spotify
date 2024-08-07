@@ -1,5 +1,5 @@
 {
-	"id": "com.ntanis.spotify-essentials.layouts.volume-control",
+	"id": "com.ntanis.essentials-for-spotify.layouts.playlists",
 
 	"items": [
 		{
@@ -12,7 +12,7 @@
 				"weight": 600
 			},
 
-			"value": "Volume Control",
+			"value": "Playlists",
 			"alignment": "left"
 		},
 
@@ -21,14 +21,14 @@
 			"type": "pixmap",
 			"rect": [16, 40, 48, 48],
 			"opacity": 0.3,
-			"value": "images/icons/volume-control.png"
+			"value": "images/icons/playlists.png"
 		},
 
 		{
-			"key": "text",
+			"key": "name",
 			"type": "text",
-			"value": "??%",
-			"rect": [76, 40, 108, 32],
+			"value": "?????",
+			"rect": [72, 36, 112, 24],
 
 			"font": {
 				"size": 16,
@@ -40,12 +40,17 @@
 		},
 
 		{
-			"key": "indicator",
-			"type": "bar",
-			"rect": [76, 74, 108, 12],
-			"value": 0,
-			"subtype": 4,
-			"border_w": 0,
+			"key": "count",
+			"type": "text",
+			"value": "???? / ????",
+			"rect": [72, 64, 112, 24],
+
+			"font": {
+				"size": 16,
+				"weight": 600
+			},
+
+			"alignment": "right",
 			"opacity": 0.3
 		}
 	]

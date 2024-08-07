@@ -9,7 +9,7 @@ import {
 
 import wrapper from './../library/wrapper.js'
 
-@action({ UUID: 'com.ntanis.spotify-essentials.song-explicit-button' })
+@action({ UUID: 'com.ntanis.essentials-for-spotify.song-explicit-button' })
 export default class SongExplicitButton extends Button {
 	static readonly STATABLE = true
 	static readonly ACTIONLESS = true

@@ -8,7 +8,7 @@ import {
 
 import wrapper from './../library/wrapper.js'
 
-@action({ UUID: 'com.ntanis.spotify-essentials.featured-playlists-dial' })
+@action({ UUID: 'com.ntanis.essentials-for-spotify.featured-playlists-dial' })
 export default class FeaturedPlaylistsDial extends PlaylistsDial {
 	constructor() {
 		super('playlists-layout.json', 'images/icons/playlists.png')

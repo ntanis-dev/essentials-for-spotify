@@ -9,7 +9,7 @@ import {
 import constants from '../library/constants.js'
 import wrapper from './../library/wrapper.js'
 
-@action({ UUID: 'com.ntanis.spotify-essentials.shuffle-button' })
+@action({ UUID: 'com.ntanis.essentials-for-spotify.shuffle-button' })
 export default class ShuffleButton extends Button {
 	static readonly STATABLE = true
 

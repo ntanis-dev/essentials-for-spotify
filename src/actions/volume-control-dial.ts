@@ -11,7 +11,7 @@ import {
 import constants from './../library/constants.js'
 import wrapper from './../library/wrapper.js'
 
-@action({ UUID: 'com.ntanis.spotify-essentials.volume-control-dial' })
+@action({ UUID: 'com.ntanis.essentials-for-spotify.volume-control-dial' })
 export default class VolumeControlDial extends Dial {
 	static readonly HOLDABLE = true
 

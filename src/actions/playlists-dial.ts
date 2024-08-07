@@ -11,7 +11,7 @@ import constants from './../library/constants.js'
 import images from './../library/images.js'
 import wrapper from './../library/wrapper.js'
 
-@action({ UUID: 'com.ntanis.spotify-essentials.playlists-dial' })
+@action({ UUID: 'com.ntanis.essentials-for-spotify.playlists-dial' })
 export class PlaylistsDial extends Dial {
 	#currentPlaylist: any = {}
 	#playlistsPage: any = {}

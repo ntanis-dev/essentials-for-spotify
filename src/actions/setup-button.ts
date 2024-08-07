@@ -14,7 +14,7 @@ import constants from '../library/constants.js'
 import connector from './../library/connector.js'
 import logger from './../library/logger.js'
 
-@action({ UUID: 'com.ntanis.spotify-essentials.setup-button' })
+@action({ UUID: 'com.ntanis.essentials-for-spotify.setup-button' })
 export default class SetupButton extends Button {
 	static readonly SETUPLESS = true
 	static readonly STATABLE = true
