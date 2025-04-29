@@ -60,7 +60,7 @@ export default class SongClipboardButton extends Button {
 
 	async invokeWrapperAction(context: string) {
 		if (wrapper.song)
-			return this.#copyToClipboard(`${wrapper.song.item.name} - ${wrapper.song.item.artists.map((artist: any) => artist.name).join(', ')}\n${wrapper.song.item.external_urls.spotify}`)
+			return this.#copyToClipboard(`${wrapper.song.item.name} - ${wrapper.song.item.artists.map((artist: any) => artist.name).join(', ')} \n${wrapper.song.item.external_urls.spotify}`)
 
 		return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
