@@ -238,10 +238,6 @@ export class PlaylistsDial extends Dial {
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 
-	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
-		super.onWillAppear(ev)
-	}
-
 	async resetFeedbackLayout(context: string, feedback = {}): Promise<void> {
 		super.resetFeedbackLayout(context, Object.assign({
 			icon: this.originalIcon

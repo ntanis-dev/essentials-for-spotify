@@ -29,7 +29,7 @@ export default class PlayPauseButton extends Button {
 	}
 
 	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
-		super.onWillAppear(ev)
+		await super.onWillAppear(ev)
 		this.#onPlaybackStateChanged(wrapper.playing, [ev.action.id])
 	}
 }

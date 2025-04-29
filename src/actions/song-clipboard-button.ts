@@ -66,7 +66,7 @@ export default class SongClipboardButton extends Button {
 	}
 
 	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
-		super.onWillAppear(ev)
+		await super.onWillAppear(ev)
 		this.#onSongChanged(wrapper.song, false, [ev.action.id])
 	}
 }
