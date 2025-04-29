@@ -286,25 +286,6 @@
 		},
 		
 		{
-			"Name": "Surprise Me",
-			"UUID": "com.ntanis.essentials-for-spotify.surprise-me-button",
-			"Icon": "images/actions/surprise-me",
-			"Tooltip": "Plays a random song that you may like.",
-			"DisableAutomaticStates": true,
-
-			"Controllers": [
-				"Keypad"
-			],
-
-			"States": [
-				{
-					"Image": "images/states/surprise-me",
-					"TitleAlignment": "middle"
-				}
-			]
-		},
-		
-		{
 			"Name": "Backward Seek",
 			"UUID": "com.ntanis.essentials-for-spotify.backward-seek-button",
 			"Icon": "images/actions/backward-seek",

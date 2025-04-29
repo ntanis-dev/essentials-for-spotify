@@ -69,8 +69,7 @@ class Wrapper extends EventEmitter {
 			this.#setSong({
 				item: this.#lastSong.item,
 				liked: this.#lastSong.liked,
-				progress: Math.min(this.#lastSong.progress + timeDiff, this.#lastSong.item.duration_ms),
-				surprise: this.#lastSong.surprise
+				progress: Math.min(this.#lastSong.progress + timeDiff, this.#lastSong.item.duration_ms)
 			}, false, true)
 		}, constants.INTERVAL_CHECK_UPDATE_SONG_TIME)
 	}
@@ -162,8 +161,7 @@ class Wrapper extends EventEmitter {
 			this.#setSong(response?.item ? {
 				item: response.item,
 				liked: (await connector.callSpotifyApi(`me/tracks/contains?ids=${response.item.id}`))[0],
-				progress: response.progress_ms,
-				surprise: this.#lastSong && this.#lastSong.item.id === response.item.id ? this.#lastSong.surprise : false
+				progress: response.progress_ms
 			} : null)
 
 			this.#setDevices(response?.device.id || null, (await connector.callSpotifyApi('me/player/devices')).devices)
@@ -530,8 +528,7 @@ class Wrapper extends EventEmitter {
 			this.#setSong({
 				item: song.item,
 				liked: true,
-				progress: song.progress,
-				surprise: song.surprise
+				progress: song.progress
 			})
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
@@ -547,8 +544,7 @@ class Wrapper extends EventEmitter {
 			this.#setSong({
 				item: song.item,
 				liked: false,
-				progress: song.progress,
-				surprise: song.surprise
+				progress: song.progress
 			})
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
@@ -567,8 +563,7 @@ class Wrapper extends EventEmitter {
 			this.#setSong({
 				item: song.item,
 				liked: song.liked,
-				progress: song.progress + time,
-				surprise: song.surprise
+				progress: song.progress + time
 			})
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
@@ -589,59 +584,8 @@ class Wrapper extends EventEmitter {
 			this.#setSong({
 				item: song.item,
 				liked: song.liked,
-				progress: newProgress,
-				surprise: song.surprise
+				progress: newProgress
 			})
-
-			return constants.WRAPPER_RESPONSE_SUCCESS
-		})
-	}
-
-	async surpriseMe(deviceId = this.#lastDevice) {
-		if (this.#lastUser?.product !== 'premium')
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-
-		return this.#wrapCall(async () => {
-			let recommendations = {
-				tracks: []
-			}
-
-			if ((!this.#lastPlaying) || (!this.#lastSong) || this.#lastSong.surprise) {
-				const genreSeeds = await connector.callSpotifyApi('recommendations/available-genre-seeds')
-
-				if (!genreSeeds.genres.length)
-					throw new constants.ApiError('No genre seeds available.')
-
-				const randomSeeds = []
-
-				for (let i = 0; i < 5; i++) {
-					const randomIndex = Math.floor(Math.random() * genreSeeds.genres.length)
-					randomSeeds.push(genreSeeds.genres[randomIndex])
-				}
-
-				recommendations = await connector.callSpotifyApi(`recommendations?seed_genres=${randomSeeds.join(',')}`)
-			} else
-				recommendations = await connector.callSpotifyApi(`recommendations?seed_tracks=${this.#lastSong.item.id}`)
-
-			if (!recommendations.tracks.length)
-				throw new constants.ApiError('No recommendations available.')
-
-			await this.#deviceCall('me/player/play', {
-				method: 'PUT',
-
-				body: JSON.stringify({
-					uris: recommendations.tracks.map(track => track.uri)
-				})
-			}, deviceId)
-
-			this.#setSong({
-				item: recommendations.tracks[0],
-				liked: (await connector.callSpotifyApi(`me/tracks/contains?ids=${recommendations.tracks[0].id}`))[0],
-				progress: 0,
-				surprise: this.#lastSong?.surprise || (!this.#lastPlaying)
-			})
-
-			this.#setPlaying(true)
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
 		})
