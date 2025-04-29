@@ -15,5 +15,4 @@ Icons are integrated into this project and must **not** be extracted or re-used 
 **Spotify** is a trademark of **Spotify AB**.\
 **Stream Deck** is a trademark of **Elgato Systems GmbH**.\
 \
-This is an independent, community-driven project.\
-It is not affiliated with, endorsed, sponsored, or approved by **Spotify AB** or **Elgato Systems GmbH**.
+This project is not affiliated with, endorsed, sponsored, or approved by **Spotify AB** or **Elgato Systems GmbH**.
