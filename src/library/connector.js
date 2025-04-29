@@ -129,7 +129,7 @@ class Connector extends EventEmitter {
 
 						body: new URLSearchParams({
 							code: req.query.code,
-							redirect_uri: `http://localhost:${this.#port}`,
+							redirect_uri: `http://127.0.0.1:${this.#port}`,
 							grant_type: 'authorization_code'
 						}),
 
@@ -183,7 +183,7 @@ class Connector extends EventEmitter {
 			} else {
 				this.#clientId = req.body.clientId
 				this.#clientSecret = req.body.clientSecret
-				res.redirect(`https://accounts.spotify.com/authorize?response_type=code&client_id=${this.#clientId}&scope=${encodeURIComponent(constants.CONNECTOR_DEFAULT_SCOPES.join(' '))}&redirect_uri=${encodeURIComponent(`http://localhost:${this.#port}`)}`);
+				res.redirect(`https://accounts.spotify.com/authorize?response_type=code&client_id=${this.#clientId}&scope=${encodeURIComponent(constants.CONNECTOR_DEFAULT_SCOPES.join(' '))}&redirect_uri=${encodeURIComponent(`http://127.0.0.1:${this.#port}`)}`);
 			}
 		})
 

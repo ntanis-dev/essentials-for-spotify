@@ -3,12 +3,6 @@ import logger from './library/logger'
 import connector from './library/connector'
 import actions from './library/actions'
 
-// Remove PI / localization (opinionated)
-// TODO: Fix mute by the player / unmute by SD 
-// TODO: Copyrights and licensing (rename to Essentials for Spotify and add icons8 license)
-// unmute button doesn't update on setup update
-// hold mute doesn't work on dial
-
 StreamDeck.connect().then(() => {
 	logger.info('Connected to Stream Deck.')
 

@@ -477,35 +477,6 @@
 					"Touch": "Refresh"
 				}
 			}
-		},
-		
-		{
-			"Name": "Featured Playlists",
-			"UUID": "com.ntanis.essentials-for-spotify.featured-playlists-dial",
-			"Icon": "images/actions/playlists",
-			"Tooltip": "Navigate and play featured playlists.",
-
-			"Controllers": [
-				"Encoder"
-			],
-
-			"States": [
-				{
-					"Image": "images/states/playlists",
-					"TitleAlignment": "left"
-				}
-			],
-
-			"Encoder": {
-				"layout": "playlists-layout.json",
-				"StackColor": "#FFF",
-
-				"TriggerDescription": {
-					"Rotate": "Navigate",
-					"Push": "Play",
-					"Touch": "Refresh"
-				}
-			}
 		}
 	],
 
