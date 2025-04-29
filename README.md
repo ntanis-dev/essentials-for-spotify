@@ -10,7 +10,7 @@ This project uses the [Spotify Web API](https://developer.spotify.com/documentat
 The use of it is subject to the [Spotify Developer Terms of Service](https://developer.spotify.com/terms).\
 \
 Icons are courtesy of [Icons8](https://icons8.com), used under the [Universal Multimedia License Agreement for Icons8](https://icons8.com/license).\
-Icons are integrated into this project and must **not** be extracted or re-used as standalone assets.\
+Icons integrated into this project must **not** be extracted or re-used as standalone assets.\
 \
 **Spotify** is a trademark of **Spotify AB**.\
 **Stream Deck** is a trademark of **Elgato Systems GmbH**.\
