@@ -458,6 +458,35 @@
 					"Touch": "Refresh"
 				}
 			}
+		},
+
+		{
+			"Name": "My Queue",
+			"UUID": "com.ntanis.essentials-for-spotify.my-queue-dial",
+			"Icon": "images/actions/queue",
+			"Tooltip": "Navigate and play your queue.",
+
+			"Controllers": [
+				"Encoder"
+			],
+
+			"States": [
+				{
+					"Image": "images/states/queue",
+					"TitleAlignment": "left"
+				}
+			],
+
+			"Encoder": {
+				"layout": "queue-layout.json",
+				"StackColor": "#FFF",
+
+				"TriggerDescription": {
+					"Rotate": "Navigate",
+					"Push": "Play",
+					"Touch": "Refresh"
+				}
+			}
 		}
 	],
 
