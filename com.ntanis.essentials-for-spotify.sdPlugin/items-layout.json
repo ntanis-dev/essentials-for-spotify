@@ -20,6 +20,7 @@
 			"key": "extra",
 			"type": "text",
 			"rect": [152, 10, 38, 24],
+			"opacity": 0.3,
 
 			"font": {
 				"size": 16,

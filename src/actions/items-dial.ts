@@ -35,6 +35,10 @@ export default class ItemsDial extends Dial {
 
 				count: {
 					opacity: 1.0
+				},
+
+				extra: {
+					opacity: 1.0
 				}
 			})
 
@@ -87,6 +91,10 @@ export default class ItemsDial extends Dial {
 				},
 
 				count: {
+					opacity: 1.0
+				},
+
+				opacity: {
 					opacity: 1.0
 				}
 			})
