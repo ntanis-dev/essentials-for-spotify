@@ -1,8 +1,7 @@
 {
 	"Name": "Essentials for Spotify",
-	"Version": "1.0.0",
+	"Version": "1.0.0.0",
 	"Author": "Ntanis",
-
 	"Actions": [
 		{
 			"Name": "Play / Pause",
@@ -10,35 +9,29 @@
 			"Icon": "images/actions/play-pause",
 			"Tooltip": "Toggles between playing and pausing the current song.",
 			"DisableAutomaticStates": true,
-
 			"Controllers": [
 				"Keypad"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/play",
 					"TitleAlignment": "middle"
 				},
-				
 				{
 					"Image": "images/states/pause",
 					"TitleAlignment": "middle"
 				}
 			]
 		},
-		
 		{
 			"Name": "Previous Song",
 			"UUID": "com.ntanis.essentials-for-spotify.previous-song-button",
 			"Icon": "images/actions/previous",
 			"Tooltip": "Skips to the previous song.",
 			"DisableAutomaticStates": true,
-
 			"Controllers": [
 				"Keypad"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/previous",
@@ -46,18 +39,15 @@
 				}
 			]
 		},
-		
 		{
 			"Name": "Next Song",
 			"UUID": "com.ntanis.essentials-for-spotify.next-song-button",
 			"Icon": "images/actions/next",
 			"Tooltip": "Advances to the next song.",
 			"DisableAutomaticStates": true,
-
 			"Controllers": [
 				"Keypad"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/next",
@@ -65,114 +55,95 @@
 				}
 			]
 		},
-		
 		{
 			"Name": "Shuffle",
 			"UUID": "com.ntanis.essentials-for-spotify.shuffle-button",
 			"Icon": "images/actions/shuffle",
 			"Tooltip": "Activates or deactivates shuffle play.",
 			"DisableAutomaticStates": true,
-
 			"Controllers": [
 				"Keypad"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/shuffle-inactive",
 					"TitleAlignment": "middle"
 				},
-				
 				{
 					"Image": "images/states/shuffle-active",
 					"TitleAlignment": "middle"
 				}
 			]
 		},
-		
 		{
 			"Name": "Loop Context",
 			"UUID": "com.ntanis.essentials-for-spotify.loop-context-button",
 			"Icon": "images/actions/loop-context",
 			"Tooltip": "Repeats the current playlist or album.",
 			"DisableAutomaticStates": true,
-
 			"Controllers": [
 				"Keypad"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/loop-inactive",
 					"TitleAlignment": "middle"
 				},
-				
 				{
 					"Image": "images/states/loop-active",
 					"TitleAlignment": "middle"
 				}
 			]
 		},
-		
 		{
 			"Name": "Loop Song",
 			"UUID": "com.ntanis.essentials-for-spotify.loop-song-button",
 			"Icon": "images/actions/loop-song",
 			"Tooltip": "Repeats the current song.",
 			"DisableAutomaticStates": true,
-
 			"Controllers": [
 				"Keypad"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/loop-one-inactive",
 					"TitleAlignment": "middle"
 				},
-				
 				{
 					"Image": "images/states/loop-one-active",
 					"TitleAlignment": "middle"
 				}
 			]
 		},
-		
 		{
 			"Name": "Like / Unlike",
 			"UUID": "com.ntanis.essentials-for-spotify.like-unlike-button",
 			"Icon": "images/actions/like-unlike",
 			"Tooltip": "Adds the current song to your liked songs or removes it if already liked.",
 			"DisableAutomaticStates": true,
-
 			"Controllers": [
 				"Keypad"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/like",
 					"TitleAlignment": "middle"
 				},
-				
 				{
 					"Image": "images/states/unlike",
 					"TitleAlignment": "middle"
 				}
 			]
 		},
-		
 		{
 			"Name": "Volume Up",
 			"UUID": "com.ntanis.essentials-for-spotify.volume-up-button",
 			"Icon": "images/actions/volume-up",
 			"Tooltip": "Increases the playback volume.",
 			"DisableAutomaticStates": true,
-
 			"Controllers": [
 				"Keypad"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/volume-up",
@@ -180,18 +151,15 @@
 				}
 			]
 		},
-		
 		{
 			"Name": "Volume Down",
 			"UUID": "com.ntanis.essentials-for-spotify.volume-down-button",
 			"Icon": "images/actions/volume-down",
 			"Tooltip": "Decreases the playback volume.",
 			"DisableAutomaticStates": true,
-
 			"Controllers": [
 				"Keypad"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/volume-down",
@@ -199,31 +167,26 @@
 				}
 			]
 		},
-		
 		{
 			"Name": "Volume Mute / Unmute",
 			"UUID": "com.ntanis.essentials-for-spotify.volume-mute-unmute-button",
 			"Icon": "images/actions/volume-mute-unmute",
 			"Tooltip": "Toggles between muting and unmuting the volume.",
 			"DisableAutomaticStates": true,
-
 			"Controllers": [
 				"Keypad"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/volume-mute",
 					"TitleAlignment": "middle"
 				},
-				
 				{
 					"Image": "images/states/volume-unmute",
 					"TitleAlignment": "middle"
 				}
 			]
 		},
-		
 		{
 			"Name": "Song Information",
 			"UUID": "com.ntanis.essentials-for-spotify.song-information-button",
@@ -232,11 +195,9 @@
 			"DisableAutomaticStates": true,
 			"UserTitleEnabled": false,
 			"SupportedInMultiActions": false,
-
 			"Controllers": [
 				"Keypad"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/song-information",
@@ -244,7 +205,6 @@
 				}
 			]
 		},
-		
 		{
 			"Name": "User Information",
 			"UUID": "com.ntanis.essentials-for-spotify.user-information-button",
@@ -253,11 +213,9 @@
 			"DisableAutomaticStates": true,
 			"UserTitleEnabled": false,
 			"SupportedInMultiActions": false,
-
 			"Controllers": [
 				"Keypad"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/user-information",
@@ -265,18 +223,15 @@
 				}
 			]
 		},
-		
 		{
 			"Name": "Song Clipboard",
 			"UUID": "com.ntanis.essentials-for-spotify.song-clipboard-button",
 			"Icon": "images/actions/song-clipboard",
 			"Tooltip": "Copies the information of the current song to the clipboard.",
 			"DisableAutomaticStates": true,
-
 			"Controllers": [
 				"Keypad"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/song-clipboard",
@@ -284,18 +239,15 @@
 				}
 			]
 		},
-		
 		{
 			"Name": "Backward Seek",
 			"UUID": "com.ntanis.essentials-for-spotify.backward-seek-button",
 			"Icon": "images/actions/backward-seek",
 			"Tooltip": "Seek backward in the current song.",
 			"DisableAutomaticStates": true,
-
 			"Controllers": [
 				"Keypad"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/backward-seek",
@@ -303,18 +255,15 @@
 				}
 			]
 		},
-		
 		{
 			"Name": "Forward Seek",
 			"UUID": "com.ntanis.essentials-for-spotify.forward-seek-button",
 			"Icon": "images/actions/forward-seek",
 			"Tooltip": "Seek forward in the current song.",
 			"DisableAutomaticStates": true,
-
 			"Controllers": [
 				"Keypad"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/forward-seek",
@@ -322,7 +271,6 @@
 				}
 			]
 		},
-		
 		{
 			"Name": "Explicit Indicator",
 			"UUID": "com.ntanis.essentials-for-spotify.song-explicit-button",
@@ -330,24 +278,20 @@
 			"Tooltip": "Shows whether the current song is explicit or not",
 			"DisableAutomaticStates": true,
 			"SupportedInMultiActions": false,
-
 			"Controllers": [
 				"Keypad"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/song-not-explicit",
 					"TitleAlignment": "middle"
 				},
-				
 				{
 					"Image": "images/states/song-explicit",
 					"TitleAlignment": "middle"
 				}
 			]
 		},
-		
 		{
 			"Name": "Setup",
 			"UUID": "com.ntanis.essentials-for-spotify.setup-button",
@@ -355,45 +299,37 @@
 			"Tooltip": "Start here to setup Essentials for Spotify.",
 			"DisableAutomaticStates": true,
 			"SupportedInMultiActions": false,
-
 			"Controllers": [
 				"Keypad"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/no-setup",
 					"TitleAlignment": "middle"
 				},
-				
 				{
 					"Image": "images/states/setup",
 					"TitleAlignment": "middle"
 				}
 			]
 		},
-		
 		{
 			"Name": "Playback Control",
 			"UUID": "com.ntanis.essentials-for-spotify.playback-control-dial",
 			"Icon": "images/actions/playback-control",
 			"Tooltip": "Controls the playback of the current song.",
-
 			"Controllers": [
 				"Encoder"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/playback-control",
-					"TitleAlignment": "left"
+					"TitleAlignment": "middle"
 				}
 			],
-
 			"Encoder": {
 				"layout": "playback-control-layout.json",
 				"StackColor": "#FFF",
-
 				"TriggerDescription": {
 					"Rotate": "Previous / Next",
 					"Push": "Rotate Seek",
@@ -401,28 +337,23 @@
 				}
 			}
 		},
-		
 		{
 			"Name": "Volume Control",
 			"UUID": "com.ntanis.essentials-for-spotify.volume-control-dial",
 			"Icon": "images/actions/volume-control",
 			"Tooltip": "Controls the playback volume.",
-
 			"Controllers": [
 				"Encoder"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/volume-control",
-					"TitleAlignment": "left"
+					"TitleAlignment": "middle"
 				}
 			],
-
 			"Encoder": {
 				"layout": "volume-control-layout.json",
 				"StackColor": "#FFF",
-
 				"TriggerDescription": {
 					"Rotate": "Adjust Volume",
 					"Push": "Hold Mute",
@@ -430,28 +361,23 @@
 				}
 			}
 		},
-		
 		{
 			"Name": "My Playlists",
 			"UUID": "com.ntanis.essentials-for-spotify.my-playlists-dial",
 			"Icon": "images/actions/playlists",
 			"Tooltip": "Navigate and play through your playlists.",
-
 			"Controllers": [
 				"Encoder"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/playlists",
-					"TitleAlignment": "left"
+					"TitleAlignment": "middle"
 				}
 			],
-
 			"Encoder": {
 				"layout": "items-layout.json",
 				"StackColor": "#FFF",
-
 				"TriggerDescription": {
 					"Rotate": "Navigate",
 					"Push": "Play",
@@ -459,28 +385,23 @@
 				}
 			}
 		},
-
 		{
 			"Name": "New Releases",
 			"UUID": "com.ntanis.essentials-for-spotify.new-releases-dial",
 			"Icon": "images/actions/items",
 			"Tooltip": "Navigate and play through your personalized new releases.",
-
 			"Controllers": [
 				"Encoder"
 			],
-
 			"States": [
 				{
 					"Image": "images/states/items",
-					"TitleAlignment": "left"
+					"TitleAlignment": "middle"
 				}
 			],
-
 			"Encoder": {
 				"layout": "items-layout.json",
 				"StackColor": "#FFF",
-
 				"TriggerDescription": {
 					"Rotate": "Navigate",
 					"Push": "Play",
@@ -489,35 +410,28 @@
 			}
 		}
 	],
-
 	"Category": "Essentials for Spotify",
 	"CategoryIcon": "images/plugin/category",
 	"CodePath": "bin/plugin.js",
-    "PropertyInspectorPath": "bin/ui/pi/index.html",
 	"Description": "Effortlessly control your Spotify through your Elgato Stream Deck. A Spotify Premium account is required. This plugin leverages the Spotify Web API.",
 	"Icon": "images/plugin/marketplace",
 	"SDKVersion": 2,
 	"URL": "https://github.com/ntanis-dev/essentials-for-spotify",
-
 	"Software": {
 		"MinimumVersion": "6.4"
 	},
-
 	"OS": [
 		{
 			"Platform": "mac",
 			"MinimumVersion": "10.11"
 		},
-
 		{
 			"Platform": "windows",
 			"MinimumVersion": "10"
 		}
 	],
-
 	"Nodejs": {
 		"Version": "20"
 	},
-
 	"UUID": "com.ntanis.essentials-for-spotify"
 }
