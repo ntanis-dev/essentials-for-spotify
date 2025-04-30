@@ -105,11 +105,12 @@ To manually install the plugin on **Windows**, follow these steps:
 
 1. Download the latest release from [here](https://github.com/ntanis-dev/essentials-for-spotify/releases).
 2. Unzip the downloaded file.
-3. Place the `com.ntanis.essentials-for-spotify.sdPlugin` folder from within the ZIP inside your `%AppData%\Elgato\StreamDeck\Plugins` folder.
-4. Restart the StreamDeck application.
-5. Place the **Setup** button in your StreamDeck and press it.
-6. A web page should open on your default internet browser, follow the instructions there.
-7. Enjoy!
+3. Locate  `com.ntanis.essentials-for-spotify.sdPlugin` folder from within the ZIP file.
+4. Place it inside `%AppData%\Elgato\StreamDeck\Plugins` folder.
+5. Restart the StreamDeck application.
+6. Place the **Setup** button in your StreamDeck and press it.
+7. A web page should open on your default internet browser, follow the instructions there.
+8. Enjoy!
 
 ## Notes
 
