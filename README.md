@@ -62,7 +62,7 @@ Effortlessly control your [Spotify](https://www.spotify.com/) through your [Elga
   - Push: Play selected playlist  
   - Touch: Refresh list  
 - **New Releases**\
-  Navigate and play through new releases.
+  Navigate and play through your personalized new releases.
   
   - Rotate: Navigate  
   - Push: Play  
