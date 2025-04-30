@@ -140,13 +140,6 @@ class Wrapper extends EventEmitter {
 		this.#updatePlaybackStateStatus = 'updating'
 
 		try {
-			let userResponse = await connector.callSpotifyApi('me')
-
-			if ((!userResponse) || typeof userResponse !== 'object')
-				userResponse = undefined
-
-			this.#setUser(userResponse || null)
-
 			let response = await connector.callSpotifyApi('me/player', undefined, [constants.API_EMPTY_RESPONSE])
 
 			if (response === constants.API_EMPTY_RESPONSE)
@@ -327,10 +320,6 @@ class Wrapper extends EventEmitter {
 	}
 
 	#setUser(user) {
-		if (this.#lastUser?.id === user?.id)
-			return
-
-		this.#updatePlaybackStateStatus = 'skip'
 		this.#lastUser = user
 		this.emit('userChanged', user)
 	}
@@ -343,6 +332,17 @@ class Wrapper extends EventEmitter {
 		this.#setSong(null, true)
 
 		this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(() => this.#updatePlaybackState(true), wasSongLoaded ? (byTime ? constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_TIME_SLEEP : constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP) : constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_UNLOADED_SLEEP)
+	}
+
+	async updateUser() {
+		return this.#wrapCall(async () => {
+			let userResponse = await connector.callSpotifyApi('me')
+	
+			if ((!userResponse) || typeof userResponse !== 'object')
+				userResponse = undefined
+	
+			this.#setUser(userResponse || null)
+		})
 	}
 
 	async resumePlayback(deviceId = this.#lastDevice) {

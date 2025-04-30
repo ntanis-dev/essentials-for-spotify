@@ -12,11 +12,11 @@ import {
 import connector from '../library/connector.js'
 import images from '../library/images.js'
 import wrapper from '../library/wrapper.js'
+import constants from '../library/constants.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.user-information-button' })
 export default class UserInformationButton extends Button {
 	static readonly STATABLE = true
-	static readonly ACTIONLESS = true
 
 	constructor() {
 		super()
@@ -24,19 +24,21 @@ export default class UserInformationButton extends Button {
 		this.setStatelessImage('images/states/user-information-unknown')
 	}
 
-	async #refreshUser(user: any, contexts = this.contexts) {
+	async #refreshUser(user: any, pending = false, contexts = this.contexts) {
 		for (const context of contexts) {
-			if ((!user) || typeof(user) !== 'object' || (this.marquees[context] && this.marquees[context].id !== user.id))
+			if ((!user) || typeof(user) !== 'object' || (this.marquees[context] && this.marquees[context].id !== user.id)) {
 				images.clearRaw('userProfilePicture')
+				this.clearMarquee(context)
+				this.setTitle(context, '')
+			}
 
 			if (!images.isRawCached('userProfilePicture'))
 				this.setImage(context, 'images/states/pending')
 
 			if ((!user) || typeof user !== 'object') {
-				this.setImage(context, 'images/states/user-information')
-				this.clearMarquee(context)
-				this.setTitle(context, '')
-				images.clearRaw('userProfilePicture')
+				if (!pending)
+					this.setImage(context, 'images/states/user-information')
+
 				return
 			}
 
@@ -62,8 +64,8 @@ export default class UserInformationButton extends Button {
 	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
 		await super.onWillAppear(ev)
 
-		if (connector.set)
-			this.#refreshUser(wrapper.user, [ev.action.id])
+		if (connector.set) 
+			this.#refreshUser(wrapper.user, false, [ev.action.id])
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
@@ -71,9 +73,18 @@ export default class UserInformationButton extends Button {
 		this.pauseMarquee(ev.action.id)
 	}
 
+	async invokeWrapperAction(context: string) {
+		await this.#refreshUser(null, true, [context])
+		return await wrapper.updateUser()
+	}
+
 	onStateSettled(context: string) {
 		super.onStateSettled(context, true)
-		this.#refreshUser(wrapper.user, [context])
+
+		if (!wrapper.user)
+			wrapper.updateUser().then(() => this.#refreshUser(wrapper.user, false, [context]))
+		else
+			this.#refreshUser(wrapper.user, false, [context])
 	}
 
 	onStateLoss(context: string) {
