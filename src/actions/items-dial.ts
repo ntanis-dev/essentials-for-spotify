@@ -54,8 +54,10 @@ export default class ItemsDial extends Dial {
 		const lastTotal = this.#lastTotal
 
 		delete apiCall.status
+
 		this.#items = apiCall
-		this.#lastTotal = this.#items.total
+		this.#lastTotal = this.#items.total <= constants.WRAPPER_ITEMS_PER_PAGE ? this.#items.items.length : this.#items.total
+
 		return lastTotal !== this.#lastTotal
 	}
 
@@ -78,7 +80,7 @@ export default class ItemsDial extends Dial {
 		return true
 	}
 
-	async #refreshLayout(refreshItems = false, context: string) {
+	async #refreshLayout(refreshItems = false, context: string): Promise<void> {
 		const nameMarquee = this.getMarquee(context, 'name')
 
 		if (refreshItems) {
@@ -108,7 +110,7 @@ export default class ItemsDial extends Dial {
 
 			await this.#refreshItems(context)
 
-			if (this.#items.total === 0) {
+			if (this.#lastTotal === 0) {
 				this.setIcon(context, this.originalIcon)
 
 				this.setFeedback(context, {
@@ -123,6 +125,10 @@ export default class ItemsDial extends Dial {
 			if (this.#currentItems[context] === undefined)
 				this.#currentItems[context] = 0
 		}
+
+		if (!this.#items.items[this.#currentItems[context]])
+			if (!refreshItems)
+				return this.#refreshLayout(true, context)
 
 		if (!images.isItemCached(this.#items.items[this.#currentItems[context]]))
 			this.setIcon(context, 'images/icons/pending.png')
@@ -167,14 +173,14 @@ export default class ItemsDial extends Dial {
 	async #refreshCount(context: string) {
 		this.setFeedback(context, {
 			count: {
-				value: `${((this.#itemsPage[context] - 1) * constants.WRAPPER_ITEMS_PER_PAGE) + this.#currentItems[context] + 1} / ${this.#items.total}`
+				value: `${((this.#itemsPage[context] - 1) * constants.WRAPPER_ITEMS_PER_PAGE) + this.#currentItems[context] + 1} / ${this.#lastTotal}`
 			}
 		})
 	}
 
 	async invokeWrapperAction(context: string, type: symbol) {
 		if (type === Dial.TYPES.ROTATE_CLOCKWISE) {
-			if (this.#items.total <= 1)
+			if (this.#lastTotal <= 1)
 				return constants.WRAPPER_RESPONSE_SUCCESS
 
 			this.pauseMarquee(context, 'name')
@@ -185,7 +191,7 @@ export default class ItemsDial extends Dial {
 
 				const lastPage = this.#itemsPage[context]
 
-				if (this.#itemsPage[context] < Math.ceil(this.#items.total / constants.WRAPPER_ITEMS_PER_PAGE))
+				if (this.#itemsPage[context] < Math.ceil(this.#lastTotal / constants.WRAPPER_ITEMS_PER_PAGE))
 					this.#itemsPage[context]++
 				else
 					this.#itemsPage[context] = 1
@@ -206,7 +212,7 @@ export default class ItemsDial extends Dial {
 
 			await this.#refreshLayout(false, context)
 		} else if (type === Dial.TYPES.ROTATE_COUNTERCLOCKWISE) {
-			if (this.#items.total <= 1)
+			if (this.#lastTotal <= 1)
 				return constants.WRAPPER_RESPONSE_SUCCESS
 
 			this.pauseMarquee(context, 'name')
@@ -219,8 +225,8 @@ export default class ItemsDial extends Dial {
 					this.#itemsPage[context]--
 					this.#currentItems[context] = constants.WRAPPER_ITEMS_PER_PAGE - 1
 				} else {
-					this.#itemsPage[context] = Math.ceil(this.#items.total / constants.WRAPPER_ITEMS_PER_PAGE)
-					this.#currentItems[context] = this.#items.total - ((this.#itemsPage[context] - 1) * constants.WRAPPER_ITEMS_PER_PAGE) - 1
+					this.#itemsPage[context] = Math.ceil(this.#lastTotal / constants.WRAPPER_ITEMS_PER_PAGE)
+					this.#currentItems[context] = this.#lastTotal - ((this.#itemsPage[context] - 1) * constants.WRAPPER_ITEMS_PER_PAGE) - 1
 				}
 
 				if (lastPage !== this.#itemsPage[context]) {
@@ -244,7 +250,7 @@ export default class ItemsDial extends Dial {
 		} else if (type === Dial.TYPES.DOWN)
 			return constants.WRAPPER_RESPONSE_SUCCESS
 		else if (type === Dial.TYPES.UP) {
-			if (this.#items.total === 0)
+			if (this.#lastTotal === 0)
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 			if (this.#currentItems[context] !== undefined)
