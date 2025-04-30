@@ -2,7 +2,8 @@
 
 # Essentials for Spotify
 
-Effortlessly control your [Spotify](https://www.spotify.com/) through your [Elgato Stream Deck](https://www.elgato.com/us/en/s/welcome-to-stream-deck).
+Effortlessly control your [Spotify](https://www.spotify.com/) through your [Elgato Stream Deck](https://www.elgato.com/us/en/s/welcome-to-stream-deck).\
+A **Spotify Premium** account is required.
 
 ## Features
 
