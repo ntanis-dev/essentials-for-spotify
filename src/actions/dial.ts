@@ -296,7 +296,7 @@ export class Dial extends Action {
 			this.#marquees[marqueeIdentifier].frame--
 
 			if (this.#marquees[marqueeIdentifier].frame < 0)
-				this.#marquees[marqueeIdentifier].frame = 0
+				this.#marquees[marqueeIdentifier].frame = this.#marquees[marqueeIdentifier].totalFrames
 
 			clearTimeout(this.#marquees[marqueeIdentifier].timeout)
 			this.marquee(this.#marquees[marqueeIdentifier].id, this.#marquees[marqueeIdentifier].key, this.#marquees[marqueeIdentifier].original, this.#marquees[marqueeIdentifier].countable, this.#marquees[marqueeIdentifier].visible, context)
