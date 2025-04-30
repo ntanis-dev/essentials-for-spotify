@@ -99,18 +99,15 @@ A **[Spotify Premium](https://www.spotify.com/premium/)** account is required.
 ![API Error](https://github.com/user-attachments/assets/07ab782b-781f-4e0a-885a-1684dc8bb58f) **API Error**: Something is wrong, try again later and if the issue persists [create a new issue](https://github.com/ntanis-dev/essentials-for-spotify/issues/new).\
 ![Setup Error](https://github.com/user-attachments/assets/dcaaff24-bdae-4f1d-9a20-80273c954b28) **Setup Error**: The setup has not been completed yet, please complete the setup first and try again.
 
-## Manual Windows Installation
+## Installation
 
-To manually install the plugin on **Windows**, follow these steps:
+To install and use the plugin, follow these steps:
 
-1. Download the latest release from [here](https://github.com/ntanis-dev/essentials-for-spotify/releases).
-2. Unzip the downloaded file.
-3. Locate  `com.ntanis.essentials-for-spotify.sdPlugin` folder from within the ZIP file.
-4. Place it inside `%AppData%\Elgato\StreamDeck\Plugins` folder.
-5. Restart the StreamDeck application.
-6. Place the **Setup** button in your StreamDeck and press it.
-7. A web page should open on your default internet browser, follow the instructions there.
-8. Enjoy!
+1. Download the latest `.streamDeckPlugin` release from [here](https://github.com/ntanis-dev/essentials-for-spotify/releases).
+3. Double-click and install it.
+4. Place the **Setup** button in your StreamDeck and press it.
+5. A web page should open on your default internet browser, follow the instructions there.
+6. Enjoy!
 
 ## Notes
 
