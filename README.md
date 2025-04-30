@@ -15,6 +15,16 @@ A **[Spotify Premium](https://www.spotify.com/premium/)** account is required.
 - **Marquee Titles**: Long titles scroll smoothly on both buttons and dials so you never miss a thing.
 - **Clear Visual Status**: Contextual icons and animations for loading states, errors, and warnings at a glance.
 
+### Layouts
+
+  Perfect layouts for **Stream Deck MK.2** and **Stream Deck +**.
+
+  **Stream Deck MK.2**\
+  ![Stream Deck MK.2 Layout](https://github.com/user-attachments/assets/8924d0f7-d82d-492b-bc6d-44315b309330)
+
+  **Stream Deck +**\
+  ![Stream Deck + Layout](https://github.com/user-attachments/assets/cf168320-1390-4d24-b4c9-beff61bd7031)
+
 ### Buttons
 - **Play / Pause**
   Toggles between playing and pausing the current song.
