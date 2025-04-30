@@ -87,6 +87,35 @@ A **[Spotify Premium](https://www.spotify.com/premium/)** account is required.
   - Push: Play
   - Touch: Refresh
 
+## Visual Indicators
+
+**Success**: It worked!\
+![success](https://github.com/user-attachments/assets/0f4fba8c-4917-449e-9646-ef83a81293e3)
+
+**Pending**: Something is loading, please wait.\
+![pending](https://github.com/user-attachments/assets/0cdb90f6-1124-45e2-9b1e-46d8196e3f1f)
+
+**Busy**: The action you're trying to perform is currently busy, wait a bit and try again later.\
+![busy](https://github.com/user-attachments/assets/d13d6a26-d322-4405-94c3-6afe147746ea)
+
+**API Rate Limited**: You're doing actions too fast, wait a bit and try again later.\
+![api-rate-limited](https://github.com/user-attachments/assets/6e19019c-9037-4eea-8aee-ba02dbe99bb0)
+
+**Not Available**: The action you are trying to perform is not available, it might be limited by the playing device type.\
+![not-available](https://github.com/user-attachments/assets/561da581-9271-4c2f-a6bb-468a1f37855f)
+
+**No Device**: A device to control cannot be found, start your Spotify client or app, play a song and then try again.\
+![no-device-error](https://github.com/user-attachments/assets/76cc1f86-ab81-4939-9f4f-e107862d887e)
+
+**Fatal Error**: A fatal error has occured, please [create a new issue](https://github.com/ntanis-dev/essentials-for-spotify/issues/new).\
+![fatal-error](https://github.com/user-attachments/assets/a9ebf6d0-f75a-40f8-9a90-24af76a08f28)
+
+**API Error**: Something is wrong, try again later and if the issue persists [create a new issue](https://github.com/ntanis-dev/essentials-for-spotify/issues/new).\
+![api-error](https://github.com/user-attachments/assets/ba506637-8a56-41df-b516-6c22c2cd7daa)
+
+**Setup Error**: The setup has not been completed yet, please complete the setup first and try again.\
+![setup-error](https://github.com/user-attachments/assets/2c1bc3f0-13e2-4891-8215-dc87885a8e56)
+
 ## Notes
 
 I started this project in plain JavaScript, then halfway through rewrote the buttons and dials in TypeScript.\
