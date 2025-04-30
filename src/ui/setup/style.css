@@ -4,6 +4,18 @@ body {
 	font-family: 'Lato', sans-serif;
 }
 
+#error, #success {
+	display: none;
+}
+
+#error span {
+	color: #ff2f2f;
+}
+
+#success span {
+	color: #1db954;
+}
+
 .form-container {
 	max-width: 600px;
 	margin: 50px auto;
