@@ -149,7 +149,7 @@ export default class ItemsDial extends Dial {
 			this.updateMarquee(context, 'name', this.#items.items[this.#currentItems[context]].name, this.#items.items[this.#currentItems[context]].name)
 			this.resumeMarquee(context, 'name')
 		} else
-			this.marquee(context, 'name', this.#items.items[this.#currentItems[context]].name, this.#items.items[this.#currentItems[context]].name, 12, context)
+			this.marquee(context, 'name', this.#items.items[this.#currentItems[context]].name, this.#items.items[this.#currentItems[context]].name, 11, context)
 
 		const image = await images.getForItem(this.#items.items[this.#currentItems[context]])
 
