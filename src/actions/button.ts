@@ -236,8 +236,9 @@ export class Button extends Action {
 		return totalWidth;
 	}
 
-	onStateSettled(context: string) {
-		this.setImage(context)
+	onStateSettled(context: string, skipImageReset: boolean = false) {
+		if (!skipImageReset)
+			this.setImage(context)
 	}
 
 	onStateLoss(context: string) {

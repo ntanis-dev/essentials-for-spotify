@@ -12,6 +12,7 @@ import {
 import connector from '../library/connector.js'
 import images from '../library/images.js'
 import wrapper from '../library/wrapper.js'
+import logger from '../library/logger.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.song-information-button' })
 export default class SongInformationButton extends Button {
@@ -36,7 +37,7 @@ export default class SongInformationButton extends Button {
 			setImmediate(async () => {
 				this.setUnpressable(context, true)
 
-				if (pending || (song && this.marquees[context] && this.marquees[context].id !== song.item.id) || ((!song) && this.marquees[context])) {
+				if ((song && this.marquees[context] && this.marquees[context].id !== song.item.id) || ((!song) && this.marquees[context])) {
 					this.clearMarquee(context)
 					this.setTitle(context, '')
 				}
@@ -96,7 +97,7 @@ export default class SongInformationButton extends Button {
 	}
 
 	onStateSettled(context: string) {
-		super.onStateSettled(context)
+		super.onStateSettled(context, true)
 		this.#onSongChanged(wrapper.song, false, [context])
 		this.#onSongTimeChanged(wrapper.song?.progress, wrapper.song?.item.duration_ms, wrapper.pendingSongChange, [context])
 	}

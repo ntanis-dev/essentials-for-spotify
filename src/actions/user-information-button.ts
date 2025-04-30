@@ -72,7 +72,7 @@ export default class UserInformationButton extends Button {
 	}
 
 	onStateSettled(context: string) {
-		super.onStateSettled(context)
+		super.onStateSettled(context, true)
 		this.#refreshUser(wrapper.user, [context])
 	}
 
