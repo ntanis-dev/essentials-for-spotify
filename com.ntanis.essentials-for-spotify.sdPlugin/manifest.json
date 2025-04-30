@@ -249,7 +249,7 @@
 			"Name": "User Information",
 			"UUID": "com.ntanis.essentials-for-spotify.user-information-button",
 			"Icon": "images/actions/user-information",
-			"Tooltip": "Displays the information of the current user.",
+			"Tooltip": "Displays the information of the connected user.",
 			"DisableAutomaticStates": true,
 			"UserTitleEnabled": false,
 			"SupportedInMultiActions": false,
@@ -435,7 +435,7 @@
 			"Name": "My Playlists",
 			"UUID": "com.ntanis.essentials-for-spotify.my-playlists-dial",
 			"Icon": "images/actions/playlists",
-			"Tooltip": "Navigate and play your playlists.",
+			"Tooltip": "Navigate and play through your playlists.",
 
 			"Controllers": [
 				"Encoder"
@@ -464,7 +464,7 @@
 			"Name": "New Releases",
 			"UUID": "com.ntanis.essentials-for-spotify.new-releases-dial",
 			"Icon": "images/actions/items",
-			"Tooltip": "Navigate and play new releases.",
+			"Tooltip": "Navigate and play through your personalized new releases.",
 
 			"Controllers": [
 				"Encoder"
