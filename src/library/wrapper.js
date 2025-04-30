@@ -636,12 +636,35 @@ class Wrapper extends EventEmitter {
 			return {
 				status: constants.WRAPPER_RESPONSE_SUCCESS,
 
-				items: response.albums.items.map(item => ({
-					id: item.id,
-					type: 'album',
-					name: `${item.name} - ${item.artists.map(artist => artist.name).join(', ')}`,
-					images: item.images
-				})),
+				items: response.albums.items.map(item => {
+					let extra = ''
+
+					switch (item.album_type) {
+						case 'album':
+							extra = '💿'
+							break
+
+						case 'single':
+							extra = '🎤'
+							break
+						
+						case 'compilation':
+							extra = '🗂️'
+							break
+
+						case 'ep':
+							extra = '📀'
+							break
+					}
+
+					return {
+						id: item.id,
+						type: 'album',
+						extra,
+						name: `${item.name} - ${item.artists.map(artist => artist.name).join(', ')}`,
+						images: item.images
+					}
+				}),
 
 				total: response.albums.total
 			}

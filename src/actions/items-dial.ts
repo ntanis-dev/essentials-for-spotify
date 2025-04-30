@@ -60,12 +60,6 @@ export default class ItemsDial extends Dial {
 		if (nameMarquee)
 			this.pauseMarquee(context, 'name')
 
-		this.setFeedback(context, {
-			name: {
-				value: '??????'
-			}
-		})
-
 		this.setIcon(context, 'images/icons/pending.png')
 		this.#refreshCount(context)
 
@@ -125,6 +119,11 @@ export default class ItemsDial extends Dial {
 		this.setFeedback(context, {
 			name: {
 				opacity: 1.0
+			},
+
+			extra: {
+				opacity: 1.0,
+				value: this.#items.items[this.#currentItems[context]].extra ?? ''
 			},
 
 			icon: {
