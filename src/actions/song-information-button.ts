@@ -12,7 +12,6 @@ import {
 import connector from '../library/connector.js'
 import images from '../library/images.js'
 import wrapper from '../library/wrapper.js'
-import logger from '../library/logger.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.song-information-button' })
 export default class SongInformationButton extends Button {

@@ -449,7 +449,7 @@
 			],
 
 			"Encoder": {
-				"layout": "playlists-layout.json",
+				"layout": "items-layout.json",
 				"StackColor": "#FFF",
 
 				"TriggerDescription": {
@@ -461,10 +461,10 @@
 		},
 
 		{
-			"Name": "My Queue",
-			"UUID": "com.ntanis.essentials-for-spotify.my-queue-dial",
-			"Icon": "images/actions/queue",
-			"Tooltip": "Navigate and play your queue.",
+			"Name": "New Releases",
+			"UUID": "com.ntanis.essentials-for-spotify.new-releases-dial",
+			"Icon": "images/actions/items",
+			"Tooltip": "Navigate and play new releases.",
 
 			"Controllers": [
 				"Encoder"
@@ -472,13 +472,13 @@
 
 			"States": [
 				{
-					"Image": "images/states/queue",
+					"Image": "images/states/items",
 					"TitleAlignment": "left"
 				}
 			],
 
 			"Encoder": {
-				"layout": "queue-layout.json",
+				"layout": "items-layout.json",
 				"StackColor": "#FFF",
 
 				"TriggerDescription": {

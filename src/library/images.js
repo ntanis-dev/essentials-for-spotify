@@ -49,48 +49,48 @@ const getForSong = async song => {
 
 const isSongCached = song => !!imageCache[`song:${song.item.id}`]
 
-const getForPlaylist = async playlist => {
+const getForItem = async item => {
 	if (Object.keys(imageCache).length > constants.WRAPPER_PLAYLISTS_PER_PAGE)
 		imageCache = Object.keys(imageCache).reduce((acc, key) => {
-			if (!key.startsWith('playlist:'))
+			if (!key.startsWith('item:'))
 				acc[key] = imageCache[key]
 
 			return acc
 		}, {})
 
-	if (imageCache[`playlist:${playlist.id}`])
-		return imageCache[`playlist:${playlist.id}`]
+	if (imageCache[`item:${item.id}`])
+		return imageCache[`item:${item.id}`]
 
-	if (pendingResults[`playlist:${playlist.id}`])
-		return pendingResults[`playlist:${playlist.id}`]
+	if (pendingResults[`item:${item.id}`])
+		return pendingResults[`item:${item.id}`]
 
-	pendingResults[`playlist:${playlist.id}`] = new Promise(async (resolve, reject) => {
+	pendingResults[`item:${item.id}`] = new Promise(async (resolve, reject) => {
 		try {
-			if (imageCache[`playlist:${playlist.id}`])
-				return imageCache[`playlist:${playlist.id}`]
+			if (imageCache[`item:${item.id}`])
+				return imageCache[`item:${item.id}`]
 
-			const url = playlist.images.length > 0 ? playlist.images[0].url : undefined
+			const url = item.images.length > 0 ? item.images[0].url : undefined
 
 			if (!url) {
 				resolve(null)
 				return
 			}
 
-			imageCache[`playlist:${playlist.id}`] = Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')
-			resolve(imageCache[`playlist:${playlist.id}`])
+			imageCache[`item:${item.id}`] = Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')
+			resolve(imageCache[`item:${item.id}`])
 		} catch (e) {
-			logger.error(`Failed to get image for playlist "${playlist.id}": "${e.message}"`)
+			logger.error(`Failed to get image for item "${item.id}": "${e.message}"`)
 			resolve(null)
 		}
 	}).finally(result => {
-		delete pendingResults[`playlist:${playlist.id}`]
+		delete pendingResults[`item:${item.id}`]
 		return result
 	})
 
-	return pendingResults[`playlist:${playlist.id}`]
+	return pendingResults[`item:${item.id}`]
 }
 
-const isPlaylistCached = playlist => !!imageCache[`playlist:${playlist.id}`]
+const isItemCached = item => !!imageCache[`item:${item.id}`]
 
 const getRaw = async (url, cacheKey) => {
 	try {
@@ -114,9 +114,9 @@ const isRawCached = cacheKey => !!imageCache[cacheKey]
 export default {
 	getRaw,
 	getForSong,
-	getForPlaylist,
+	getForItem,
 	clearRaw,
 	isSongCached,
-	isPlaylistCached,
+	isItemCached,
 	isRawCached
 }

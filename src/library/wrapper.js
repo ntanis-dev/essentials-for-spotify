@@ -612,7 +612,7 @@ class Wrapper extends EventEmitter {
 
 	async getPlaylists(page = 1) {
 		return this.#wrapCall(async () => {
-			const playlists = await connector.callSpotifyApi(`me/playlists?limit=${constants.WRAPPER_PLAYLISTS_PER_PAGE}&offset=${(page - 1) * constants.WRAPPER_PLAYLISTS_PER_PAGE}`)
+			const playlists = await connector.callSpotifyApi(`me/playlists?limit=${constants.WRAPPER_ITEMS_PER_PAGE}&offset=${(page - 1) * constants.WRAPPER_ITEMS_PER_PAGE}`)
 
 			return {
 				status: constants.WRAPPER_RESPONSE_SUCCESS,
@@ -620,11 +620,28 @@ class Wrapper extends EventEmitter {
 				items: playlists.items.map(playlist => ({
 					id: playlist.id,
 					name: playlist.name,
-					owner: playlist.owner.display_name,
 					images: playlist.images
 				})),
 
 				total: playlists.total
+			}
+		}, true)
+	}
+
+	async getNewReleases(page = 1) {
+		return this.#wrapCall(async () => {
+			const response = await connector.callSpotifyApi(`browse/new-releases?limit=${constants.WRAPPER_ITEMS_PER_PAGE}&offset=${(page - 1) * constants.WRAPPER_ITEMS_PER_PAGE}`)
+
+			return {
+				status: constants.WRAPPER_RESPONSE_SUCCESS,
+
+				items: response.albums.items.map(item => ({
+					id: item.id,
+					name: `${item.name} - ${item.artists.map(artist => artist.name).join(', ')}`,
+					images: item.images
+				})),
+
+				total: response.albums.total
 			}
 		}, true)
 	}

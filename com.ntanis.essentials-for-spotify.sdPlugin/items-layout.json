@@ -1,5 +1,5 @@
 {
-	"id": "com.ntanis.essentials-for-spotify.layouts.playlists",
+	"id": "com.ntanis.essentials-for-spotify.layouts.items",
 
 	"items": [
 		{
@@ -12,7 +12,7 @@
 				"weight": 600
 			},
 
-			"value": "Playlists",
+			"value": "Songs",
 			"alignment": "left"
 		},
 
@@ -21,7 +21,7 @@
 			"type": "pixmap",
 			"rect": [16, 40, 48, 48],
 			"opacity": 0.3,
-			"value": "images/icons/playlists.png"
+			"value": "images/icons/items.png"
 		},
 
 		{
