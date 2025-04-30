@@ -591,7 +591,7 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async playPlaylist(playlistId, deviceId = this.#lastDevice) {
+	async playItem(item, deviceId = this.#lastDevice) {
 		if (this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
@@ -600,7 +600,7 @@ class Wrapper extends EventEmitter {
 				method: 'PUT',
 
 				body: JSON.stringify({
-					context_uri: `spotify:playlist:${playlistId}`
+					context_uri: `spotify:${item.type}:${item.id}`
 				})
 			}, deviceId)
 
@@ -619,6 +619,7 @@ class Wrapper extends EventEmitter {
 
 				items: playlists.items.map(playlist => ({
 					id: playlist.id,
+					type: 'playlist',
 					name: playlist.name,
 					images: playlist.images
 				})),
@@ -637,6 +638,7 @@ class Wrapper extends EventEmitter {
 
 				items: response.albums.items.map(item => ({
 					id: item.id,
+					type: 'album',
 					name: `${item.name} - ${item.artists.map(artist => artist.name).join(', ')}`,
 					images: item.images
 				})),

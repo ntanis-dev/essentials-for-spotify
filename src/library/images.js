@@ -50,7 +50,7 @@ const getForSong = async song => {
 const isSongCached = song => !!imageCache[`song:${song.item.id}`]
 
 const getForItem = async item => {
-	if (Object.keys(imageCache).length > constants.WRAPPER_PLAYLISTS_PER_PAGE)
+	if (Object.keys(imageCache).length > constants.WRAPPER_ITEMS_PER_PAGE)
 		imageCache = Object.keys(imageCache).reduce((acc, key) => {
 			if (!key.startsWith('item:'))
 				acc[key] = imageCache[key]

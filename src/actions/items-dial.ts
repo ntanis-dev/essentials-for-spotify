@@ -155,7 +155,7 @@ export default class ItemsDial extends Dial {
 	async #refreshCount(context: string) {
 		this.setFeedback(context, {
 			count: {
-				value: `${((this.#itemsPage[context] - 1) * constants.WRAPPER_PLAYLISTS_PER_PAGE) + this.#currentItems[context] + 1} / ${this.#items.total}`
+				value: `${((this.#itemsPage[context] - 1) * constants.WRAPPER_ITEMS_PER_PAGE) + this.#currentItems[context] + 1} / ${this.#items.total}`
 			}
 		})
 	}
@@ -173,7 +173,7 @@ export default class ItemsDial extends Dial {
 
 				const lastPage = this.#itemsPage[context]
 
-				if (this.#itemsPage[context] < Math.ceil(this.#items.total / constants.WRAPPER_PLAYLISTS_PER_PAGE))
+				if (this.#itemsPage[context] < Math.ceil(this.#items.total / constants.WRAPPER_ITEMS_PER_PAGE))
 					this.#itemsPage[context]++
 				else
 					this.#itemsPage[context] = 1
@@ -198,10 +198,10 @@ export default class ItemsDial extends Dial {
 
 				if (this.#itemsPage[context] > 1) {
 					this.#itemsPage[context]--
-					this.#currentItems[context] = constants.WRAPPER_PLAYLISTS_PER_PAGE - 1
+					this.#currentItems[context] = constants.WRAPPER_ITEMS_PER_PAGE - 1
 				} else {
-					this.#itemsPage[context] = Math.ceil(this.#items.total / constants.WRAPPER_PLAYLISTS_PER_PAGE)
-					this.#currentItems[context] = this.#items.total - ((this.#itemsPage[context] - 1) * constants.WRAPPER_PLAYLISTS_PER_PAGE) - 1
+					this.#itemsPage[context] = Math.ceil(this.#items.total / constants.WRAPPER_ITEMS_PER_PAGE)
+					this.#currentItems[context] = this.#items.total - ((this.#itemsPage[context] - 1) * constants.WRAPPER_ITEMS_PER_PAGE) - 1
 				}
 
 				if (lastPage !== this.#itemsPage[context])
@@ -223,7 +223,7 @@ export default class ItemsDial extends Dial {
 
 			if (this.#currentItems[context] !== undefined)
 				if (this.#items.items[this.#currentItems[context]]) {
-					const apiCall = await wrapper.playItems(this.#items.items[this.#currentItems[context]].id)
+					const apiCall = await wrapper.playItem(this.#items.items[this.#currentItems[context]])
 
 					if (apiCall !== constants.WRAPPER_RESPONSE_SUCCESS && apiCall !== constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)
 						await this.#refreshLayout(true, context)
