@@ -9,10 +9,10 @@ Effortlessly control your [Spotify](https://www.spotify.com/) through your [Elga
 - **Plug-and-Play Setup**: In-browser, step-by-step setup; have it running in under a minute.
 - **Opinionated**: No endless pages of settings, set it up once and forget about it.
 - **Lag-Proof Controls**: Forget laggy or unresponsive buttons, built in a way that it simply works.
-- **Interval Refresh**: Syncs data at sensible intervals with your native client so it remains up-to-date without spamming.
+- **Interval Refresh**: Syncs data at sensible intervals with your native client so it remains up-to-date.
 - **Pixel-Perfect UI**: Every icon and element is meticulously aligned for a crisp, frictionless experience.
 - **Marquee Titles**: Long titles scroll smoothly on both buttons and dials so you never miss a thing.
-- **Clear Visual Status**: Contextual icons and animations surface loading states, errors, and rate-limit warnings at a glance.
+- **Clear Visual Status**: Contextual icons and animations for loading states, errors, and warnings at a glance.
 
 ### Buttons
 - **Play / Pause**
