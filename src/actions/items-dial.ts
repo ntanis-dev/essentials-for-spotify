@@ -1,5 +1,6 @@
 import {
-	action
+	action,
+	WillDisappearEvent
 } from '@elgato/streamdeck'
 
 import {
@@ -17,7 +18,7 @@ export default class ItemsDial extends Dial {
 	#items: any = []
 	#lastTotal: number = 0
 
-	async #refreshItemss(context: string) {
+	async #refreshItems(context: string) {
 		if (this.#itemsPage[context] === undefined)
 			this.#itemsPage[context] = 1
 
@@ -67,9 +68,9 @@ export default class ItemsDial extends Dial {
 		this.setIcon(context, 'images/icons/pending.png')
 		this.#refreshCount(context)
 
-		const refreshItemss = await this.#refreshItemss(context)
+		const refreshItems = await this.#refreshItems(context)
 
-		if (refreshItemss) {
+		if (refreshItems) {
 			await this.#refreshLayout(true, context)
 			return false
 		}
@@ -77,10 +78,10 @@ export default class ItemsDial extends Dial {
 		return true
 	}
 
-	async #refreshLayout(refreshItemss = false, context: string) {
+	async #refreshLayout(refreshItems = false, context: string) {
 		const nameMarquee = this.getMarquee(context, 'name')
 
-		if (refreshItemss) {
+		if (refreshItems) {
 			this.resetFeedbackLayout(context, {
 				name: {
 					opacity: 1.0
@@ -105,7 +106,7 @@ export default class ItemsDial extends Dial {
 			this.#currentItems = {}
 			this.#items = {}
 
-			await this.#refreshItemss(context)
+			await this.#refreshItems(context)
 
 			if (this.#items.total === 0) {
 				this.setIcon(context, this.originalIcon)
@@ -118,11 +119,13 @@ export default class ItemsDial extends Dial {
 
 				return
 			}
-		} else if (this.#items.items[this.#currentItems[context]] && (!images.isItemCached(this.#items.items[this.#currentItems[context]])))
-			this.setIcon(context, 'images/icons/pending.png')
 
-		if (this.#currentItems[context] === undefined)
-			this.#currentItems[context] = 0
+			if (this.#currentItems[context] === undefined)
+				this.#currentItems[context] = 0
+		}
+
+		if (!images.isItemCached(this.#items.items[this.#currentItems[context]]))
+			this.setIcon(context, 'images/icons/pending.png')
 
 		this.setFeedback(context, {
 			name: {
@@ -146,7 +149,9 @@ export default class ItemsDial extends Dial {
 		this.#refreshCount(context)
 
 		if (nameMarquee) {
-			this.updateMarquee(context, 'name', this.#items.items[this.#currentItems[context]].name, this.#items.items[this.#currentItems[context]].name)
+			if (nameMarquee.original !== this.#items.items[this.#currentItems[context]].name)
+				this.updateMarquee(context, 'name', this.#items.items[this.#currentItems[context]].name, this.#items.items[this.#currentItems[context]].name)
+
 			this.resumeMarquee(context, 'name')
 		} else
 			this.marquee(context, 'name', this.#items.items[this.#currentItems[context]].name, this.#items.items[this.#currentItems[context]].name, 11, context)
@@ -185,9 +190,16 @@ export default class ItemsDial extends Dial {
 				else
 					this.#itemsPage[context] = 1
 
-				if (lastPage !== this.#itemsPage[context])
+				if (lastPage !== this.#itemsPage[context]) {
+					this.setFeedback(context, {
+						name: {
+							value: '?????'
+						}
+					})
+
 					if (!(await this.#refreshPage(context)))
 						return constants.WRAPPER_RESPONSE_API_ERROR
+				}
 			}
 
 			this.#refreshCount(context)
@@ -211,9 +223,16 @@ export default class ItemsDial extends Dial {
 					this.#currentItems[context] = this.#items.total - ((this.#itemsPage[context] - 1) * constants.WRAPPER_ITEMS_PER_PAGE) - 1
 				}
 
-				if (lastPage !== this.#itemsPage[context])
+				if (lastPage !== this.#itemsPage[context]) {
+					this.setFeedback(context, {
+						name: {
+							value: '?????'
+						}
+					})
+
 					if (!(await this.#refreshPage(context)))
 						return constants.WRAPPER_RESPONSE_API_ERROR
+				}
 			}
 
 			this.#refreshCount(context)
@@ -254,8 +273,14 @@ export default class ItemsDial extends Dial {
         throw new Error('The fetchItems method must be implemented in a subclass.')
 	}
 
+
+	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
+		await super.onWillDisappear(ev)
+		this.pauseMarquee(ev.action.id, 'name')
+	}
+
 	updateFeedback(context: string): void {
 		super.updateFeedback(context)
-		this.#refreshLayout(true, context)
+		this.#refreshLayout(this.#lastTotal === 0, context)
 	}
 }

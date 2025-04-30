@@ -16,6 +16,10 @@ body {
 	color: #1db954;
 }
 
+small {
+	text-align: left;
+}
+
 .form-container {
 	max-width: 600px;
 	margin: 50px auto;
