@@ -99,6 +99,18 @@ A **[Spotify Premium](https://www.spotify.com/premium/)** account is required.
 ![API Error](https://github.com/user-attachments/assets/07ab782b-781f-4e0a-885a-1684dc8bb58f) **API Error**: Something is wrong, try again later and if the issue persists [create a new issue](https://github.com/ntanis-dev/essentials-for-spotify/issues/new).\
 ![Setup Error](https://github.com/user-attachments/assets/dcaaff24-bdae-4f1d-9a20-80273c954b28) **Setup Error**: The setup has not been completed yet, please complete the setup first and try again.
 
+## Manual Windows Installation
+
+To manually install the plugin on **Windows**, follow these steps:
+
+1. Download the latest release from [here](https://github.com/ntanis-dev/essentials-for-spotify/releases).
+2. Unzip the downloaded file.
+3. Place the `com.ntanis.essentials-for-spotify.sdPlugin` folder from within the ZIP inside your `%AppData%\Elgato\StreamDeck\Plugins` folder.
+4. Restart the StreamDeck application.
+5. Place the **Setup** button in your StreamDeck and press it, it should open a web page on your default internet browser.
+6. Follow the on-screen installation instructions.
+7. Enjoy!
+
 ## Notes
 
 I started this project in plain JavaScript, then halfway through rewrote the buttons and dials in TypeScript.\
