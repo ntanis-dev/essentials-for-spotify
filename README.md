@@ -68,14 +68,20 @@ A **Spotify Premium** account is required.
   Navigate and play through your playlists.
   
   - Rotate: Navigate  
-  - Push: Play  
+  - Push: Play
   - Touch: Refresh  
 - **New Releases**\
   Navigate and play through your personalized new releases.
   
   - Rotate: Navigate  
-  - Push: Play  
-  - Touch: Refresh  
+  - Push: Play
+  - Touch: Refresh
+
+## Notes
+
+I started this project in plain JavaScript, then halfway through rewrote the buttons and dials in TypeScript.\
+However I never had the grit to port the rest, so now it’s a hybrid mess, sorry about that. 😁\
+I only built it because when I got my first Stream Deck, every available Spotify control plugin fell short for my taste.
 
 ## Disclaimer
 
