@@ -3,7 +3,7 @@
 # Essentials for Spotify
 
 Effortlessly control your [Spotify](https://www.spotify.com/) through your [Elgato Stream Deck](https://www.elgato.com/us/en/s/welcome-to-stream-deck).\
-A **[Spotify Premium](https://www.spotify.com/premium/)** account is required.
+A **[Spotify Premium](https://www.spotify.com/premium/)** account is required to use the full functionality of this plugin.
 
 ## Features
 
