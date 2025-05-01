@@ -105,6 +105,9 @@ A **[Spotify Premium](https://www.spotify.com/premium/)** account is required.
 ![API Error](https://github.com/user-attachments/assets/07ab782b-781f-4e0a-885a-1684dc8bb58f) **API Error**: Something is wrong, try again later and if the issue persists [create a new issue](https://github.com/ntanis-dev/essentials-for-spotify/issues/new).\
 ![Setup Error](https://github.com/user-attachments/assets/dcaaff24-bdae-4f1d-9a20-80273c954b28) **Setup Error**: The setup has not been completed yet, please complete the setup first and try again.
 
+When a questionmark "?" appears on top of a button, that indicates that the plugin is not sure of the button state.\
+For example if no song is currently playing or played recently, we can't know if it's liked or not, so the like / unlike button will show a questionmark "?" to indicate that.
+
 ## Installation
 
 To install and use the plugin, follow these steps:
