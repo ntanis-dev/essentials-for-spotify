@@ -87,6 +87,12 @@ A **[Spotify Premium](https://www.spotify.com/premium/)** account is required.
   - Push: Play
   - Touch: Refresh
 
+  Icons\
+    🎤 Single\
+    💿 Album\
+    🗂️ Compilation\
+    📀 EP
+
 ## Visual Indicators
 
 ![Success](https://github.com/user-attachments/assets/e8ea52ee-2c45-4daf-863f-0f346a834bda) **Success**: It worked!\
