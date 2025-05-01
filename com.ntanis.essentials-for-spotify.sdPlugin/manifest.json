@@ -413,7 +413,7 @@
 	"Category": "Essentials for Spotify",
 	"CategoryIcon": "images/plugin/category",
 	"CodePath": "bin/plugin.js",
-	"Description": "Effortlessly control your Spotify through your Elgato Stream Deck. A Spotify Premium account is required. This plugin leverages the Spotify Web API.",
+	"Description": "Effortlessly control your Spotify through your Elgato Stream Deck. A Spotify Premium account is required to use the full functionality of this plugin.",
 	"Icon": "images/plugin/marketplace",
 	"SDKVersion": 2,
 	"URL": "https://github.com/ntanis-dev/essentials-for-spotify",
