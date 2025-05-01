@@ -1,6 +1,6 @@
 {
 	"Name": "Essentials for Spotify",
-	"Version": "1.0.0.2",
+	"Version": "1.0.0.3",
 	"Author": "Ntanis",
 	"Actions": [
 		{
@@ -433,5 +433,19 @@
 	"Nodejs": {
 		"Version": "20"
 	},
-	"UUID": "com.ntanis.essentials-for-spotify"
+	"UUID": "com.ntanis.essentials-for-spotify",
+	"Profiles": [
+		{
+			"Name": "SD",
+			"DeviceType": 0,
+			"Readonly": false,
+			"DontAutoSwitchWhenInstalled": false
+		},
+		{
+			"Name": "SDP",
+			"DeviceType": 7,
+			"Readonly": false,
+			"DontAutoSwitchWhenInstalled": false
+		}
+	]
 }
