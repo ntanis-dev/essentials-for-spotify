@@ -145,6 +145,9 @@ class Wrapper extends EventEmitter {
 			if (response === constants.API_EMPTY_RESPONSE)
 				response = undefined
 
+			if (!this.#lastUser)
+				await this.updateUser()
+
 			this.#setPlaying(response?.is_playing || false)
 			this.#setRepeatState(response?.repeat_state || 'off')
 			this.#setShuffleState(response?.shuffle_state || false)
