@@ -12,6 +12,7 @@ class Wrapper extends EventEmitter {
 	#lastMuted = null
 	#lastShuffleState = null
 	#lastPendingSong = null
+	#lastPendingContext = null
 	#lastVolumePercent = null
 	#lastDevice = null
 	#lastSong = null
@@ -34,11 +35,11 @@ class Wrapper extends EventEmitter {
 			if (state)
 				this.#updatePlaybackState(true)
 			else {
+				this.#updatePlaybackContext(null)
 				this.#setPlaying(false)
 				this.#setRepeatState('off')
 				this.#setShuffleState(false)
 				this.#setVolumePercent(null)
-				this.#setPlaybackContext(null)
 				this.#setSong(null)
 				this.#setDevices(null, [])
 				this.#setDisallowFlags([])
@@ -94,7 +95,10 @@ class Wrapper extends EventEmitter {
 				response = constants.WRAPPER_RESPONSE_NO_DEVICE_ERROR
 
 			if (response !== constants.WRAPPER_RESPONSE_API_RATE_LIMITED)
-				logger.error(`An error occured while responding to a wrapper call: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
+				if (e.message.includes('Restriction violated'))
+					return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+				else
+					logger.error(`An error occured while responding to a wrapper call: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
 
 			return response
 		} finally {
@@ -148,11 +152,12 @@ class Wrapper extends EventEmitter {
 			if (!this.#lastUser)
 				await this.updateUser()
 
+			await this.#updatePlaybackContext(response?.context || null)
+
 			this.#setPlaying(response?.is_playing || false)
 			this.#setRepeatState(response?.repeat_state || 'off')
 			this.#setShuffleState(response?.shuffle_state || false)
 			this.#setVolumePercent(response?.device.supports_volume ? (typeof response?.device.volume_percent !== 'number' ? 100 : response.device.volume_percent) : null)
-			this.#setPlaybackContext(response?.context?.uri || null)
 
 			this.#setSong(response?.item ? {
 				item: response.item,
@@ -201,13 +206,77 @@ class Wrapper extends EventEmitter {
 		this.emit('shuffleStateChanged', shuffleState)
 	}
 
-	#setPlaybackContext(context) {
-		if (this.#lastPlaybackContext === context)
+	async #updatePlaybackContext(context, pending = false) {
+		this.#lastPendingContext = pending
+
+		if (this.#lastPlaybackContext?.uri === context?.uri)
 			return
+
+		if (context) {
+			const id = `${context.uri.split(':')[2]}`
+
+			let title = 'Unknown ❓'
+			let extra = 'Unknown ❓'
+			let images = []
+			let subtitle = null
+
+			switch (context.type) {
+				case 'artist':
+					const artist = await this.#wrapCall(() => connector.callSpotifyApi(`artists/${id}`))
+
+					extra = 'Artist 👤'
+					images = artist.images
+``
+					break
+
+				case 'album':
+					const album = await this.#wrapCall(() => connector.callSpotifyApi(`albums/${id}`))
+
+					switch (album.album_type) {
+						case 'compilation':
+							extra = 'Compilation 🗂️'
+							break
+
+						default:
+							extra = 'Album 💿'
+							break
+					}
+
+					title = album.name
+					subtitle = album.artists.map(artist => artist.name).join(', ')
+					images = album.images
+
+					break
+
+				case 'playlist':
+					const playlist = await this.#wrapCall(() => connector.callSpotifyApi(`playlists/${id}`))
+
+					extra = 'Playlist 📃'
+					title = playlist.name
+					images = playlist.images
+
+					break
+
+				case 'show':
+					const show = await this.#wrapCall(() => connector.callSpotifyApi(`shows/${id}`))
+
+					extra = 'Show 🎙️'
+					title = show.name
+					images = show.images
+
+					break
+			}
+
+			context.id = id
+			context.images = images
+			context.title = title
+			context.subtitle = subtitle
+			context.extra = extra
+		}
 
 		this.#updatePlaybackStateStatus = 'skip'
 		this.#lastPlaybackContext = context
-		this.emit('playbackContextChanged', context)
+		this.emit('playbackContextChanged', context, pending)
 	}
 
 	#setVolumePercent(volumePercent) {
@@ -332,9 +401,16 @@ class Wrapper extends EventEmitter {
 
 		const wasSongLoaded = !!this.#lastSong
 
+		if (!wasSongLoaded)
+			this.#onContextChangeExpected()
+
 		this.#setSong(null, true)
 
 		this.#songChangeForceUpdatePlaybackStateTimeout = setTimeout(() => this.#updatePlaybackState(true), wasSongLoaded ? (byTime ? constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_TIME_SLEEP : constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_STATE_SLEEP) : constants.SONG_CHANGE_FORCE_UPDATE_PLAYBACK_UNLOADED_SLEEP)
+	}
+
+	#onContextChangeExpected() {
+		this.#updatePlaybackContext(null, true)
 	}
 
 	async updateUser() {
@@ -608,6 +684,7 @@ class Wrapper extends EventEmitter {
 			}, deviceId)
 
 			this.#onSongChangeExpected()
+			this.#onContextChangeExpected()
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
 		})
@@ -716,6 +793,10 @@ class Wrapper extends EventEmitter {
 
 	get pendingSongChange() {
 		return this.#lastPendingSong
+	}
+
+	get pendingContextChange() {
+		return this.#lastPendingContext
 	}
 }
 

@@ -1,6 +1,6 @@
 {
 	"Name": "Essentials for Spotify",
-	"Version": "1.0.0.3",
+	"Version": "1.0.0.4",
 	"Author": "Ntanis",
 	"Actions": [
 		{
@@ -201,6 +201,24 @@
 			"States": [
 				{
 					"Image": "images/states/song-information",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
+			"Name": "Context Information",
+			"UUID": "com.ntanis.essentials-for-spotify.context-information-button",
+			"Icon": "images/actions/context-information",
+			"Tooltip": "Displays the information of the current context.",
+			"DisableAutomaticStates": true,
+			"UserTitleEnabled": false,
+			"SupportedInMultiActions": false,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/context-information",
 					"TitleAlignment": "middle"
 				}
 			]
