@@ -21,6 +21,7 @@ import VolumeControlDial from './../actions/volume-control-dial'
 import PlaybackControlDial from './../actions/playback-control-dial'
 import MyPlaylistsDial from './../actions/my-playlists-dial'
 import NewReleasesDial from '../actions/new-releases-dial'
+import MultiActionButton from './../actions/multi-action-button'
 
 export default {
 	register: () => {
@@ -46,5 +47,6 @@ export default {
 		StreamDeck.actions.registerAction(new PlaybackControlDial())
 		StreamDeck.actions.registerAction(new MyPlaylistsDial())
 		StreamDeck.actions.registerAction(new NewReleasesDial())
+		StreamDeck.actions.registerAction(new MultiActionButton())
 	}
 }
