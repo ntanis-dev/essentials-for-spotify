@@ -226,7 +226,7 @@ class Wrapper extends EventEmitter {
 
 					extra = 'Artist 👤'
 					images = artist.images
-``
+
 					break
 
 				case 'album':
