@@ -136,6 +136,24 @@
 			]
 		},
 		{
+			"Name": "Multi-Action",
+			"UUID": "com.ntanis.essentials-for-spotify.multi-action-button",
+			"Icon": "images/actions/multi-action",
+			"Tooltip": "Single press: Play/Pause, Double press: Next Song, Triple press: Previous Song, Long press: Like/Unlike. Displays current song artwork.",
+			"DisableAutomaticStates": true,
+			"UserTitleEnabled": false,
+			"SupportedInMultiActions": false,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/multi-action",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
 			"Name": "Volume Up",
 			"UUID": "com.ntanis.essentials-for-spotify.volume-up-button",
 			"Icon": "images/actions/volume-up",
