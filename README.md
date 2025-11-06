@@ -111,7 +111,7 @@ There's absolutely no obligation, but you may do so through my **[personal donat
 ![Busy](https://github.com/user-attachments/assets/2bc68ab5-f008-48cb-ac84-577d46ed59db) **Busy**: The action you're trying to perform is currently busy, wait a bit and try again later.\
 ![API Rate Limited](https://github.com/user-attachments/assets/f43bf816-4d42-47e4-8421-b8a2ae5dbe28) **API Rate Limited**: You're doing actions too fast, wait a bit and try again later.\
 ![Not Available](https://github.com/user-attachments/assets/5fed6fdd-9ce1-47f1-862a-a69d74b792e7) **Not Available**: The action you are trying to perform is not available due to current restrictions.\
-![No Device](https://github.com/user-attachments/assets/28b90f74-b710-412d-8f04-a8f32837a3ed) **No Device**: A device to control cannot be found, start your Spotify client or app, play a song and then try again.\
+![No Device](https://github.com/user-attachments/assets/28b90f74-b710-412d-8f04-a8f32837a3ed) **No Device**: A device cannot be found, start your Spotify client or app, play a song and try again.\
 ![Fatal Error](https://github.com/user-attachments/assets/b95624df-c0c8-4be9-8d70-7549532c7dcf) **Fatal Error**: A fatal error has occured, please [create a new issue](https://github.com/ntanis-dev/essentials-for-spotify/issues/new).\
 ![API Error](https://github.com/user-attachments/assets/b7d329bc-f8c1-455e-abf7-18a5352ed09b) **API Error**: Something is wrong, try again later and if the issue persists [create a new issue](https://github.com/ntanis-dev/essentials-for-spotify/issues/new).\
 ![Setup Error](https://github.com/user-attachments/assets/f138e85b-3e8a-4c6a-8d27-245453328d65) **Setup Error**: The setup has not been completed yet, please complete the setup first and try again.
