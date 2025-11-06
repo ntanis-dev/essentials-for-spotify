@@ -244,12 +244,12 @@ export default class ItemsDial extends Dial {
 			this.#refreshCount(context)
 
 			await this.#refreshLayout(false, context)
-		} else if (type === Dial.TYPES.TAP) {
+		} else if (type === Dial.TYPES.LONG_TAP) {
 			await this.#refreshLayout(true, context)
 			return constants.WRAPPER_RESPONSE_SUCCESS
 		} else if (type === Dial.TYPES.DOWN)
 			return constants.WRAPPER_RESPONSE_SUCCESS
-		else if (type === Dial.TYPES.UP) {
+		else if (type === Dial.TYPES.UP || type === Dial.TYPES.TAP) {
 			if (this.#lastTotal === 0)
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 

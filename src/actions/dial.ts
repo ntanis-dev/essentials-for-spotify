@@ -24,7 +24,8 @@ export class Dial extends Action {
 		ROTATE_COUNTERCLOCKWISE: Symbol('ROTATE_COUNTERCLOCKWISE'),
 		UP: Symbol('UP'),
 		DOWN: Symbol('DOWN'),
-		TAP: Symbol('TAP')
+		TAP: Symbol('TAP'),
+		LONG_TAP: Symbol('LONG_TAP')
 	}
 	
 	layout: string
@@ -213,7 +214,7 @@ export class Dial extends Action {
 	}
 
 	async onTouchTap(ev: TouchTapEvent<object>): Promise<void> {
-		return this.#processAction(ev.action, Dial.TYPES.TAP)
+		return this.#processAction(ev.action, ev.payload.hold ? Dial.TYPES.LONG_TAP : Dial.TYPES.TAP)
 	}
 
 	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {

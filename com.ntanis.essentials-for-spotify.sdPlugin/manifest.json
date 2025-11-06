@@ -402,9 +402,10 @@
 				"layout": "layouts/items-layout.json",
 				"StackColor": "#FFF",
 				"TriggerDescription": {
+					"LongTouch": "Refresh",
 					"Rotate": "Navigate",
 					"Push": "Play",
-					"Touch": "Refresh"
+					"Touch": "Play"
 				}
 			}
 		},
@@ -426,9 +427,10 @@
 				"layout": "layouts/items-layout.json",
 				"StackColor": "#FFF",
 				"TriggerDescription": {
+					"LongTouch": "Refresh",
 					"Rotate": "Navigate",
 					"Push": "Play",
-					"Touch": "Refresh"
+					"Touch": "Play"
 				}
 			}
 		}
