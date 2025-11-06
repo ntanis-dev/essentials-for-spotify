@@ -42,7 +42,7 @@ export default class UserInformationButton extends Button {
 				return
 			}
 
-			const image = await images.getRaw(user.images[0]?.url, 'userProfilePicture')
+			const image = await images.getRaw(user.images.sort((a: any, b: any) => a.width - b.width)[0]?.url, 'userProfilePicture')
 
 			if (!image)
 				this.setImage(context, 'images/states/user-information')
@@ -59,13 +59,6 @@ export default class UserInformationButton extends Button {
 			else
 				this.resumeMarquee(context)
 		}
-	}
-
-	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
-		await super.onWillAppear(ev)
-
-		if (connector.set) 
-			this.#refreshUser(wrapper.user, false, [ev.action.id])
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {

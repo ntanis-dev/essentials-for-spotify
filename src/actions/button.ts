@@ -23,6 +23,7 @@ export class Button extends Action {
 	#holding: any = {}
 	#busy: any = {}
 	#unpressable: any = {}
+	#flashing: any = {}
 	#statelessImage: string = ''
 
 	contexts: Array<string> = []
@@ -43,6 +44,10 @@ export class Button extends Action {
 	}
 
 	async #flashImage(action: any, image: string, duration: number = 500, times = 2) {
+		action.setTitle('')
+
+		this.#flashing[action.id] = true
+
 		for (let i = 0; i < times; i++) {
 			await action.setImage(image).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 			await new Promise(resolve => setTimeout(resolve, duration))
@@ -54,6 +59,10 @@ export class Button extends Action {
 
 		if ((this.constructor as typeof Button).STATABLE && connector.set)
 			this.onStateSettled(action.id)
+
+		this.#flashing[action.id] = false
+
+		this.resumeMarquee(action.id, true)
 	}
 
 	async onKeyDown(ev: KeyDownEvent<any>) {
@@ -146,7 +155,10 @@ export class Button extends Action {
 		await StreamDeck.client.setState(context, state).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck state of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
-	async marqueeTitle(id: string, data: Array<any>, context: string) {
+	async marqueeTitle(id: string, data: Array<any>, context: string, forced = false) {
+		if (this.#flashing[context])
+			return
+
 		const isInitial = !this.marquees[context]
 
 		const marqueeData = this.marquees[context] || {
@@ -195,7 +207,8 @@ export class Button extends Action {
 				marqueeData.entries[data[i].key].frame = 0
 		}
 
-		marqueeData.timeout = setTimeout(() => this.marqueeTitle(id, marqueeData.data, context), isInitial ? constants.BUTTON_MARQUEE_INTERVAL_INITIAL : constants.BUTTON_MARQUEE_INTERVAL)
+		if (!forced)
+			marqueeData.timeout = setTimeout(() => this.marqueeTitle(id, marqueeData.data, context), isInitial ? constants.BUTTON_MARQUEE_INTERVAL_INITIAL : constants.BUTTON_MARQUEE_INTERVAL)
 	}
 
 	updateMarqueeEntry(context: string, key: string, value: string) {
@@ -206,9 +219,13 @@ export class Button extends Action {
 		}
 	}
 
-	resumeMarquee(context: string) {
+	resumeMarquee(context: string, forced = false) {
 		if (this.marquees[context]) {
 			clearTimeout(this.marquees[context].timeout)
+			
+			if (forced)
+				this.marqueeTitle(this.marquees[context].id, this.marquees[context].data, context, true)
+
 			this.marquees[context].timeout = setTimeout(() => this.marqueeTitle(this.marquees[context].id, this.marquees[context].data, context), constants.BUTTON_MARQUEE_INTERVAL)
 		}
 	}

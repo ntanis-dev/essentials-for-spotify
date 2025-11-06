@@ -53,9 +53,13 @@ A **[Spotify Premium](https://www.spotify.com/premium/)** account is required to
 - **Forward Seek**
   Seek forward in the current song.
 - **Song Information**
-  Displays the information of the current song.
+  Displays the information of the current song and navigates to it.
+- **Song Artwork**
+  Displays the artwork of the current song and navigates to it.
 - **Context Information**
-  Displays the information of the current context.
+  Displays the information of the current context and navigates to it.
+  **Context Artwork**
+  Displays the artwork of the current context and navigates to it.
 - **User Information**
   Displays the information of the connected user.
 - **Song Clipboard**

@@ -2,6 +2,17 @@ import constants from './constants'
 import logger from './logger'
 import wrapper from './wrapper'
 
+import {
+	Agent,
+	setGlobalDispatcher,
+	fetch
+} from 'undici'
+
+setGlobalDispatcher(new Agent({
+	keepAliveTimeout: 600_000,
+	keepAliveMaxTimeout: 600_000
+}))
+
 let lastSong = null
 let imageCache = {}
 let pendingResults = {}
@@ -23,10 +34,12 @@ const getForSong = async song => {
 
 	pendingResults[`song:${song.item.id}`] = new Promise(async (resolve, reject) => {
 		try {
-			if (imageCache[`song:${song.item.id}`])
-				return imageCache[`song:${song.item.id}`]
+			if (imageCache[`song:${song.item.id}`]) {
+				resolve(imageCache[`song:${song.item.id}`])
+				return
+			}
 
-			const url = song.item.album.images.length > 0 ? song.item.album.images[0].url : undefined
+			const url = song.item.album.images.length > 0 ? song.item.album.images.sort((a, b) => b.width - a.width)[0].url : undefined
 
 			if (!url) {
 				resolve(null)
@@ -34,6 +47,7 @@ const getForSong = async song => {
 			}
 
 			imageCache[`song:${song.item.id}`] = Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')
+
 			resolve(imageCache[`song:${song.item.id}`])
 		} catch (e) {
 			logger.error(`Failed to get image for song "${song.item.id}": "${e.message}"`)
@@ -66,10 +80,12 @@ const getForItem = async item => {
 
 	pendingResults[`item:${item.id}`] = new Promise(async (resolve, reject) => {
 		try {
-			if (imageCache[`item:${item.id}`])
-				return imageCache[`item:${item.id}`]
+			if (imageCache[`item:${item.id}`]) {
+				resolve(imageCache[`item:${item.id}`])
+				return
+			}
 
-			const url = item.images.length > 0 ? item.images[0].url : undefined
+			const url = item.images.length > 0 ? item.images.sort((a, b) => b.width - a.width)[0].url : undefined
 
 			if (!url) {
 				resolve(null)
@@ -77,6 +93,7 @@ const getForItem = async item => {
 			}
 
 			imageCache[`item:${item.id}`] = Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')
+
 			resolve(imageCache[`item:${item.id}`])
 		} catch (e) {
 			logger.error(`Failed to get image for item "${item.id}": "${e.message}"`)
@@ -93,16 +110,32 @@ const getForItem = async item => {
 const isItemCached = item => !!imageCache[`item:${item.id}`]
 
 const getRaw = async (url, cacheKey) => {
-	try {
-		if (imageCache[cacheKey])
-			return imageCache[cacheKey]
-
-		imageCache[cacheKey] = Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')
+	if (imageCache[cacheKey])
 		return imageCache[cacheKey]
-	} catch (e) {
-		logger.error(`Failed to get image for URL "${url}": "${e.message}"`)
-		return null
-	}
+
+	if (pendingResults[cacheKey])
+		return pendingResults[cacheKey]
+
+	pendingResults[cacheKey] = new Promise(async (resolve, reject) => {
+		try {
+			if (imageCache[cacheKey]) {
+				resolve(imageCache[cacheKey])
+				return
+			}
+
+			imageCache[cacheKey] = Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')
+
+			resolve(imageCache[cacheKey])
+		} catch (e) {
+			logger.error(`Failed to get image for URL "${url}": "${e.message}"`)
+			resolve(null)
+		}
+	}).finally(result => {
+		delete pendingResults[cacheKey]
+		return result
+	})
+
+	return pendingResults[cacheKey]
 }
 
 const clearRaw = cacheKey => {

@@ -118,6 +118,8 @@ class Wrapper extends EventEmitter {
 		if (response === constants.API_NOT_FOUND_RESPONSE) {
 			const activeDevices = this.#lastDevices || []
 
+			activeDevices.sort((a, b) => b.is_active - a.is_active)
+
 			if (activeDevices.length > 0) {
 				response = await connector.callSpotifyApi(`${path}device_id=${activeDevices[0].id}`, options, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
 
@@ -222,15 +224,16 @@ class Wrapper extends EventEmitter {
 
 			switch (context.type) {
 				case 'artist':
-					const artist = await this.#wrapCall(() => connector.callSpotifyApi(`artists/${id}`))
+					const artist = await this.#wrapCall(() => connector.callSpotifyApi(`artists/${id}`), true)
 
+					title = artist?.name ?? 'Unknown ❓'
 					extra = 'Artist 👤'
-					images = artist.images
+					images = artist?.images ?? []
 
 					break
 
 				case 'album':
-					const album = await this.#wrapCall(() => connector.callSpotifyApi(`albums/${id}`))
+					const album = await this.#wrapCall(() => connector.callSpotifyApi(`albums/${id}`), true)
 
 					switch (album.album_type) {
 						case 'compilation':
@@ -242,27 +245,27 @@ class Wrapper extends EventEmitter {
 							break
 					}
 
-					title = album.name
-					subtitle = album.artists.map(artist => artist.name).join(', ')
-					images = album.images
+					title = album?.name ?? 'Unknown ❓'
+					subtitle = album?.artists?.map(artist => artist.name).join(', ') ?? null
+					images = album?.images ?? []
 
 					break
 
 				case 'playlist':
-					const playlist = await this.#wrapCall(() => connector.callSpotifyApi(`playlists/${id}`))
+					const playlist = await this.#wrapCall(() => connector.callSpotifyApi(`playlists/${id}`), true)
 
 					extra = 'Playlist 📃'
-					title = playlist.name
-					images = playlist.images
+					title = playlist?.name ?? 'Unknown ❓'
+					images = playlist?.images ?? []
 
 					break
 
 				case 'show':
-					const show = await this.#wrapCall(() => connector.callSpotifyApi(`shows/${id}`))
+					const show = await this.#wrapCall(() => connector.callSpotifyApi(`shows/${id}`), true)
 
 					extra = 'Show 🎙️'
-					title = show.name
-					images = show.images
+					title = show?.name ?? 'Unknown ❓'
+					images = show?.images ?? []
 
 					break
 			}
@@ -416,10 +419,10 @@ class Wrapper extends EventEmitter {
 	async updateUser() {
 		return this.#wrapCall(async () => {
 			let userResponse = await connector.callSpotifyApi('me')
-	
+			
 			if ((!userResponse) || typeof userResponse !== 'object')
 				userResponse = undefined
-	
+			
 			this.#setUser(userResponse || null)
 		})
 	}

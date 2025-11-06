@@ -1,3 +1,4 @@
+import os from 'os'
 
 import {
 	action,
@@ -8,6 +9,11 @@ import {
 	Button
 } from './button.js'
 
+import {
+	spawn
+} from 'child_process'
+
+import constants from '../library/constants.js'
 import connector from '../library/connector.js'
 import images from '../library/images.js'
 import wrapper from '../library/wrapper.js'
@@ -15,7 +21,6 @@ import wrapper from '../library/wrapper.js'
 @action({ UUID: 'com.ntanis.essentials-for-spotify.song-artwork-button' })
 export default class SongArtworkButton extends Button {
 	static readonly STATABLE = true
-	static readonly ACTIONLESS = true
 
 	constructor() {
 		super()
@@ -48,11 +53,29 @@ export default class SongArtworkButton extends Button {
 			})
 	}
 
-	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
-		await super.onWillAppear(ev)
+	async invokeWrapperAction(context: string) {
+		if (wrapper.song) {
+			switch (os.platform()) {
+				case 'darwin':
+					spawn('open', [wrapper.song.item.uri])
+					break
 
-		if (connector.set)
-			this.#onSongChanged(wrapper.song, true, [ev.action.id])
+				case 'win32':
+					spawn('cmd', ['/c', 'start', '', wrapper.song.item.uri])
+					break
+
+				case 'linux':
+					spawn('xdg-open', [wrapper.song.item.uri])
+					break
+
+				default:
+					return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+			}
+
+			return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
+		}
+
+		return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 
 	onStateSettled(context: string) {
