@@ -16,7 +16,6 @@ import {
 import constants from '../library/constants.js'
 import images from '../library/images.js'
 import wrapper from '../library/wrapper.js'
-import logger from '../library/logger.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.context-information-button' })
 export default class ContextInformationButton extends Button {
@@ -120,8 +119,6 @@ export default class ContextInformationButton extends Button {
 			await this.setSettings(context, {
 				show: ['title', 'extra', 'subtitle']
 			})
-
-		logger.info(`${context} updating settings from ${JSON.stringify(oldSettings)} to ${JSON.stringify(this.settings[context])}`)
 
 		if (oldSettings.show?.length !== this.settings[context].show?.length || (oldSettings.show && this.settings[context].show && (!oldSettings.show.every((value: any, index: number) => value === this.settings[context].show[index]))))
 			this.#onPlaybackContextChanged(wrapper.playbackContext, wrapper.pendingPlaybackContext, [context], true)

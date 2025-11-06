@@ -1,7 +1,6 @@
 
 import {
 	action,
-	WillAppearEvent,
 	WillDisappearEvent,
 } from '@elgato/streamdeck'
 
@@ -9,10 +8,8 @@ import {
 	Button
 } from './button.js'
 
-import connector from '../library/connector.js'
 import images from '../library/images.js'
 import wrapper from '../library/wrapper.js'
-import constants from '../library/constants.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.user-information-button' })
 export default class UserInformationButton extends Button {
@@ -24,10 +21,13 @@ export default class UserInformationButton extends Button {
 		this.setStatelessImage('images/states/user-information-unknown')
 	}
 
-	async #refreshUser(user: any, pending = false, contexts = this.contexts) {
+	async #refreshUser(user: any, pending = false, contexts = this.contexts, force = false) {
 		for (const context of contexts) {
 			if ((!user) || typeof(user) !== 'object' || (this.marquees[context] && this.marquees[context].id !== user.id)) {
 				images.clearRaw('userProfilePicture')
+				this.clearMarquee(context)
+				this.setTitle(context, '')
+			} else if (force) {
 				this.clearMarquee(context)
 				this.setTitle(context, '')
 			}
@@ -49,15 +49,16 @@ export default class UserInformationButton extends Button {
 			else
 				this.setImage(context, `data:image/jpeg;base64,${image}`)
 
-			if ((!this.marquees[context]) || this.marquees[context].id !== user.id)
-				this.marqueeTitle(user.id, [
-					{
-						key: 'display_name',
-						value: user.display_name || user.id
-					}
-				], context)
-			else
-				this.resumeMarquee(context)
+			if (this.settings[context].show?.includes('display_name'))
+				if ((!this.marquees[context]) || this.marquees[context].id !== user.id || force)
+					this.marqueeTitle(user.id, [
+						{
+							key: 'display_name',
+							value: user.display_name || user.id
+						}
+					], context)
+				else
+					this.resumeMarquee(context)
 		}
 	}
 
@@ -69,6 +70,23 @@ export default class UserInformationButton extends Button {
 	async invokeWrapperAction(context: string) {
 		await this.#refreshUser(null, true, [context])
 		return await wrapper.updateUser()
+	}
+
+	async onSettingsUpdated(context: string, oldSettings: any): Promise<void> {
+		await super.onSettingsUpdated(context, oldSettings)
+
+		if (!this.settings[context].action)
+			await this.setSettings(context, {
+				action: 'open_spotify'
+			})
+		
+		if (!this.settings[context].show)
+			await this.setSettings(context, {
+				show: ['display_name']
+			})
+
+		if (oldSettings.show?.length !== this.settings[context].show?.length || (oldSettings.show && this.settings[context].show && (!oldSettings.show.every((value: any, index: number) => value === this.settings[context].show[index]))))
+			this.#refreshUser(wrapper.user, false, [context], true)
 	}
 
 	onStateSettled(context: string) {

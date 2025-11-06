@@ -231,6 +231,7 @@
 			"UUID": "com.ntanis.essentials-for-spotify.user-information-button",
 			"Icon": "images/actions/user-information",
 			"Tooltip": "Displays the information of the connected user.",
+			"PropertyInspectorPath": "pi/user-information.html",
 			"DisableAutomaticStates": true,
 			"UserTitleEnabled": false,
 			"SupportedInMultiActions": false,
