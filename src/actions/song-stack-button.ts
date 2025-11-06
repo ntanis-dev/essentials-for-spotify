@@ -17,14 +17,14 @@ import constants from '../library/constants.js'
 import images from '../library/images.js'
 import wrapper from '../library/wrapper.js'
 
-@action({ UUID: 'com.ntanis.essentials-for-spotify.song-information-button' })
-export default class SongInformationButton extends Button {
+@action({ UUID: 'com.ntanis.essentials-for-spotify.song-stack-button' })
+export default class SongStackButton extends Button {
 	static readonly STATABLE = true
 	static readonly MULTI = true
 
 	constructor() {
 		super()
-		this.setStatelessImage('images/states/song-information-unknown')
+		this.setStatelessImage('images/states/song-stack-unknown')
 		wrapper.on('songChanged', this.#onSongChanged.bind(this))
 		wrapper.on('songTimeChanged', this.#onSongTimeChanged.bind(this))
 		wrapper.on('songLikedStateChanged', (liked: boolean, pending: boolean = false) => this.#onSongChanged(wrapper.song, wrapper.pendingSongChange))
@@ -81,7 +81,7 @@ export default class SongInformationButton extends Button {
 				} else if (pending)
 					this.setImage(context, 'images/states/pending')
 				else
-					this.setImage(context, 'images/states/song-information-unknown')
+					this.setImage(context, 'images/states/song-stack-unknown')
 
 				if (!pending)
 					this.setUnpressable(context, false)

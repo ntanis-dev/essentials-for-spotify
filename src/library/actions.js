@@ -9,7 +9,7 @@ import LikeUnlikeButton from './../actions/like-unlike-button'
 import VolumeUpButton from './../actions/volume-up-button'
 import VolumeDownButton from './../actions/volume-down-button'
 import VolumeMuteUnmuteButton from './../actions/volume-mute-unmute-button'
-import SongInformationButton from './../actions/song-information-button'
+import SongStackButton from './../actions/song-stack-button'
 import ContextInformationButton from './../actions/context-information-button'
 import UserInformationButton from './../actions/user-information-button'
 import SongClipboardButton from './../actions/song-clipboard-button'
@@ -34,7 +34,7 @@ export default {
 		StreamDeck.actions.registerAction(new VolumeUpButton())
 		StreamDeck.actions.registerAction(new VolumeDownButton())
 		StreamDeck.actions.registerAction(new VolumeMuteUnmuteButton())
-		StreamDeck.actions.registerAction(new SongInformationButton())
+		StreamDeck.actions.registerAction(new SongStackButton())
 		StreamDeck.actions.registerAction(new ContextInformationButton())
 		StreamDeck.actions.registerAction(new UserInformationButton())
 		StreamDeck.actions.registerAction(new SongClipboardButton())

@@ -189,11 +189,11 @@
 			]
 		},
 		{
-			"Name": "Song Information",
-			"UUID": "com.ntanis.essentials-for-spotify.song-information-button",
-			"Icon": "images/actions/song-information",
-			"Tooltip": "Displays the information of the current song.",
-			"PropertyInspectorPath": "pi/song-information.html",
+			"Name": "Song Stack",
+			"UUID": "com.ntanis.essentials-for-spotify.song-stack-button",
+			"Icon": "images/actions/song-stack",
+			"Tooltip": "Displays the information of the current song and offers a variety of control actions.",
+			"PropertyInspectorPath": "pi/song-stack-button.html",
 			"DisableAutomaticStates": true,
 			"UserTitleEnabled": false,
 			"SupportedInMultiActions": false,
@@ -202,7 +202,7 @@
 			],
 			"States": [
 				{
-					"Image": "images/states/song-information",
+					"Image": "images/states/song-stack",
 					"TitleAlignment": "middle"
 				}
 			]
@@ -231,7 +231,7 @@
 			"UUID": "com.ntanis.essentials-for-spotify.user-information-button",
 			"Icon": "images/actions/user-information",
 			"Tooltip": "Displays the information of the connected user.",
-			"PropertyInspectorPath": "pi/user-information.html",
+			"PropertyInspectorPath": "pi/user-information-button.html",
 			"DisableAutomaticStates": true,
 			"UserTitleEnabled": false,
 			"SupportedInMultiActions": false,
