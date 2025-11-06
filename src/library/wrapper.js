@@ -268,6 +268,18 @@ class Wrapper extends EventEmitter {
 					images = show?.images ?? []
 
 					break
+
+				case 'collection':
+					extra = 'Collection 📚'
+					title = context.uri.includes('user:') ? 'Liked Songs' : 'Unknown ❓'
+
+					images = [{
+						width: 64,
+						height: 64,
+						url: 'https://misc.scdn.co/liked-songs/liked-songs-64.jpg'
+					}]
+
+					break
 			}
 
 			context.id = id
@@ -695,17 +707,28 @@ class Wrapper extends EventEmitter {
 
 	async getPlaylists(page = 1) {
 		return this.#wrapCall(async () => {
+			const tracks = await connector.callSpotifyApi(`me/tracks?limit=1&offset=0`)
 			const playlists = await connector.callSpotifyApi(`me/playlists?limit=${constants.WRAPPER_ITEMS_PER_PAGE}&offset=${(page - 1) * constants.WRAPPER_ITEMS_PER_PAGE}`)
 
 			return {
 				status: constants.WRAPPER_RESPONSE_SUCCESS,
 
-				items: playlists.items.map(playlist => ({
+				items: [tracks.total > 0 ? {
+					id: 'tracks',
+					type: 'collection',
+					name: 'Liked Songs',
+
+					images: [{
+						width: 64,
+						height: 64,
+						url: 'https://misc.scdn.co/liked-songs/liked-songs-64.jpg'
+					}]
+				} : null].concat(playlists.items.map(playlist => ({
 					id: playlist.id,
 					type: 'playlist',
 					name: playlist.name,
 					images: playlist.images
-				})),
+				}))),
 
 				total: playlists.total
 			}
