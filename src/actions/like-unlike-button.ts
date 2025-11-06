@@ -39,7 +39,7 @@ export default class LikeUnlikeButton extends Button {
 	}
 
 	async invokeWrapperAction(context: string) {
-		if (!wrapper.song)
+		if (!wrapper.song?.item.id)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 		else if (wrapper.song.liked)
 			return wrapper.unlikeSong(Object.assign({}, wrapper.song))

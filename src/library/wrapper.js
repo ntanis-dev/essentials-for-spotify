@@ -163,7 +163,7 @@ class Wrapper extends EventEmitter {
 
 			this.#setSong(response?.item ? {
 				item: response.item,
-				liked: (await connector.callSpotifyApi(`me/tracks/contains?ids=${response.item.id}`))[0],
+				liked: response.item.id ? (await connector.callSpotifyApi(`me/tracks/contains?ids=${response.item.id}`))[0] : false,
 				progress: response.progress_ms
 			} : null)
 
@@ -211,11 +211,17 @@ class Wrapper extends EventEmitter {
 	async #updatePlaybackContext(context, pending = false) {
 		this.#lastPendingContext = pending
 
+		if ((!context) && this.#lastSong?.item.uri.includes('local:'))
+			context = {
+				type: 'local',
+				uri: 'local'
+			}
+
 		if (this.#lastPlaybackContext?.uri === context?.uri)
 			return
 
 		if (context) {
-			const id = `${context.uri.split(':')[2]}`
+			const id = `${context.uri?.split(':')[2]}`
 
 			let title = 'Unknown ❓'
 			let extra = 'Unknown ❓'
@@ -254,8 +260,8 @@ class Wrapper extends EventEmitter {
 				case 'playlist':
 					const playlist = await this.#wrapCall(() => connector.callSpotifyApi(`playlists/${id}`), true)
 
-					extra = 'Playlist 📃'
 					title = playlist?.name ?? 'Unknown ❓'
+					extra = 'Playlist 📃'
 					images = playlist?.images ?? []
 
 					break
@@ -263,21 +269,28 @@ class Wrapper extends EventEmitter {
 				case 'show':
 					const show = await this.#wrapCall(() => connector.callSpotifyApi(`shows/${id}`), true)
 
-					extra = 'Show 🎙️'
 					title = show?.name ?? 'Unknown ❓'
+					extra = 'Show 🎙️'
 					images = show?.images ?? []
 
 					break
 
 				case 'collection':
-					extra = 'Collection 📚'
 					title = context.uri.includes('user:') ? 'Liked Songs' : 'Unknown ❓'
+					extra = 'Collection 📚'
 
 					images = [{
 						width: 64,
 						height: 64,
 						url: 'https://misc.scdn.co/liked-songs/liked-songs-64.jpg'
 					}]
+
+					break
+
+				case 'local':
+					title = 'Local Files 🖥️'
+					extra = null
+					images = []
 
 					break
 			}
@@ -359,8 +372,10 @@ class Wrapper extends EventEmitter {
 			if (songChanged || timeChanged)
 				this.#lastSongTimeUpdateAt = Date.now()
 
-			if (songChanged)
+			if (songChanged) {
 				this.emit('songChanged', song, pending)
+				this.#updatePlaybackContext(this.#lastPlaybackContext, pending)
+			}
 
 			if (likedChanged)
 				this.emit('songLikedStateChanged', song.liked, pending)

@@ -73,6 +73,8 @@ export default class SongInformationButton extends Button {
 
 					if (image)
 						this.setImage(context, `data:image/jpeg;base64,${image}`)
+					else if (song.item.uri.includes('local:'))
+						this.setImage(context, 'images/states/local')
 					else
 						this.setImage(context)
 				} else if (pending)

@@ -14,7 +14,6 @@ import {
 } from 'child_process'
 
 import constants from '../library/constants.js'
-import connector from '../library/connector.js'
 import images from '../library/images.js'
 import wrapper from '../library/wrapper.js'
 
@@ -41,6 +40,8 @@ export default class SongArtworkButton extends Button {
 
 					if (image)
 						this.setImage(context, `data:image/jpeg;base64,${image}`)
+					else if (song.item.uri.includes('local:'))
+						this.setImage(context, 'images/states/local')
 					else
 						this.setImage(context)
 				} else if (pending)

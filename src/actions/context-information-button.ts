@@ -15,9 +15,9 @@ import {
 } from 'child_process'
 
 import constants from '../library/constants.js'
-import connector from '../library/connector.js'
 import images from '../library/images.js'
 import wrapper from '../library/wrapper.js'
+import logger from '../library/logger.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.context-information-button' })
 export default class ContextInformationButton extends Button {
@@ -57,16 +57,18 @@ export default class ContextInformationButton extends Button {
 								value: playbackContext.subtitle
 							} : undefined,
 
-							{
+							playbackContext.extra ? {
 								key: 'extra',
 								value: playbackContext.extra
-							}
+							} : undefined
 						].filter(v => !!v), context)
 					else
 						this.resumeMarquee(context)
 
 					if (image)
 						this.setImage(context, `data:image/jpeg;base64,${image}`)
+					else if (playbackContext.type === 'local')
+						this.setImage(context, 'images/states/local')
 					else
 						this.setImage(context)
 				} else if (pending)
