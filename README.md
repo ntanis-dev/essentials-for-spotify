@@ -58,13 +58,9 @@ There's absolutely no obligation, but you may do so through my **[personal donat
 - **Forward Seek**
   Seek forward in the current song.
 - **Song Information**
-  Displays the information of the current song and navigates to it.
-- **Song Artwork**
-  Displays the artwork of the current song and navigates to it.
+  Displays the information of the current song.
 - **Context Information**
-  Displays the information of the current context and navigates to it.
-  **Context Artwork**
-  Displays the artwork of the current context and navigates to it.
+  Displays the information of the current context.
 - **User Information**
   Displays the information of the connected user.
 - **Song Clipboard**

@@ -2,7 +2,6 @@ import os from 'os'
 
 import {
 	action,
-	WillAppearEvent,
 	WillDisappearEvent
 } from '@elgato/streamdeck'
 
@@ -29,12 +28,12 @@ export default class ContextInformationButton extends Button {
 		wrapper.on('playbackContextChanged', this.#onPlaybackContextChanged.bind(this))
 	}
 
-	#onPlaybackContextChanged(playbackContext: any, pending: boolean = false, contexts = this.contexts) {
+	#onPlaybackContextChanged(playbackContext: any, pending: boolean = false, contexts = this.contexts, force = false) {
 		for (const context of contexts)
 			setImmediate(async () => {
 				this.setUnpressable(context, true)
 
-				if ((playbackContext && this.marquees[context] && this.marquees[context].id !== playbackContext.uri) || ((!playbackContext) && this.marquees[context])) {
+				if ((playbackContext && this.marquees[context] && this.marquees[context].id !== playbackContext.uri) || ((!playbackContext) && this.marquees[context]) || force) {
 					this.clearMarquee(context)
 					this.setTitle(context, '')
 				}
@@ -45,19 +44,19 @@ export default class ContextInformationButton extends Button {
 
 					const image = await images.getForItem(playbackContext)
 
-					if ((!this.marquees[context]) || this.marquees[context].id !== playbackContext.uri)
+					if ((!this.marquees[context]) || this.marquees[context].id !== playbackContext.uri || force)
 						this.marqueeTitle(playbackContext.uri, [
-							{
+							this.settings[context].show.includes('title') ? {
 								key: 'title',
 								value: playbackContext.title
-							},
+							} : undefined,
 
-							playbackContext.subtitle ? {
+							playbackContext.subtitle && this.settings[context].show.includes('subtitle') ? {
 								key: 'subtitle',
 								value: playbackContext.subtitle
 							} : undefined,
 
-							playbackContext.extra ? {
+							playbackContext.extra && this.settings[context].show.includes('extra') ? {
 								key: 'extra',
 								value: playbackContext.extra
 							} : undefined
@@ -82,28 +81,50 @@ export default class ContextInformationButton extends Button {
 	}
 
 	async invokeWrapperAction(context: string) {
-		if (wrapper.playbackContext) {
-			switch (os.platform()) {
-				case 'darwin':
-					spawn('open', [wrapper.playbackContext.uri])
-					break
+		if (this.settings[context].action === 'play_pause')
+			return wrapper.togglePlayback()
+		else if (this.settings[context].action === 'open_spotify')
+			if (wrapper.playbackContext) {
+				switch (os.platform()) {
+					case 'darwin':
+						spawn('open', [wrapper.playbackContext.uri])
+						break
 
-				case 'win32':
-					spawn('cmd', ['/c', 'start', '', wrapper.playbackContext.uri])
-					break
+					case 'win32':
+						spawn('cmd', ['/c', 'start', '', wrapper.playbackContext.uri])
+						break
 
-				case 'linux':
-					spawn('xdg-open', [wrapper.playbackContext.uri])
-					break
+					case 'linux':
+						spawn('xdg-open', [wrapper.playbackContext.uri])
+						break
 
-				default:
-					return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+					default:
+						return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+				}
+
+				return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
 			}
 
-			return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
-		}
-
 		return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+	}
+
+	async onSettingsUpdated(context: string, oldSettings: any): Promise<void> {
+		await super.onSettingsUpdated(context, oldSettings)
+
+		if (!this.settings[context].action)
+			await this.setSettings(context, {
+				action: 'open_spotify'
+			})
+		
+		if (!this.settings[context].show)
+			await this.setSettings(context, {
+				show: ['title', 'extra', 'subtitle']
+			})
+
+		logger.info(`${context} updating settings from ${JSON.stringify(oldSettings)} to ${JSON.stringify(this.settings[context])}`)
+
+		if (oldSettings.show?.length !== this.settings[context].show?.length || (oldSettings.show && this.settings[context].show && (!oldSettings.show.every((value: any, index: number) => value === this.settings[context].show[index]))))
+			this.#onPlaybackContextChanged(wrapper.playbackContext, wrapper.pendingPlaybackContext, [context], true)
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {

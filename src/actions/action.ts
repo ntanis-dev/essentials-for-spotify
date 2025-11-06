@@ -3,7 +3,7 @@ import {
 } from '@elgato/streamdeck'
 
 export class Action extends SingletonAction {
-	beautifyTime(progressMs: number, durationMs: number) {
+	beautifyTime(progressMs: number, durationMs: number, showProgress: boolean = true, showDuration: boolean = true): string {
 		const progress = Math.floor(progressMs / 1000)
 		const duration = Math.floor(durationMs / 1000)
 
@@ -13,6 +13,6 @@ export class Action extends SingletonAction {
 		const durationMinutes = Math.floor(duration / 60)
 		const durationSeconds = duration - (durationMinutes * 60)
 
-		return `${progressMinutes}:${progressSeconds.toString().padStart(2, '0')} / ${durationMinutes}:${durationSeconds.toString().padStart(2, '0')}`
+		return `${showProgress ? `${progressMinutes}:${progressSeconds.toString().padStart(2, '0')}` : ''}${showProgress && showDuration ? ' / ' : ''}${showDuration ? `${durationMinutes}:${durationSeconds.toString().padStart(2, '0')}` : ''}`
 	}
 }

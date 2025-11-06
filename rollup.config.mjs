@@ -60,8 +60,13 @@ const config = {
 		copy({
 			targets: [
 				{
-					src: 'src/ui',
+					src: 'src/ui/setup',
 					dest: 'com.ntanis.essentials-for-spotify.sdPlugin/bin'
+				},
+
+				{
+					src: 'src/ui/pi',
+					dest: 'com.ntanis.essentials-for-spotify.sdPlugin'
 				},
 
 				{

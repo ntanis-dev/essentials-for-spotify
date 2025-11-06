@@ -2,7 +2,6 @@ import os from 'os'
 
 import {
 	action,
-	WillAppearEvent,
 	WillDisappearEvent
 } from '@elgato/streamdeck'
 
@@ -32,15 +31,15 @@ export default class SongInformationButton extends Button {
 	#onSongTimeChanged(progress: number, duration: number, pending: boolean = false, contexts = this.contexts) {
 		for (const context of contexts)
 			if (this.marquees[context])
-				this.updateMarqueeEntry(context, 'time', this.beautifyTime(progress, duration))
+				this.updateMarqueeEntry(context, 'time', this.beautifyTime(progress, duration, this.settings[context].show.includes('progress'), this.settings[context].show.includes('duration')))
 	}
 
-	#onSongChanged(song: any, pending: boolean = false, contexts = this.contexts) {
+	#onSongChanged(song: any, pending: boolean = false, contexts = this.contexts, force = false) {
 		for (const context of contexts)
 			setImmediate(async () => {
 				this.setUnpressable(context, true)
 
-				if ((song && this.marquees[context] && this.marquees[context].id !== song.item.id) || ((!song) && this.marquees[context])) {
+				if ((song && this.marquees[context] && this.marquees[context].id !== song.item.id) || ((!song) && this.marquees[context]) || force) {
 					this.clearMarquee(context)
 					this.setTitle(context, '')
 				}
@@ -51,22 +50,22 @@ export default class SongInformationButton extends Button {
 
 					const image = await images.getForSong(song)
 
-					if ((!this.marquees[context]) || this.marquees[context].id !== song.item.id)
+					if ((!this.marquees[context]) || this.marquees[context].id !== song.item.id || force)
 						this.marqueeTitle(song.item.id, [
-							{
+							this.settings[context].show.includes('name') ? {
 								key: 'title',
 								value: song.item.name
-							},
+							} : undefined,
 
-							{
+							this.settings[context].show.includes('artists') ? {
 								key: 'artists',
 								value: song.item.artists.map((artist: any) => artist.name).join(', ')
-							},
+							} : undefined,
 
-							{
+							this.settings[context].show.includes('progress') || this.settings[context].show.includes('duration') ? {
 								key: 'time',
-								value: this.beautifyTime(song.progress, song.item.duration_ms)
-							}
+								value: this.beautifyTime(song.progress, song.item.duration_ms, this.settings[context].show.includes('progress'), this.settings[context].show.includes('duration'))
+							} : undefined
 						], context)
 					else
 						this.resumeMarquee(context)
@@ -88,28 +87,48 @@ export default class SongInformationButton extends Button {
 	}
 
 	async invokeWrapperAction(context: string) {
-		if (wrapper.song) {
-			switch (os.platform()) {
-				case 'darwin':
-					spawn('open', [wrapper.song.item.uri])
-					break
+		if (this.settings[context].action === 'play_pause')
+			return wrapper.togglePlayback()
+		else if (this.settings[context].action === 'open_spotify')
+			if (wrapper.song) {
+				switch (os.platform()) {
+					case 'darwin':
+						spawn('open', [wrapper.song.item.uri])
+						break
 
-				case 'win32':
-					spawn('cmd', ['/c', 'start', '', wrapper.song.item.uri])
-					break
+					case 'win32':
+						spawn('cmd', ['/c', 'start', '', wrapper.song.item.uri])
+						break
 
-				case 'linux':
-					spawn('xdg-open', [wrapper.song.item.uri])
-					break
+					case 'linux':
+						spawn('xdg-open', [wrapper.song.item.uri])
+						break
 
-				default:
-					return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+					default:
+						return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+				}
+
+				return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
 			}
 
-			return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
-		}
-
 		return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+	}
+
+	async onSettingsUpdated(context: string, oldSettings: any): Promise<void> {
+		await super.onSettingsUpdated(context, oldSettings)
+
+		if (!this.settings[context].action)
+			await this.setSettings(context, {
+				action: 'play_pause'
+			})
+
+		if (!this.settings[context].show)
+			await this.setSettings(context, {
+				show: ['name', 'artists', 'progress', 'duration']
+			})
+
+		if (oldSettings.show?.length !== this.settings[context].show?.length || (oldSettings.show && this.settings[context].show && (!oldSettings.show.every((value: any, index: number) => value === this.settings[context].show[index]))))
+			this.#onSongChanged(wrapper.song, wrapper.pendingSongChange, [context], true)
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {

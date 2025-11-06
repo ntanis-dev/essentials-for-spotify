@@ -8,6 +8,7 @@
 			"UUID": "com.ntanis.essentials-for-spotify.play-pause-button",
 			"Icon": "images/actions/play-pause",
 			"Tooltip": "Toggles between playing and pausing the current song.",
+			"PropertyInspectorPath": "pi/play-pause-button.html",
 			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
@@ -192,24 +193,7 @@
 			"UUID": "com.ntanis.essentials-for-spotify.song-information-button",
 			"Icon": "images/actions/song-information",
 			"Tooltip": "Displays the information of the current song.",
-			"DisableAutomaticStates": true,
-			"UserTitleEnabled": false,
-			"SupportedInMultiActions": false,
-			"Controllers": [
-				"Keypad"
-			],
-			"States": [
-				{
-					"Image": "images/states/song-information",
-					"TitleAlignment": "middle"
-				}
-			]
-		},
-		{
-			"Name": "Song Artwork",
-			"UUID": "com.ntanis.essentials-for-spotify.song-artwork-button",
-			"Icon": "images/actions/song-artwork",
-			"Tooltip": "Displays the artwork of the current song.",
+			"PropertyInspectorPath": "pi/song-information.html",
 			"DisableAutomaticStates": true,
 			"UserTitleEnabled": false,
 			"SupportedInMultiActions": false,
@@ -228,24 +212,7 @@
 			"UUID": "com.ntanis.essentials-for-spotify.context-information-button",
 			"Icon": "images/actions/context-information",
 			"Tooltip": "Displays the information of the current context.",
-			"DisableAutomaticStates": true,
-			"UserTitleEnabled": false,
-			"SupportedInMultiActions": false,
-			"Controllers": [
-				"Keypad"
-			],
-			"States": [
-				{
-					"Image": "images/states/context-information",
-					"TitleAlignment": "middle"
-				}
-			]
-		},
-		{
-			"Name": "Context Artwork",
-			"UUID": "com.ntanis.essentials-for-spotify.context-artwork-button",
-			"Icon": "images/actions/context-artwork",
-			"Tooltip": "Displays the artwork of the current context.",
+			"PropertyInspectorPath": "pi/context-information.html",
 			"DisableAutomaticStates": true,
 			"UserTitleEnabled": false,
 			"SupportedInMultiActions": false,
@@ -382,7 +349,7 @@
 				}
 			],
 			"Encoder": {
-				"layout": "playback-control-layout.json",
+				"layout": "layouts/playback-control-layout.json",
 				"StackColor": "#FFF",
 				"TriggerDescription": {
 					"Rotate": "Previous / Next",
@@ -406,7 +373,7 @@
 				}
 			],
 			"Encoder": {
-				"layout": "volume-control-layout.json",
+				"layout": "layouts/volume-control-layout.json",
 				"StackColor": "#FFF",
 				"TriggerDescription": {
 					"Rotate": "Adjust Volume",
@@ -430,7 +397,7 @@
 				}
 			],
 			"Encoder": {
-				"layout": "items-layout.json",
+				"layout": "layouts/items-layout.json",
 				"StackColor": "#FFF",
 				"TriggerDescription": {
 					"Rotate": "Navigate",
@@ -454,7 +421,7 @@
 				}
 			],
 			"Encoder": {
-				"layout": "items-layout.json",
+				"layout": "layouts/items-layout.json",
 				"StackColor": "#FFF",
 				"TriggerDescription": {
 					"Rotate": "Navigate",

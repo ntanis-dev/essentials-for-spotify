@@ -253,6 +253,7 @@ class Wrapper extends EventEmitter {
 
 					title = album?.name ?? 'Unknown ❓'
 					subtitle = album?.artists?.map(artist => artist.name).join(', ') ?? null
+					extra = 'Album 💿'
 					images = album?.images ?? []
 
 					break
@@ -489,6 +490,13 @@ class Wrapper extends EventEmitter {
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
 		})
+	}
+
+	async togglePlayback() {
+		if (this.#lastPlaying)
+			return this.pausePlayback()
+		else
+			return this.resumePlayback()
 	}
 
 	async nextSong(deviceId = this.#lastDevice) {

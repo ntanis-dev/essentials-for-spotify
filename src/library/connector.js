@@ -103,7 +103,7 @@ class Connector extends EventEmitter {
 			next()
 		})
 
-		this.#app.use(express.static('./bin/ui/setup', {
+		this.#app.use(express.static('./bin/setup', {
 			index: false
 		}))
 
@@ -119,7 +119,7 @@ class Connector extends EventEmitter {
 					this.#error = false
 					
 					res.sendFile('./index.html', {
-						root: './bin/ui/setup'
+						root: './bin/setup'
 					})
 				}
 			else if (req.query.code && (!this.#setup) && this.#clientId && this.#clientSecret)
@@ -166,7 +166,7 @@ class Connector extends EventEmitter {
 				res.redirect('/')
 			else {
 				res.sendFile('./index.html', {
-					root: './bin/ui/setup'
+					root: './bin/setup'
 				})
 
 				if (req.query.success && this.#setup) {

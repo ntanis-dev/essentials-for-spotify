@@ -18,18 +18,42 @@ export default class PlayPauseButton extends Button {
 
 	#onPlaybackStateChanged(state: boolean, contexts = this.contexts) {
 		for (const context of contexts)
-			this.setState(context, state ? 1 : 0)
+			if (this.settings[context]?.action === 'play_pause')
+				this.setState(context, state ? 1 : 0)
 	}
 
 	async invokeWrapperAction(context: string) {
-		if (wrapper.playing)
+		if (wrapper.playing && this.settings[context]?.action !== 'play')
 			return wrapper.pausePlayback()
-		else
+		else if ((!wrapper.playing) && this.settings[context]?.action !== 'pause')
 			return wrapper.resumePlayback()
 	}
 
 	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
 		await super.onWillAppear(ev)
 		this.#onPlaybackStateChanged(wrapper.playing, [ev.action.id])
+	}
+
+	async onSettingsUpdated(context: string, oldSettings: any): Promise<void> {
+		await super.onSettingsUpdated(context, oldSettings)
+
+		if (!this.settings[context].action)
+			await this.setSettings(context, {
+				action: 'play_pause'
+			})
+
+		switch (this.settings[context].action) {
+			case 'play_pause':
+				this.#onPlaybackStateChanged(wrapper.playing, [context])
+				break
+
+			case 'play':
+				this.setState(context, 0)
+				break
+			
+			case 'pause':
+				this.setState(context, 1)
+				break
+		}
 	}
 }

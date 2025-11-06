@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+<head lang="en">
+    <meta charset="utf-8" />
+    <script src="sdpi-components.js"></script>
+</head>
+<body>
+    <sdpi-item label="Action">
+        <sdpi-select setting="action">
+            <option value="open_spotify" selected>Open in Spotify</option>
+            <option value="play_pause">Play / Pause</option>
+        </sdpi-select>
+    </sdpi-item>
+    <sdpi-item label="Show">
+        <sdpi-checkbox-list setting="show">
+            <option value="name">Title</option>
+            <option value="artists">Artist(s)</option>
+            <option value="progress">Progress</option>
+            <option value="duration">Duration</option>
+        </sdpi-checkbox-list>
+    </sdpi-item>
+</body>
+</html>
