@@ -31,6 +31,10 @@ There's absolutely no obligation, but you may do so through my **[donate portal]
   ![Stream Deck + Layout](https://github.com/user-attachments/assets/9832d67e-9bb6-4def-8af4-7cd1cbefa0c8)
 
 ### Buttons
+
+What's described here is the default and intended functionality of the buttons.\
+You are able to configure the behavior of some of them via their settings. 
+
 - **Play / Pause**
   Toggles between playing and pausing the current song.
 - **Previous Song**
