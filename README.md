@@ -8,7 +8,7 @@ A **[Spotify Premium](https://www.spotify.com/premium/)** account is required to
 ## Donations
 
 If you've found my work helpful, any contribution is greatly appreciated.\
-There's absolutely no obligation, but you may do so through my **[personal donate portal](https://donate.ntanis.dev/)**.
+There's absolutely no obligation, but you may do so through my **[donate portal](https://donate.ntanis.dev/)**.
 
 ## Features
 
