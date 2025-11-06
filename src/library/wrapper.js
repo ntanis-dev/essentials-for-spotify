@@ -353,6 +353,9 @@ class Wrapper extends EventEmitter {
 				this.emit('songChanged', null, pending)
 				this.emit('songLikedStateChanged', false, pending)
 				this.emit('songTimeChanged', 0, 0, pending)
+
+				if (this.#lastPlaybackContext?.type === 'local')
+					this.#onContextChangeExpected()
 			}
 		} else {
 			const previousSongChanged = this.#previousSong?.item?.id !== song.item.id
@@ -369,13 +372,14 @@ class Wrapper extends EventEmitter {
 			this.#lastSong = song
 			this.#previousSong = Object.assign({}, this.#lastSong)
 
+			if ((this.#lastPlaybackContext?.type === 'local' && (!song.item.uri.includes('local:'))) || this.#lastPlaybackContext?.type !== 'local' && song.item.uri.includes('local:'))
+				this.#onContextChangeExpected()
+
 			if (songChanged || timeChanged)
 				this.#lastSongTimeUpdateAt = Date.now()
 
-			if (songChanged) {
+			if (songChanged)
 				this.emit('songChanged', song, pending)
-				this.#updatePlaybackContext(this.#lastPlaybackContext, pending)
-			}
 
 			if (likedChanged)
 				this.emit('songLikedStateChanged', song.liked, pending)
