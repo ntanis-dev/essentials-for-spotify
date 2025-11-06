@@ -371,7 +371,7 @@ class Wrapper extends EventEmitter {
 			const timeChanged = this.#lastSong?.progress !== song?.progress || this.#lastSong?.item?.duration_ms !== song?.duration_ms
 
 			this.#lastSong = song
-			this.#previousSong = Object.assign({}, this.#lastSong)
+			this.#previousSong = JSON.parse(JSON.stringify(song))
 
 			if ((this.#lastPlaybackContext?.type === 'local' && (!song.item.uri.includes('local:'))) || this.#lastPlaybackContext?.type !== 'local' && song.item.uri.includes('local:'))
 				this.#onContextChangeExpected()
@@ -670,6 +670,15 @@ class Wrapper extends EventEmitter {
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
 		})
+	}
+
+	async likeUnlikeCurrentSong() {
+		if (!this.#lastSong?.item.id)
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+		else if (this.#lastSong.liked)
+			return this.unlikeSong(this.#lastSong)
+		else
+			return this.likeSong(this.#lastSong)
 	}
 
 	async forwardSeek(song, time, deviceId = this.#lastDevice) {

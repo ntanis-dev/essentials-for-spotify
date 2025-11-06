@@ -23,7 +23,7 @@ export default class PlaybackControlDial extends Dial {
 		wrapper.on('songTimeChanged', this.#onSongTimeChanged.bind(this))
 		wrapper.on('playbackStateChanged', this.#onPlaybackStateChanged.bind(this))
 		wrapper.on('deviceChanged', this.#onDeviceChanged.bind(this))
-		wrapper.on('songLikedStateChanged', (liked: boolean, pending: boolean = false, contexts = this.contexts) => this.#onSongChanged(wrapper.song, wrapper.pendingSongChange, contexts))
+		wrapper.on('songLikedStateChanged', (liked: boolean, pending: boolean = false) => this.#onSongChanged(wrapper.song, wrapper.pendingSongChange))
 	}
 
 	#updateJointFeedback(contexts = this.contexts) {
@@ -164,7 +164,7 @@ export default class PlaybackControlDial extends Dial {
 			else if (!this.isHolding(context))
 				return wrapper.nextSong()
 			else if (wrapper.song && wrapper.song.progress + constants.SEEK_STEP_SIZE < wrapper.song.item.duration_ms)
-				return wrapper.forwardSeek(Object.assign({}, wrapper.song), constants.SEEK_STEP_SIZE)
+				return wrapper.forwardSeek(wrapper.song, constants.SEEK_STEP_SIZE)
 			else
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 		} else if (type === Dial.TYPES.ROTATE_COUNTERCLOCKWISE) {
@@ -178,21 +178,13 @@ export default class PlaybackControlDial extends Dial {
 			else if (!this.isHolding(context))
 				return wrapper.previousSong()
 			else if (wrapper.song)
-				return wrapper.backwardSeek(Object.assign({}, wrapper.song), constants.SEEK_STEP_SIZE)
+				return wrapper.backwardSeek(wrapper.song, constants.SEEK_STEP_SIZE)
 			else
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 		} else if (type === Dial.TYPES.TAP)
-			if (wrapper.playing)
-				return wrapper.pausePlayback()
-			else
-				return wrapper.resumePlayback()
+			return wrapper.togglePlayback()
 		else if (type === Dial.TYPES.LONG_TAP)
-			if (!wrapper.song?.item.id)
-				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-			else if (wrapper.song.liked)
-				return wrapper.unlikeSong(Object.assign({}, wrapper.song))
-			else
-				return wrapper.likeSong(Object.assign({}, wrapper.song))
+			return wrapper.likeUnlikeCurrentSong()
 		else
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}

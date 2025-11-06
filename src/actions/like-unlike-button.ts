@@ -7,7 +7,6 @@ import {
 	Button
 } from './button.js'
 
-import constants from '../library/constants.js'
 import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.like-unlike-button' })
@@ -39,12 +38,7 @@ export default class LikeUnlikeButton extends Button {
 	}
 
 	async invokeWrapperAction(context: string) {
-		if (!wrapper.song?.item.id)
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-		else if (wrapper.song.liked)
-			return wrapper.unlikeSong(Object.assign({}, wrapper.song))
-		else
-			return wrapper.likeSong(Object.assign({}, wrapper.song))
+		return wrapper.likeUnlikeCurrentSong()
 	}
 
 	onStateSettled(context: string) {

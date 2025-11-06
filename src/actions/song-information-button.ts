@@ -20,12 +20,14 @@ import wrapper from '../library/wrapper.js'
 @action({ UUID: 'com.ntanis.essentials-for-spotify.song-information-button' })
 export default class SongInformationButton extends Button {
 	static readonly STATABLE = true
+	static readonly MULTI = true
 
 	constructor() {
 		super()
 		this.setStatelessImage('images/states/song-information-unknown')
 		wrapper.on('songChanged', this.#onSongChanged.bind(this))
 		wrapper.on('songTimeChanged', this.#onSongTimeChanged.bind(this))
+		wrapper.on('songLikedStateChanged', (liked: boolean, pending: boolean = false) => this.#onSongChanged(wrapper.song, wrapper.pendingSongChange))
 	}
 
 	#onSongTimeChanged(progress: number, duration: number, pending: boolean = false, contexts = this.contexts) {
@@ -71,7 +73,7 @@ export default class SongInformationButton extends Button {
 						this.resumeMarquee(context)
 
 					if (image)
-						this.setImage(context, `data:image/jpeg;base64,${image}`)
+						this.setImage(context, this.processImage(`data:image/jpeg;base64,${image}`, this.settings[context].show.includes('liked') && song.liked))
 					else if (song.item.uri.includes('local:'))
 						this.setImage(context, 'images/states/local')
 					else
@@ -86,40 +88,82 @@ export default class SongInformationButton extends Button {
 			})
 	}
 
-	async invokeWrapperAction(context: string) {
-		if (this.settings[context].action === 'play_pause')
-			return wrapper.togglePlayback()
-		else if (this.settings[context].action === 'open_spotify')
-			if (wrapper.song) {
-				switch (os.platform()) {
-					case 'darwin':
-						spawn('open', [wrapper.song.item.uri])
-						break
+	async #openSpotify() {
+		if (wrapper.song) {
+			switch (os.platform()) {
+				case 'darwin':
+					spawn('open', [wrapper.song.item.uri])
+					break
 
-					case 'win32':
-						spawn('cmd', ['/c', 'start', '', wrapper.song.item.uri])
-						break
+				case 'win32':
+					spawn('cmd', ['/c', 'start', '', wrapper.song.item.uri])
+					break
 
-					case 'linux':
-						spawn('xdg-open', [wrapper.song.item.uri])
-						break
+				case 'linux':
+					spawn('xdg-open', [wrapper.song.item.uri])
+					break
 
-					default:
-						return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-				}
-
-				return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
+				default:
+					return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 			}
 
-		return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+			return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
+		}
+	}
+
+	async #invokePress(context: string, action: string) {
+		switch (action) {
+			case 'play_pause':
+				return wrapper.togglePlayback()
+
+			case 'open_spotify':
+				return this.#openSpotify()
+
+			case 'next_song':
+				return wrapper.nextSong()
+
+			case 'previous_song':
+				return wrapper.previousSong()
+			
+			case 'like_unlike':
+				return wrapper.likeUnlikeCurrentSong()
+		}
+	}
+
+	async invokeWrapperAction(context: string, type: symbol) {
+		if (type === Button.TYPES.SINGLE_PRESS)
+			return this.#invokePress(context, this.settings[context].single_press)
+		else if (type === Button.TYPES.DOUBLE_PRESS)
+			return this.#invokePress(context, this.settings[context].double_press)
+		else if (type === Button.TYPES.TRIPLE_PRESS)
+			return this.#invokePress(context, this.settings[context].triple_press)
+		else if (type === Button.TYPES.LONG_PRESS)
+			return this.#invokePress(context, this.settings[context].long_press)
+		else
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 
 	async onSettingsUpdated(context: string, oldSettings: any): Promise<void> {
 		await super.onSettingsUpdated(context, oldSettings)
 
-		if (!this.settings[context].action)
+		if (!this.settings[context].single_press)
 			await this.setSettings(context, {
-				action: 'play_pause'
+				single_press: 'play_pause'
+			})
+
+		if (!this.settings[context].double_press)
+			await this.setSettings(context, {
+				double_press: 'next_song'
+			})
+
+		if (!this.settings[context].triple_press)
+			await this.setSettings(context, {
+				triple_press: 'previous_song'
+			})
+
+		if (!this.settings[context].long_press)
+			await this.setSettings(context, {
+				long_press: 'like_unlike'
 			})
 
 		if (!this.settings[context].show)

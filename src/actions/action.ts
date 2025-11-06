@@ -32,9 +32,9 @@ export class Action extends SingletonAction {
 	async setSettings(context: string, settings: any, internal = true) {
 		const oldSettings = JSON.parse(JSON.stringify(this.settings[context] || {}))
 
-		await StreamDeck.client.setSettings(context, settings).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck settings of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
-
 		Object.assign(this.settings[context], settings)
+		
+		await StreamDeck.client.setSettings(context, this.settings[context]).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck settings of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 		if (!internal)
 			this.onSettingsUpdated(context, oldSettings)
