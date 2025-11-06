@@ -353,8 +353,9 @@
 				"layout": "layouts/playback-control-layout.json",
 				"StackColor": "#FFF",
 				"TriggerDescription": {
+					"LongTouch": "Like / Unlike",
 					"Rotate": "Previous / Next",
-					"Push": "Rotate Seek",
+					"Push": "Play / Pause / Rotate Seek",
 					"Touch": "Play / Pause"
 				}
 			}

@@ -15,12 +15,15 @@ import wrapper from './../library/wrapper.js'
 export default class PlaybackControlDial extends Dial {
 	static readonly HOLDABLE = true
 
+	#seeking: boolean = false
+
 	constructor() {
 		super('layouts/playback-control-layout.json', 'images/icons/playback-control.png')
 		wrapper.on('songChanged', this.#onSongChanged.bind(this))
 		wrapper.on('songTimeChanged', this.#onSongTimeChanged.bind(this))
 		wrapper.on('playbackStateChanged', this.#onPlaybackStateChanged.bind(this))
 		wrapper.on('deviceChanged', this.#onDeviceChanged.bind(this))
+		wrapper.on('songLikedStateChanged', (liked: boolean, pending: boolean = false, contexts = this.contexts) => this.#onSongChanged(wrapper.song, wrapper.pendingSongChange, contexts))
 	}
 
 	#updateJointFeedback(contexts = this.contexts) {
@@ -107,7 +110,7 @@ export default class PlaybackControlDial extends Dial {
 						this.resumeMarquee(context, 'time')
 
 					if (image)
-						this.setIcon(context, `data:image/jpeg;base64,${image}`)
+						this.setIcon(context, this.processImage(`data:image/jpeg;base64,${image}`, song.liked))
 					else
 						this.setIcon(context, this.originalIcon)
 				} else if (wrapper.pendingSongChange)
@@ -151,6 +154,11 @@ export default class PlaybackControlDial extends Dial {
 
 	async invokeWrapperAction(context: string, type: symbol) {
 		if (type === Dial.TYPES.ROTATE_CLOCKWISE) {
+			if (this.isHolding(context))
+				this.#seeking = true
+			else
+				this.#seeking = false
+
 			if ((!wrapper.song) && wrapper.pendingSongChange)
 				return constants.WRAPPER_RESPONSE_BUSY
 			else if (!this.isHolding(context))
@@ -160,6 +168,11 @@ export default class PlaybackControlDial extends Dial {
 			else
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 		} else if (type === Dial.TYPES.ROTATE_COUNTERCLOCKWISE) {
+			if (this.isHolding(context))
+				this.#seeking = true
+			else
+				this.#seeking = false
+
 			if ((!wrapper.song) && wrapper.pendingSongChange)
 				return constants.WRAPPER_RESPONSE_BUSY
 			else if (!this.isHolding(context))
@@ -173,6 +186,13 @@ export default class PlaybackControlDial extends Dial {
 				return wrapper.pausePlayback()
 			else
 				return wrapper.resumePlayback()
+		else if (type === Dial.TYPES.LONG_TAP)
+			if (!wrapper.song?.item.id)
+				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+			else if (wrapper.song.liked)
+				return wrapper.unlikeSong(Object.assign({}, wrapper.song))
+			else
+				return wrapper.likeSong(Object.assign({}, wrapper.song))
 		else
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
@@ -182,7 +202,15 @@ export default class PlaybackControlDial extends Dial {
 	}
 
 	async invokeHoldReleaseWrapperAction(context: string) {
-		return constants.WRAPPER_RESPONSE_SUCCESS
+		if (this.#seeking) {
+			this.#seeking = false
+			return constants.WRAPPER_RESPONSE_SUCCESS
+		}
+
+		if (wrapper.playing)
+			return wrapper.pausePlayback()
+		else
+			return wrapper.resumePlayback()
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
