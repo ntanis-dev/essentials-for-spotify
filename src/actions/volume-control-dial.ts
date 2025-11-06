@@ -14,7 +14,7 @@ export default class VolumeControlDial extends Dial {
 	static readonly HOLDABLE = true
 
 	constructor() {
-		super('volume-control-layout.json', 'images/icons/volume-control.png')
+		super('layouts/volume-control-layout.json', 'images/icons/volume-control.png')
 		wrapper.on('mutedStateChanged', this.#onMutedStateChanged.bind(this))
 		wrapper.on('volumePercentChanged', this.#onVolumePercentChanged.bind(this))
 		wrapper.on('deviceChanged', this.#onDeviceChanged.bind(this))

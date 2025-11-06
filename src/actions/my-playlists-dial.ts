@@ -9,7 +9,7 @@ import wrapper from './../library/wrapper.js'
 @action({ UUID: 'com.ntanis.essentials-for-spotify.my-playlists-dial' })
 export default class MyPlaylistsDial extends ItemsDial {
 	constructor() {
-		super('items-layout.json', 'images/icons/playlists.png')
+		super('layouts/items-layout.json', 'images/icons/playlists.png')
 	}
 
 	async fetchItems(page: number) {

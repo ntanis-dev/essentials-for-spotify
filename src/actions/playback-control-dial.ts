@@ -16,7 +16,7 @@ export default class PlaybackControlDial extends Dial {
 	static readonly HOLDABLE = true
 
 	constructor() {
-		super('playback-control-layout.json', 'images/icons/playback-control.png')
+		super('layouts/playback-control-layout.json', 'images/icons/playback-control.png')
 		wrapper.on('songChanged', this.#onSongChanged.bind(this))
 		wrapper.on('songTimeChanged', this.#onSongTimeChanged.bind(this))
 		wrapper.on('playbackStateChanged', this.#onPlaybackStateChanged.bind(this))
