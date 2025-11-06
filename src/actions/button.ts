@@ -2,8 +2,7 @@ import StreamDeck, {
 	KeyDownEvent,
 	KeyUpEvent,
 	WillAppearEvent,
-	WillDisappearEvent,
-	DidReceiveSettingsEvent
+	WillDisappearEvent
 } from '@elgato/streamdeck'
 
 import {
@@ -27,8 +26,6 @@ export class Button extends Action {
 	#flashing: any = {}
 	#statelessImage: string = ''
 
-	settings: any = {}
-	contexts: Array<string> = []
 	marquees: any = {}
 
 	constructor() {
@@ -122,13 +119,7 @@ export class Button extends Action {
 	}
 
 	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
-		this.contexts.push(ev.action.id)
-
-		const oldSettings = JSON.parse(JSON.stringify(this.settings[ev.action.id] || {}))
-
-		this.settings[ev.action.id] = ev.payload.settings
-
-		await this.onSettingsUpdated(ev.action.id, oldSettings)
+		await super.onWillAppear(ev)
 
 		if ((this.constructor as typeof Button).STATABLE)
 			if (!connector.set)
@@ -145,27 +136,6 @@ export class Button extends Action {
 		delete this.#holding[ev.action.id]
 
 		this.contexts.splice(this.contexts.indexOf(ev.action.id), 1)
-	}
-
-	async onDidReceiveSettings(ev: DidReceiveSettingsEvent<any>): Promise<void> {
-		const oldSettings = JSON.parse(JSON.stringify(this.settings[ev.action.id] || {}))
-		this.settings[ev.action.id] = ev.payload.settings
-		await this.onSettingsUpdated(ev.action.id, oldSettings)
-	}
-
-	async onSettingsUpdated(context: string, oldSettings: any) {
-		return
-	}
-
-	async setSettings(context: string, settings: any, internal = true) {
-		const oldSettings = JSON.parse(JSON.stringify(this.settings[context] || {}))
-
-		await StreamDeck.client.setSettings(context, settings).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck settings of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
-
-		Object.assign(this.settings[context], settings)
-
-		if (!internal)
-			this.onSettingsUpdated(context, oldSettings)
 	}
 
 	async invokeWrapperAction(context: string): Promise<Symbol> {

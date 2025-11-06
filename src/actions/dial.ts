@@ -217,7 +217,7 @@ export class Dial extends Action {
 	}
 
 	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
-		this.contexts.push(ev.action.id)
+		await super.onWillAppear(ev)
 
 		if (connector.set)
 			this.updateFeedback(ev.action.id)

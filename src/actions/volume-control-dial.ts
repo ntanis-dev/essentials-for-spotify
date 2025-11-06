@@ -1,7 +1,5 @@
-import StreamDeck, {
-	action,
-	PropertyInspectorDidAppearEvent,
-	PropertyInspectorDidDisappearEvent
+import {
+	action
 } from '@elgato/streamdeck'
 
 import {
@@ -52,11 +50,6 @@ export default class VolumeControlDial extends Dial {
 	}
 
 	#onVolumePercentChanged(percent: number, contexts = this.contexts) {
-		for (const context of contexts)
-		StreamDeck.client.sendToPropertyInspector(context, {
-			test: 'tost'
-		})
-
 		this.#updateJointFeedback(contexts)
 	}
 
@@ -81,15 +74,15 @@ export default class VolumeControlDial extends Dial {
 			if (wrapper.volumePercent === null)
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
-			return wrapper.setPlaybackVolume((wrapper.muted ? wrapper.mutedVolumePercent : wrapper.volumePercent) + constants.VOLUME_STEP_SIZE)
+			return wrapper.setPlaybackVolume((wrapper.muted ? wrapper.mutedVolumePercent : wrapper.volumePercent) + this.settings[context]?.step)
 		} else if (type === Dial.TYPES.ROTATE_COUNTERCLOCKWISE) {
 			if (wrapper.volumePercent === null)
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
-			if (wrapper.muted && wrapper.mutedVolumePercent > constants.VOLUME_STEP_SIZE)
+			if (wrapper.muted && wrapper.mutedVolumePercent > this.settings[context]?.step)
 				await wrapper.unmuteVolume()
 
-			return wrapper.setPlaybackVolume(wrapper.volumePercent - constants.VOLUME_STEP_SIZE)
+			return wrapper.setPlaybackVolume(wrapper.volumePercent - this.settings[context]?.step)
 		} else if (type === Dial.TYPES.TAP) {
 			if (wrapper.volumePercent === null)
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
@@ -128,10 +121,13 @@ export default class VolumeControlDial extends Dial {
 		})
 	}
 
-	async onPropertyInspectorDidAppear(event: PropertyInspectorDidAppearEvent<any>): Promise<void> {
-	}
+	async onSettingsUpdated(context: string, oldSettings: any): Promise<void> {
+		await super.onSettingsUpdated(context, oldSettings)
 
-	async onPropertyInspectorDidDisappear(event: PropertyInspectorDidDisappearEvent<any>): Promise<void> {
+		if (!this.settings[context].step)
+			await this.setSettings(context, {
+				step: 5
+			})
 	}
 
 	updateFeedback(context: string): void {

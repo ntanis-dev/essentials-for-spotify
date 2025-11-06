@@ -364,6 +364,7 @@
 			"UUID": "com.ntanis.essentials-for-spotify.volume-control-dial",
 			"Icon": "images/actions/volume-control",
 			"Tooltip": "Controls the playback volume.",
+			"PropertyInspectorPath": "pi/volume-control-dial.html",
 			"Controllers": [
 				"Encoder"
 			],
