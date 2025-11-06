@@ -49,6 +49,8 @@ You are able to configure the behavior of some of them via their settings.
   Repeats the current song.
 - **Like / Unlike**
   Adds the current song to your liked songs or removes it if already liked.
+- **Multi-Action**
+  Single press: Play/Pause, Double press: Next Song, Triple press: Previous Song, Long press: Like/Unlike. Displays current song artwork.
 - **Explicit Indicator**
   Shows whether the current song is explicit or not.
 - **Volume Up**
