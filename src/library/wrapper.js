@@ -19,7 +19,7 @@ class Wrapper extends EventEmitter {
 	#lastPendingSong = null
 	#lastPendingContext = null
 	#lastVolumePercent = null
-	#lastDevice = null
+	#lastDeviceId = null
 	#lastSong = null
 	#previousSong = null
 	#lastSongTimeUpdateAt = null
@@ -118,13 +118,13 @@ class Wrapper extends EventEmitter {
 
 	async #deviceCall(path, options, deviceId) {
 		if (!deviceId) {
-			if (this.#lastDevice)
+			if (this.#lastDeviceId)
 				throw new constants.NoDeviceError('No device specified.')
 
 			const activeDevices = this.#lastDevices.filter(device => device.type !== 'Speaker')
 
 			if (activeDevices.length > 0)
-				this.#setDevices(activeDevices[0], activeDevices)
+				this.#setDevices(activeDevices[0].id, activeDevices)
 		}
 
 		path = `${path}${path.includes('?') ? '&' : '?'}`
@@ -192,7 +192,7 @@ class Wrapper extends EventEmitter {
 				progress: response.progress_ms
 			} : null)
 
-			this.#setDevices(response?.device.id ?? this.#lastDevice ?? null, (await connector.callSpotifyApi('me/player/devices')).devices ?? [])
+			this.#setDevices(response?.device.id ?? this.#lastDeviceId ?? null, (await connector.callSpotifyApi('me/player/devices')).devices ?? [])
 			this.#setDisallowFlags((response?.actions?.disallows ? Object.keys(response.actions.disallows).filter(flag => response.actions.disallows[flag]) : []).concat(response?.device.supports_volume ? [] : 'volume'))
 			this.#setCurrentlyPlayingType(response?.currently_playing_type || null)
 		} catch (e) {
@@ -458,11 +458,11 @@ class Wrapper extends EventEmitter {
 		}
 	}
 
-	#setDevices(last, devices) {
-		if (this.#lastDevice !== last) {
+	#setDevices(lastDeviceId, devices) {
+		if (this.#lastDeviceId !== lastDeviceId) {
 			this.#updatePlaybackStateStatus = 'skip'
-			this.#lastDevice = last
-			this.emit('deviceChanged', last)
+			this.#lastDeviceId = lastDeviceId
+			this.emit('deviceChanged', lastDeviceId)
 		}
 
 		if (this.#lastDevices && this.#lastDevices.length === devices.length && this.#lastDevices.every((device, index) => device.id === devices[index].id))
@@ -542,7 +542,7 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async resumePlayback(deviceId = this.#lastDevice) {
+	async resumePlayback(deviceId = this.#lastDeviceId) {
 		if (this.#lastPlaying || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
@@ -560,7 +560,7 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async pausePlayback(deviceId = this.#lastDevice) {
+	async pausePlayback(deviceId = this.#lastDeviceId) {
 		if ((!this.#lastPlaying) || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
@@ -582,7 +582,7 @@ class Wrapper extends EventEmitter {
 			return this.resumePlayback()
 	}
 
-	async nextSong(deviceId = this.#lastDevice) {
+	async nextSong(deviceId = this.#lastDeviceId) {
 		if (this.#lastDisallowFlags.includes('skipping_next') || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
@@ -600,7 +600,7 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async previousSong(deviceId = this.#lastDevice) {
+	async previousSong(deviceId = this.#lastDeviceId) {
 		if (this.#lastDisallowFlags.includes('skipping_prev') || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
@@ -618,7 +618,7 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async turnOnShuffle(deviceId = this.#lastDevice) {
+	async turnOnShuffle(deviceId = this.#lastDeviceId) {
 		if (this.#lastDisallowFlags.includes('toggling_shuffle') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
@@ -633,7 +633,7 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async turnOffShuffle(deviceId = this.#lastDevice) {
+	async turnOffShuffle(deviceId = this.#lastDeviceId) {
 		if (this.#lastDisallowFlags.includes('toggling_shuffle') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
@@ -648,7 +648,7 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async turnOnContextRepeat(deviceId = this.#lastDevice) {
+	async turnOnContextRepeat(deviceId = this.#lastDeviceId) {
 		if (this.#lastDisallowFlags.includes('toggling_repeat_context') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
@@ -663,7 +663,7 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async turnOnTrackRepeat(deviceId = this.#lastDevice) {
+	async turnOnTrackRepeat(deviceId = this.#lastDeviceId) {
 		if (this.#lastDisallowFlags.includes('toggling_repeat_track') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
@@ -678,7 +678,7 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async turnOffRepeat(deviceId = this.#lastDevice) {
+	async turnOffRepeat(deviceId = this.#lastDeviceId) {
 		if ((this.#lastDisallowFlags.includes('toggling_repeat_context') && this.#lastRepeatState === 'context') || (this.#lastDisallowFlags.includes('toggling_repeat_track') && this.#lastRepeatState === 'track') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
@@ -693,7 +693,7 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async setPlaybackVolume(volumePercent, deviceId = this.#lastDevice) {
+	async setPlaybackVolume(volumePercent, deviceId = this.#lastDeviceId) {
 		if (this.#lastDisallowFlags.includes('volume') || (this.#lastDisallowFlags.includes('interrupting_playback') && volumePercent <= 0) || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
@@ -710,7 +710,7 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async muteVolume(deviceId = this.#lastDevice) {
+	async muteVolume(deviceId = this.#lastDeviceId) {
 		const lastVolumePercent = this.#lastVolumePercent
 
 		return this.setPlaybackVolume(0, deviceId).then(response => {
@@ -719,7 +719,7 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async unmuteVolume(deviceId = this.#lastDevice) {
+	async unmuteVolume(deviceId = this.#lastDeviceId) {
 		return this.setPlaybackVolume(this.#lastMuted || constants.VOLUME_PERCENT_MUTE_RESTORE, deviceId)
 	}
 
@@ -764,7 +764,7 @@ class Wrapper extends EventEmitter {
 			return this.likeSong(this.#lastSong)
 	}
 
-	async forwardSeek(song, time, deviceId = this.#lastDevice) {
+	async forwardSeek(song, time, deviceId = this.#lastDeviceId) {
 		if (this.#lastDisallowFlags.includes('seeking') || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
@@ -783,7 +783,7 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async backwardSeek(song, time, deviceId = this.#lastDevice) {
+	async backwardSeek(song, time, deviceId = this.#lastDeviceId) {
 		if (this.#lastDisallowFlags.includes('seeking') || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
@@ -804,7 +804,7 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async playItem(item, deviceId = this.#lastDevice) {
+	async playItem(item, deviceId = this.#lastDeviceId) {
 		if (this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
@@ -959,7 +959,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	get device() {
-		return this.#lastDevice
+		return this.#lastDeviceId
 	}
 
 	get user() {
