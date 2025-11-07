@@ -39,7 +39,7 @@ const getForSong = async song => {
 				return
 			}
 
-			const url = song.item.album.images.length > 0 ? song.item.album.images.sort((a, b) => b.width - a.width)[0].url : undefined
+			const url = song.item.album.images.length > 0 ? song.item.album.images.sort((a, b) => a.width - b.width)[0].url : undefined
 
 			if (!url) {
 				resolve(null)
@@ -85,7 +85,7 @@ const getForItem = async item => {
 				return
 			}
 
-			const url = item.images.length > 0 ? item.images.sort((a, b) => b.width - a.width)[0].url : undefined
+			const url = item.images.length > 0 ? item.images.sort((a, b) => a.width - b.width)[0].url : undefined
 
 			if (!url) {
 				resolve(null)

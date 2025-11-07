@@ -168,7 +168,7 @@ export default class SongStackButton extends Button {
 
 		if (!this.settings[context].show)
 			await this.setSettings(context, {
-				show: ['name', 'artists', 'progress', 'duration']
+				show: ['name', 'artists', 'progress', 'duration', 'liked']
 			})
 
 		if (oldSettings.show?.length !== this.settings[context].show?.length || (oldSettings.show && this.settings[context].show && (!oldSettings.show.every((value: any, index: number) => value === this.settings[context].show[index]))))

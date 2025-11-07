@@ -44,7 +44,7 @@ export class Action extends SingletonAction {
 		return
 	}
 
-	processImage(iconDataUrl: string, addHeart: boolean): string {
+	processImage(iconDataUrl: string, addHeart: boolean, topLeft: boolean = false): string {
 		if (!addHeart)
 			return iconDataUrl
 
@@ -57,12 +57,27 @@ export class Action extends SingletonAction {
 			const originalHeight = 106
 			const availableWidth = iconSize - (heartPadding * 2)
 			const availableHeight = iconSize - (heartPadding * 2)
-			const scaleFactor = Math.min(availableWidth / originalWidth, availableHeight / originalHeight)
-			const heartWidth = originalWidth * scaleFactor
-			const heartHeight = originalHeight * scaleFactor
-			const offsetX = (iconSize - heartWidth) / 2
-			const offsetY = (iconSize - heartHeight) / 2
+
+			let scaleFactor = Math.min(availableWidth / originalWidth, availableHeight / originalHeight)
+			let heartWidth = originalWidth * scaleFactor
+			let heartHeight = originalHeight * scaleFactor
+			let offsetX = (iconSize - heartWidth) / 2
+			let offsetY = (iconSize - heartHeight) / 2
+			let strokeWidth = 2
+
 			const patternId = `iconPattern-${Math.random().toString(36).slice(2, 8)}`
+
+			if (topLeft) {
+				const cornerPadding = 12
+				const maxCornerSize = iconSize * 0.4
+
+				scaleFactor = Math.min(maxCornerSize / originalWidth, maxCornerSize / originalHeight)
+				heartWidth = originalWidth * scaleFactor
+				heartHeight = originalHeight * scaleFactor
+				offsetX = cornerPadding
+				offsetY = cornerPadding
+				strokeWidth = 1
+			}
 
 			const svg = `
 				<svg width="${iconSize}" height="${iconSize}" viewBox="0 0 ${iconSize} ${iconSize}" xmlns="http://www.w3.org/2000/svg">
@@ -73,7 +88,7 @@ export class Action extends SingletonAction {
 					</defs>
 					<rect width="${iconSize}" height="${iconSize}" fill="url(#${patternId})"/>
 					<path d="M 65,29 C 59,19 49,12 37,12 20,12 7,25 7,42 7,75 25,80 65,118 105,80 123,75 123,42 123,25 110,12 93,12 81,12 71,19 65,29 z"
-						  fill="#1db954" stroke="#191414" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+						  fill="#1db954" stroke="#191414" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round"
 						  transform="translate(${offsetX - (originalMinX * scaleFactor)}, ${offsetY - (originalMinY * scaleFactor)}) scale(${scaleFactor})" vector-effect="non-scaling-stroke"/>
 				</svg>
 			`

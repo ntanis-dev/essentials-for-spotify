@@ -35,12 +35,18 @@ There's absolutely no obligation, but you may do so through my **[donate portal]
 What's described here is the default and intended functionality of the buttons.\
 You are able to configure the behavior of some of them via their settings. 
 
+- **Setup**
+  Start here to setup Essentials for Spotify or to reset the setup process.
 - **Play / Pause**
   Toggles between playing and pausing the current song.
 - **Previous Song**
   Skips to the previous song.
 - **Next Song**
   Advances to the next song.
+- **Backward Seek**
+  Seek backward in the current song.
+- **Forward Seek**
+  Seek forward in the current song.
 - **Shuffle** 
   Activates or deactivates shuffle play.
 - **Loop Context**
@@ -57,28 +63,25 @@ You are able to configure the behavior of some of them via their settings.
   Decreases the playback volume.
 - **Volume Mute / Unmute** 
   Toggles between muting and unmuting the volume.
-- **Backward Seek**
-  Seek backward in the current song.
-- **Forward Seek**
-  Seek forward in the current song.
 - **Song Stack**
   Displays the information of the current song and offers a variety of control actions.
+- **Song Clipboard**
+  Copies the information of the current song to the clipboard.
 - **Context Information**
   Displays the information of the current context.
 - **User Information**
   Displays the information of the connected user.
-- **Song Clipboard**
-  Copies the information of the current song to the clipboard.
-- **Setup**
-  Start here to setup Essentials for Spotify or to reset the setup process.
+- **Play Context**
+  Map this button to any supported Spotify URI and press it to start playing.
 
 ### Dials
 - **Playback Control**\
   Controls the playback of the current song.
 
   - Rotate: Previous / Next
-  - Push: Rotate Seek
+  - Push: Play / Pause / Rotate Seek
   - Touch: Play / Pause
+  - Long Touch: Like / Unlike
 - **Volume Control**\
   Controls the playback volume.
   
@@ -90,13 +93,15 @@ You are able to configure the behavior of some of them via their settings.
   
   - Rotate: Navigate  
   - Push: Play
-  - Touch: Refresh  
+  - Touch: Play
+  - Long Touch: Refresh  
 - **New Releases**\
   Navigate and play through your personalized new releases.
   
   - Rotate: Navigate  
   - Push: Play
-  - Touch: Refresh
+  - Touch: Play
+  - Long Touch: Refresh
 
   Icons\
     🎤 Single\

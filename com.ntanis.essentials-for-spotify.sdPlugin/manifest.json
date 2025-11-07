@@ -4,6 +4,27 @@
 	"Author": "Ntanis",
 	"Actions": [
 		{
+			"Name": "Setup",
+			"UUID": "com.ntanis.essentials-for-spotify.setup-button",
+			"Icon": "images/actions/setup",
+			"Tooltip": "Start here to setup Essentials for Spotify.",
+			"DisableAutomaticStates": true,
+			"SupportedInMultiActions": false,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/no-setup",
+					"TitleAlignment": "middle"
+				},
+				{
+					"Image": "images/states/setup",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
 			"Name": "Play / Pause",
 			"UUID": "com.ntanis.essentials-for-spotify.play-pause-button",
 			"Icon": "images/actions/play-pause",
@@ -52,6 +73,38 @@
 			"States": [
 				{
 					"Image": "images/states/next",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
+			"Name": "Backward Seek",
+			"UUID": "com.ntanis.essentials-for-spotify.backward-seek-button",
+			"Icon": "images/actions/backward-seek",
+			"Tooltip": "Seek backward in the current song.",
+			"DisableAutomaticStates": true,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/backward-seek",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
+			"Name": "Forward Seek",
+			"UUID": "com.ntanis.essentials-for-spotify.forward-seek-button",
+			"Icon": "images/actions/forward-seek",
+			"Tooltip": "Seek forward in the current song.",
+			"DisableAutomaticStates": true,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/forward-seek",
 					"TitleAlignment": "middle"
 				}
 			]
@@ -137,6 +190,27 @@
 			]
 		},
 		{
+			"Name": "Explicit Indicator",
+			"UUID": "com.ntanis.essentials-for-spotify.song-explicit-button",
+			"Icon": "images/actions/song-explicit",
+			"Tooltip": "Shows whether the current song is explicit or not",
+			"DisableAutomaticStates": true,
+			"SupportedInMultiActions": false,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/song-not-explicit",
+					"TitleAlignment": "middle"
+				},
+				{
+					"Image": "images/states/song-explicit",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
 			"Name": "Volume Up",
 			"UUID": "com.ntanis.essentials-for-spotify.volume-up-button",
 			"Icon": "images/actions/volume-up",
@@ -189,6 +263,23 @@
 			]
 		},
 		{
+			"Name": "Play Context",
+			"UUID": "com.ntanis.essentials-for-spotify.play-context-button",
+			"Icon": "images/actions/play-context",
+			"Tooltip": "Toggles between playing and pausing the current song.",
+			"PropertyInspectorPath": "pi/play-context-button.html",
+			"DisableAutomaticStates": true,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/play-context",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
 			"Name": "Song Stack",
 			"UUID": "com.ntanis.essentials-for-spotify.song-stack-button",
 			"Icon": "images/actions/song-stack",
@@ -203,6 +294,22 @@
 			"States": [
 				{
 					"Image": "images/states/song-stack",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
+			"Name": "Song Clipboard",
+			"UUID": "com.ntanis.essentials-for-spotify.song-clipboard-button",
+			"Icon": "images/actions/song-clipboard",
+			"Tooltip": "Copies the information of the current song to the clipboard.",
+			"DisableAutomaticStates": true,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/song-clipboard",
 					"TitleAlignment": "middle"
 				}
 			]
@@ -246,100 +353,11 @@
 			]
 		},
 		{
-			"Name": "Song Clipboard",
-			"UUID": "com.ntanis.essentials-for-spotify.song-clipboard-button",
-			"Icon": "images/actions/song-clipboard",
-			"Tooltip": "Copies the information of the current song to the clipboard.",
-			"DisableAutomaticStates": true,
-			"Controllers": [
-				"Keypad"
-			],
-			"States": [
-				{
-					"Image": "images/states/song-clipboard",
-					"TitleAlignment": "middle"
-				}
-			]
-		},
-		{
-			"Name": "Backward Seek",
-			"UUID": "com.ntanis.essentials-for-spotify.backward-seek-button",
-			"Icon": "images/actions/backward-seek",
-			"Tooltip": "Seek backward in the current song.",
-			"DisableAutomaticStates": true,
-			"Controllers": [
-				"Keypad"
-			],
-			"States": [
-				{
-					"Image": "images/states/backward-seek",
-					"TitleAlignment": "middle"
-				}
-			]
-		},
-		{
-			"Name": "Forward Seek",
-			"UUID": "com.ntanis.essentials-for-spotify.forward-seek-button",
-			"Icon": "images/actions/forward-seek",
-			"Tooltip": "Seek forward in the current song.",
-			"DisableAutomaticStates": true,
-			"Controllers": [
-				"Keypad"
-			],
-			"States": [
-				{
-					"Image": "images/states/forward-seek",
-					"TitleAlignment": "middle"
-				}
-			]
-		},
-		{
-			"Name": "Explicit Indicator",
-			"UUID": "com.ntanis.essentials-for-spotify.song-explicit-button",
-			"Icon": "images/actions/song-explicit",
-			"Tooltip": "Shows whether the current song is explicit or not",
-			"DisableAutomaticStates": true,
-			"SupportedInMultiActions": false,
-			"Controllers": [
-				"Keypad"
-			],
-			"States": [
-				{
-					"Image": "images/states/song-not-explicit",
-					"TitleAlignment": "middle"
-				},
-				{
-					"Image": "images/states/song-explicit",
-					"TitleAlignment": "middle"
-				}
-			]
-		},
-		{
-			"Name": "Setup",
-			"UUID": "com.ntanis.essentials-for-spotify.setup-button",
-			"Icon": "images/actions/setup",
-			"Tooltip": "Start here to setup Essentials for Spotify.",
-			"DisableAutomaticStates": true,
-			"SupportedInMultiActions": false,
-			"Controllers": [
-				"Keypad"
-			],
-			"States": [
-				{
-					"Image": "images/states/no-setup",
-					"TitleAlignment": "middle"
-				},
-				{
-					"Image": "images/states/setup",
-					"TitleAlignment": "middle"
-				}
-			]
-		},
-		{
 			"Name": "Playback Control",
 			"UUID": "com.ntanis.essentials-for-spotify.playback-control-dial",
 			"Icon": "images/actions/playback-control",
 			"Tooltip": "Controls the playback of the current song.",
+			"PropertyInspectorPath": "pi/playback-control-dial.html",
 			"Controllers": [
 				"Encoder"
 			],

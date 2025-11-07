@@ -10,6 +10,7 @@ import {
 import constants from './../library/constants.js'
 import images from './../library/images.js'
 import wrapper from './../library/wrapper.js'
+import logger from './../library/logger.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.playback-control-dial' })
 export default class PlaybackControlDial extends Dial {
@@ -47,14 +48,14 @@ export default class PlaybackControlDial extends Dial {
 				},
 
 				text: {
-					value: timeMarquee ? timeMarquee.last : '??:?? / ??:??',
+					value: timeMarquee ? timeMarquee.last : `${this.settings[context].show.includes('progress') ? '??:??' : ''}${this.settings[context].show.includes('progress') && this.settings[context].show.includes('duration') ? ' / ' : ''}${this.settings[context].show.includes('duration') ? '??:??' : ''}`,
 					opacity: wrapper.playing ? 1.0 : 0.5
 				}
 			})
 		}
 	}
 
-	#onSongChanged(song: any, pending: boolean = false, contexts = this.contexts) {
+	#onSongChanged(song: any, pending: boolean = false, contexts = this.contexts, force = false) {
 		for (const context of contexts)
 			setImmediate(async () => {
 				this.setUnpressable(context, true)
@@ -62,27 +63,28 @@ export default class PlaybackControlDial extends Dial {
 				let titleMarquee = this.getMarquee(context, 'title')
 				let timeMarquee = this.getMarquee(context, 'time')
 
-				this.setFeedback(context, {
+				await this.setFeedback(context, {
 					icon: {
 						opacity: wrapper.device && (wrapper.song || wrapper.pendingSongChange) ? 1.0 : 0.5
 					}
 				})
 
-				if (pending || (song && ((titleMarquee && titleMarquee.id !== song.item.id) || (timeMarquee && timeMarquee.id !== song.item.id))) || ((!song) && titleMarquee && timeMarquee)) {
+				if (pending || (song && ((titleMarquee && titleMarquee.id !== song.item.id) || (timeMarquee && timeMarquee.id !== song.item.id))) || ((!song) && titleMarquee && timeMarquee) || force) {
 					this.clearMarquee(context, 'title')
 					this.clearMarquee(context, 'time')
 
 					titleMarquee = null
 					timeMarquee = null
 
-					this.setFeedback(context, {
-						title: 'Playback Control',
+					if ((!force) || (!song))
+						await this.setFeedback(context, {
+							title: 'Playback Control',
 
-						text: {
-							value: '??:?? / ??:??',
-							opacity: wrapper.playing ? 1.0 : 0.5
-						}
-					})
+							text: {
+								value: '??:?? / ??:??',
+								opacity: wrapper.playing ? 1.0 : 0.5
+							}
+						})
 				}
 
 				if (song) {
@@ -90,27 +92,27 @@ export default class PlaybackControlDial extends Dial {
 						this.setIcon(context, 'images/icons/pending.png')
 
 					const image = await images.getForSong(song)
-					const time = this.beautifyTime(song.progress, song.item.duration_ms)
+					const time = this.beautifyTime(song.progress, song.item.duration_ms, this.settings[context].show.includes('progress'), this.settings[context].show.includes('duration'))
 
-					this.setFeedback(context, {
+					await this.setFeedback(context, {
 						text: {
 							value: time
 						}
 					})
 
-					if ((!titleMarquee) || titleMarquee.id !== song.item.id) {
-						const title = `${song.item.name} - ${song.item.artists.map((artist: any) => artist.name).join(', ')}`
-						this.marquee(song.item.id, 'title', title, title, 16, context)
+					if ((!titleMarquee) || titleMarquee.id !== song.item.id || force) {
+						const title = `${this.settings[context].show.includes('name') ? song.item.name : ''}${this.settings[context].show.includes('name') && this.settings[context].show.includes('artists') ? ' - ' : ''}${this.settings[context].show.includes('artists') ? song.item.artists.map((artist: any) => artist.name).join(', ') : ''}`
+						this.marquee(undefined, 'title', title, title, 16, context)
 					} else
 						this.resumeMarquee(context, 'title')
 
-					if ((!timeMarquee) || timeMarquee.id !== song.item.id)
-						this.marquee(song.item.id, 'time', time, `${'8'.repeat(time.length - 5)}: : /`, 14, context)
+					if ((!timeMarquee) || timeMarquee.id !== song.item.id || force)
+						this.marquee(undefined, 'time', time === '' ? ' ' : time, time === '' ? ' ' : `${'8'.repeat(time.length - (this.settings[context].show.includes('progress') && this.settings[context].show.includes('duration') ? 5 : 1))}${this.settings[context].show.includes('progress') && this.settings[context].show.includes('duration') ? ': : /' : ':'}`, 14, context)
 					else
 						this.resumeMarquee(context, 'time')
 
 					if (image)
-						this.setIcon(context, this.processImage(`data:image/jpeg;base64,${image}`, song.liked))
+						this.setIcon(context, this.processImage(`data:image/jpeg;base64,${image}`, this.settings[context].show.includes('liked') && song.liked, true))
 					else
 						this.setIcon(context, this.originalIcon)
 				} else if (wrapper.pendingSongChange)
@@ -127,8 +129,8 @@ export default class PlaybackControlDial extends Dial {
 			const timeMarquee = this.getMarquee(context, 'time')
 
 			if (timeMarquee) {
-				const time = this.beautifyTime(progress, duration)
-				this.updateMarquee(context, 'time', time, `${'8'.repeat(time.length - 5)}: : /`)
+				const time = this.beautifyTime(progress, duration, this.settings[context].show.includes('progress'), this.settings[context].show.includes('duration'))
+				this.updateMarquee(context, 'time', time === '' ? ' ' : time, time === '' ? ' ' : `${'8'.repeat(time.length - (this.settings[context].show.includes('progress') && this.settings[context].show.includes('duration') ? 5 : 1))}${this.settings[context].show.includes('progress') && this.settings[context].show.includes('duration') ? ': : /' : ':'}`)
 			}
 
 			this.#updateJointFeedback([context])
@@ -216,6 +218,18 @@ export default class PlaybackControlDial extends Dial {
 			title: 'Playback Control',
 			icon: this.originalIcon
 		})
+	}
+
+	async onSettingsUpdated(context: string, oldSettings: any): Promise<void> {
+		await super.onSettingsUpdated(context, oldSettings)
+
+		if (!this.settings[context].show)
+			await this.setSettings(context, {
+				show: ['name', 'artists', 'progress', 'duration', 'liked']
+			})
+
+		if (oldSettings.show?.length !== this.settings[context].show?.length || (oldSettings.show && this.settings[context].show && (!oldSettings.show.every((value: any, index: number) => value === this.settings[context].show[index]))))
+			this.#onSongChanged(wrapper.song, wrapper.pendingSongChange, [context], true)
 	}
 
 	onStateLoss(context: string) {

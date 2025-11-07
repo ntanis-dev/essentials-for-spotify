@@ -74,11 +74,6 @@ export default class UserInformationButton extends Button {
 
 	async onSettingsUpdated(context: string, oldSettings: any): Promise<void> {
 		await super.onSettingsUpdated(context, oldSettings)
-
-		if (!this.settings[context].action)
-			await this.setSettings(context, {
-				action: 'open_spotify'
-			})
 		
 		if (!this.settings[context].show)
 			await this.setSettings(context, {

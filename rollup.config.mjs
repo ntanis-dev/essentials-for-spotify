@@ -54,6 +54,7 @@ const config = {
 
 			buildStart(){
 				this.addWatchFile('src/ui')
+				this.addWatchFile('com.ntanis.essentials-for-spotify.sdPlugin/manifest.json')
 			}
 		},
 

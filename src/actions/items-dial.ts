@@ -113,7 +113,7 @@ export default class ItemsDial extends Dial {
 			if (this.#lastTotal === 0) {
 				this.setIcon(context, this.originalIcon)
 
-				this.setFeedback(context, {
+				await this.setFeedback(context, {
 					count: {
 						value: '0 / 0'
 					}
@@ -133,7 +133,7 @@ export default class ItemsDial extends Dial {
 		if (!images.isItemCached(this.#items.items[this.#currentItems[context]]))
 			this.setIcon(context, 'images/icons/pending.png')
 
-		this.setFeedback(context, {
+		await this.setFeedback(context, {
 			name: {
 				opacity: 1.0
 			},
@@ -160,7 +160,7 @@ export default class ItemsDial extends Dial {
 
 			this.resumeMarquee(context, 'name')
 		} else
-			this.marquee(context, 'name', this.#items.items[this.#currentItems[context]].name, this.#items.items[this.#currentItems[context]].name, 11, context)
+			this.marquee(undefined, 'name', this.#items.items[this.#currentItems[context]].name, this.#items.items[this.#currentItems[context]].name, 11, context)
 
 		const image = await images.getForItem(this.#items.items[this.#currentItems[context]])
 
@@ -171,7 +171,7 @@ export default class ItemsDial extends Dial {
 	}
 
 	async #refreshCount(context: string) {
-		this.setFeedback(context, {
+		await this.setFeedback(context, {
 			count: {
 				value: `${((this.#itemsPage[context] - 1) * constants.WRAPPER_ITEMS_PER_PAGE) + this.#currentItems[context] + 1} / ${this.#lastTotal}`
 			}
@@ -197,7 +197,7 @@ export default class ItemsDial extends Dial {
 					this.#itemsPage[context] = 1
 
 				if (lastPage !== this.#itemsPage[context]) {
-					this.setFeedback(context, {
+					await this.setFeedback(context, {
 						name: {
 							value: '?????'
 						}
@@ -230,7 +230,7 @@ export default class ItemsDial extends Dial {
 				}
 
 				if (lastPage !== this.#itemsPage[context]) {
-					this.setFeedback(context, {
+					await this.setFeedback(context, {
 						name: {
 							value: '?????'
 						}

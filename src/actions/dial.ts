@@ -11,6 +11,10 @@ import {
 	Action
 } from './action.js'
 
+import {
+	v4
+} from 'uuid'
+
 import connector from './../library/connector.js'
 import constants from './../library/constants.js'
 import logger from './../library/logger.js'
@@ -143,9 +147,11 @@ export class Dial extends Action {
 		}
 	}
 
-	async marquee(id: string, key: string, value: string, countable: string, visible: number, context: string) {
+	async marquee(id: string | undefined, key: string, value: string, countable: string, visible: number, context: string) {
 		const marqueeIdentifier = `${context}-${key}`
 		const isInitial = !this.#marquees[marqueeIdentifier]
+
+		id = id ?? v4()
 
 		const marqueeData = this.#marquees[marqueeIdentifier] || {
 			timeout: null,
@@ -182,7 +188,7 @@ export class Dial extends Action {
 	
 		marqueeData.last = countable.length > marqueeData.visible ? `${marqueeData.render.substr(marqueeData.frame, marqueeData.visible)}${marqueeData.frame + marqueeData.visible > marqueeData.render.length ? marqueeData.render.substr(0, (marqueeData.frame + marqueeData.visible) - marqueeData.render.length) : ''}` : marqueeData.original
 
-		this.setFeedback(context, {
+		await this.setFeedback(context, {
 			[marqueeData.key]: marqueeData.last
 		})
 
