@@ -118,13 +118,39 @@ class Wrapper extends EventEmitter {
 
 	async #deviceCall(path, options, deviceId) {
 		if (!deviceId) {
-			if (this.#lastDevice)
+			if (!this.#lastDevice) {
+				const activeDevices = this.#lastDevices || []
+				
+				if (activeDevices.length > 0) {
+					// Try to find currently active device
+					const activeDevice = activeDevices.find(device => device.is_active)
+					
+					if (activeDevice) {
+						deviceId = activeDevice.id
+					} else {
+						// Prefer personal devices (Computer, Smartphone, Tablet) over speakers/other devices
+						const computerDevice = activeDevices.find(device => 
+							device.type === 'Computer' || device.type === 'Smartphone' || device.type === 'Tablet'
+						)
+						
+						if (computerDevice) {
+							deviceId = computerDevice.id
+						} else {
+							// Fall back to any non-speaker device
+							const nonSpeakerDevice = activeDevices.find(device => device.type !== 'Speaker')
+							if (nonSpeakerDevice) {
+								deviceId = nonSpeakerDevice.id
+							}
+							// If only speakers available or no devices, leave deviceId undefined
+							// and let Spotify choose
+						}
+					}
+				}
+				// If deviceId is still undefined here, the API call will be made without device_id
+				// allowing Spotify to use its default device selection
+			} else {
 				throw new constants.NoDeviceError('No device specified.')
-
-			const activeDevices = this.#lastDevices || []
-
-			if (activeDevices.length > 0)
-				this.#setDevices(activeDevices.filter(device => device.type !== 'Speaker')[0], activeDevices)
+			}
 		}
 
 		path = `${path}${path.includes('?') ? '&' : '?'}`
@@ -133,11 +159,10 @@ class Wrapper extends EventEmitter {
 
 		if (response === constants.API_NOT_FOUND_RESPONSE) {
 			const activeDevices = this.#lastDevices || []
+			const activeFilteredDevices = activeDevices.filter(device => device.is_active)
 
-			activeDevices.filter(device => device.is_active)
-
-			if (activeDevices.length > 0) {
-				response = await connector.callSpotifyApi(`${path}device_id=${activeDevices[0].id}`, options, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
+			if (activeFilteredDevices.length > 0) {
+				response = await connector.callSpotifyApi(`${path}device_id=${activeFilteredDevices[0].id}`, options, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
 
 				if (response === constants.API_NOT_FOUND_RESPONSE)
 					throw new constants.NoDeviceError('No device available.')
