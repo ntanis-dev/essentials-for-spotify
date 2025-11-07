@@ -121,10 +121,10 @@ class Wrapper extends EventEmitter {
 			if (this.#lastDevice)
 				throw new constants.NoDeviceError('No device specified.')
 
-			const activeDevices = this.#lastDevices || []
+			const activeDevices = this.#lastDevices.filter(device => device.type !== 'Speaker')
 
 			if (activeDevices.length > 0)
-				this.#setDevices(activeDevices.filter(device => device.type !== 'Speaker')[0], activeDevices)
+				this.#setDevices(activeDevices[0], activeDevices)
 		}
 
 		path = `${path}${path.includes('?') ? '&' : '?'}`
@@ -132,9 +132,7 @@ class Wrapper extends EventEmitter {
 		let response = await connector.callSpotifyApi(`${path}${deviceId ? `device_id=${deviceId}` : ''}`, options, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
 
 		if (response === constants.API_NOT_FOUND_RESPONSE) {
-			const activeDevices = this.#lastDevices || []
-
-			activeDevices.filter(device => device.is_active)
+			const activeDevices = this.#lastDevices.filter(device => device.is_active)
 
 			if (activeDevices.length > 0) {
 				response = await connector.callSpotifyApi(`${path}device_id=${activeDevices[0].id}`, options, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
@@ -194,7 +192,7 @@ class Wrapper extends EventEmitter {
 				progress: response.progress_ms
 			} : null)
 
-			this.#setDevices(response?.device.id ?? this.#lastDevice ?? null, (await connector.callSpotifyApi('me/player/devices')).devices)
+			this.#setDevices(response?.device.id ?? this.#lastDevice ?? null, (await connector.callSpotifyApi('me/player/devices')).devices ?? [])
 			this.#setDisallowFlags((response?.actions?.disallows ? Object.keys(response.actions.disallows).filter(flag => response.actions.disallows[flag]) : []).concat(response?.device.supports_volume ? [] : 'volume'))
 			this.#setCurrentlyPlayingType(response?.currently_playing_type || null)
 		} catch (e) {
@@ -525,7 +523,7 @@ class Wrapper extends EventEmitter {
 				})
 			}, [constants.API_EMPTY_RESPONSE])
 
-			this.#setDevices(deviceId, this.#lastDevices || [])
+			this.#setDevices(deviceId, this.#lastDevices)
 			this.#setDisallowFlags(['volume', 'interrupting_playback', 'toggling_shuffle', 'toggling_repeat_context', 'toggling_repeat_track', 'seeking', 'skipping_next', 'skipping_prev'])
 			this.#setVolumePercent(null)
 
