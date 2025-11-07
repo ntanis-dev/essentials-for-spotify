@@ -2,9 +2,14 @@ import {
 	EventEmitter
 } from 'events'
 
+import {
+	fetch
+} from 'undici'
+
 import connector from './connector'
 import constants from './constants'
 import logger from './logger'
+import images from './images'
 
 class Wrapper extends EventEmitter {
 	#pendingWrappedCall = false
@@ -149,6 +154,11 @@ class Wrapper extends EventEmitter {
 		this.#updatePlaybackStateStatus = 'updating'
 
 		try {
+			for (const domain of images.expectedCdnDomains)
+				fetch(`https://${domain}/`, {
+					method: 'HEAD'
+				}).catch(() => {})
+
 			let response = await connector.callSpotifyApi('me/player', undefined, [constants.API_EMPTY_RESPONSE])
 
 			if (response === constants.API_EMPTY_RESPONSE)
@@ -390,6 +400,9 @@ class Wrapper extends EventEmitter {
 
 			if (hadSong || this.#lastCurrentlyPlayingType !== 'track') {
 				this.emit('songChanged', null, pending)
+
+				images.onSongChanged(null, pending)
+				
 				this.emit('songLikedStateChanged', false, pending)
 				this.emit('songTimeChanged', 0, 0, pending)
 
@@ -417,8 +430,10 @@ class Wrapper extends EventEmitter {
 			if (songChanged || timeChanged)
 				this.#lastSongTimeUpdateAt = Date.now()
 
-			if (songChanged)
+			if (songChanged) {
 				this.emit('songChanged', song, pending)
+				images.onSongChanged(song, pending)
+			}
 
 			if (likedChanged)
 				this.emit('songLikedStateChanged', song.liked, pending)

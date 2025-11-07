@@ -6,17 +6,11 @@ import {
 	fetch
 } from 'undici'
 
+const expectedCdnDomains = new Set()
+
 let lastSong = null
 let imageCache = {}
 let pendingResults = {}
-
-wrapper.on('songChanged', (song, pending) => {
-	if (lastSong)
-		delete imageCache[`song:${lastSong.item.id}`]
-
-	if (song)
-		lastSong = song
-})
 
 const getForSong = async song => {
 	if (imageCache[`song:${song.item.id}`])
@@ -38,6 +32,11 @@ const getForSong = async song => {
 				resolve(null)
 				return
 			}
+
+			const parsedUrl = new URL(url)
+
+			if (!expectedCdnDomains.has(parsedUrl.hostname))
+				expectedCdnDomains.add(parsedUrl.hostname)
 
 			imageCache[`song:${song.item.id}`] = Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')
 
@@ -85,6 +84,11 @@ const getForItem = async item => {
 				return
 			}
 
+			const parsedUrl = new URL(url)
+
+			if (!expectedCdnDomains.has(parsedUrl.hostname))
+				expectedCdnDomains.add(parsedUrl.hostname)
+
 			imageCache[`item:${item.id}`] = Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')
 
 			resolve(imageCache[`item:${item.id}`])
@@ -116,6 +120,11 @@ const getRaw = async (url, cacheKey) => {
 				return
 			}
 
+			const parsedUrl = new URL(url)
+
+			if (!expectedCdnDomains.has(parsedUrl.hostname))
+				expectedCdnDomains.add(parsedUrl.hostname)
+
 			imageCache[cacheKey] = Buffer.from(await (await fetch(url)).arrayBuffer()).toString('base64')
 
 			resolve(imageCache[cacheKey])
@@ -137,6 +146,14 @@ const clearRaw = cacheKey => {
 
 const isRawCached = cacheKey => !!imageCache[cacheKey]
 
+const onSongChanged = (song, pending) => {
+	if (lastSong)
+		delete imageCache[`song:${lastSong.item.id}`]
+
+	if (song)
+		lastSong = song
+}
+
 export default {
 	getRaw,
 	getForSong,
@@ -144,5 +161,7 @@ export default {
 	clearRaw,
 	isSongCached,
 	isItemCached,
-	isRawCached
+	isRawCached,
+	onSongChanged,
+	expectedCdnDomains
 }
