@@ -2,6 +2,30 @@ import StreamDeck from '@elgato/streamdeck'
 import logger from './library/logger'
 import connector from './library/connector'
 import actions from './library/actions'
+import CacheableLookup from 'cacheable-lookup'
+
+import {
+	setGlobalDispatcher,
+	Agent
+} from 'undici'
+
+const cacheable = new CacheableLookup({
+	maxTtl: 60,
+	errorTtl: 5,
+	fallbackDuration: 0,
+	order: 'ipv4first'
+})
+
+const dispatcher = new Agent({
+	connect: {
+		lookup: cacheable.lookup
+	},
+
+	keepAliveTimeout: 60000,
+	keepAliveMaxTimeout: 120000
+})
+
+setGlobalDispatcher(dispatcher)
 
 StreamDeck.connect().then(() => {
 	logger.info('Connected to Stream Deck.')

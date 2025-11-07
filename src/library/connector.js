@@ -4,6 +4,10 @@ import express from 'express'
 import constants from './constants'
 import logger from './logger'
 
+import {
+	fetch
+} from 'undici'
+
 class Connector extends EventEmitter {
 	#accessToken = null
 	#refreshToken = null

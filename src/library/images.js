@@ -3,15 +3,8 @@ import logger from './logger'
 import wrapper from './wrapper'
 
 import {
-	Agent,
-	setGlobalDispatcher,
 	fetch
 } from 'undici'
-
-setGlobalDispatcher(new Agent({
-	keepAliveTimeout: 600_000,
-	keepAliveMaxTimeout: 600_000
-}))
 
 let lastSong = null
 let imageCache = {}
