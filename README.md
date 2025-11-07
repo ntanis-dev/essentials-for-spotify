@@ -168,6 +168,8 @@ To install and use the plugin, follow these steps:
 
 ## Notes
 
+**Sonos** speakers cannot be controlled, this is a Spotify limitation.
+
 I started this project in plain JavaScript, then halfway through rewrote the buttons and dials in TypeScript.\
 However I never had the grit to port the rest, so now it’s a hybrid mess, sorry about that. 😁\
 I only built it because when I got my first Stream Deck, every available Spotify control plugin fell short for my taste.
