@@ -168,7 +168,7 @@ To install and use the plugin, follow these steps:
 
 ## Notes
 
-**Sonos** speakers cannot be controlled, this is a Spotify limitation.
+**Sonos** speakers cannot be controlled through this plugin, this is a Spotify Web API limitation.
 
 I started this project in plain JavaScript, then halfway through rewrote the buttons and dials in TypeScript.\
 However I never had the grit to port the rest, so now it’s a hybrid mess, sorry about that. 😁\
