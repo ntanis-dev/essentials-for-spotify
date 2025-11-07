@@ -78,7 +78,7 @@ export class Dial extends Action {
 
 		this.#busy[action.id] = true
 
-		if (type === Dial.TYPES.UP && this.#holding[action.id])
+		if (type === Dial.TYPES.UP)
 			delete this.#holding[action.id]
 
 		if (!connector.set)
@@ -134,13 +134,13 @@ export class Dial extends Action {
 
 			await this.setFeedback(context, {
 				icon
-			}).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+			}, true).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 			await new Promise(resolve => setTimeout(resolve, duration))
 
 			await this.setFeedback(context, {
 				icon: connector.set ? this.icon : this.originalIcon
-			}).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+			}, true).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 			if (i + 1 < times)
 				await new Promise(resolve => setTimeout(resolve, duration))
@@ -248,8 +248,8 @@ export class Dial extends Action {
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 
-	async setFeedback(context: string, feedback: any) {
-		if ((!this.contexts.includes(context)) || (!connector.set))
+	async setFeedback(context: string, feedback: any, force = false) {
+		if (((!this.contexts.includes(context)) || (!connector.set)) && (!force))
 			return
 
 		await StreamDeck.client.setFeedback(context, feedback).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
@@ -259,8 +259,8 @@ export class Dial extends Action {
 		await StreamDeck.client.showAlert(context).catch((e: any) => logger.error(`An error occurred while showing the Stream Deck alert of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
-	async setIcon(context: string, icon: string) {
-		if ((!this.contexts.includes(context)) || (!connector.set))
+	async setIcon(context: string, icon: string, force = false) {
+		if (((!this.contexts.includes(context)) || (!connector.set) && (!force)))
 			return
 
 		this.icon = icon
