@@ -172,26 +172,27 @@ export class Button extends Action {
 
 		this.#busy[ev.action.id] = true
 
-		if ((!this.#holding[ev.action.id]) && (this.constructor as typeof Button).MULTI && (!this.#pressed[ev.action.id].long))
-			if (this.#pressed[ev.action.id].at + constants.BUTTON_HOLD_DELAY <= Date.now())
-				await this.#invokePress(ev, true, 1)
-			else if ((!this.#keyUpTracker[ev.action.id]) || this.#keyUpTracker[ev.action.id].presses < 3) {
-				clearTimeout(this.#keyUpTracker[ev.action.id]?.timeout)
+		if (this.#pressed[ev.action.id])
+			if ((!this.#holding[ev.action.id]) && (this.constructor as typeof Button).MULTI && (!this.#pressed[ev.action.id].long))
+				if (this.#pressed[ev.action.id].at + constants.BUTTON_HOLD_DELAY <= Date.now())
+					await this.#invokePress(ev, true, 1)
+				else if ((!this.#keyUpTracker[ev.action.id]) || this.#keyUpTracker[ev.action.id].presses < 3) {
+					clearTimeout(this.#keyUpTracker[ev.action.id]?.timeout)
 
-				this.#keyUpTracker[ev.action.id] = {
-					time: Date.now(),
-					presses: (this.#keyUpTracker[ev.action.id]?.presses || 0) + 1,
+					this.#keyUpTracker[ev.action.id] = {
+						time: Date.now(),
+						presses: (this.#keyUpTracker[ev.action.id]?.presses || 0) + 1,
 
-					timeout: setTimeout(async () => {
-						this.#busy[ev.action.id] = true
+						timeout: setTimeout(async () => {
+							this.#busy[ev.action.id] = true
 
-						await this.#invokePress(ev, false, this.#keyUpTracker[ev.action.id].presses)
+							await this.#invokePress(ev, false, this.#keyUpTracker[ev.action.id].presses)
 
-						delete this.#keyUpTracker[ev.action.id]
-						delete this.#busy[ev.action.id]
-					}, constants.BUTTON_MULTI_PRESS_INTERVAL)
+							delete this.#keyUpTracker[ev.action.id]
+							delete this.#busy[ev.action.id]
+						}, constants.BUTTON_MULTI_PRESS_INTERVAL)
+					}
 				}
-			}
 
 		clearTimeout(this.#pressed[ev.action.id].timeout)
 		clearTimeout(this.#holding[ev.action.id])
