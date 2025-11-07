@@ -111,6 +111,9 @@ class Wrapper extends EventEmitter {
 	}
 
 	async #deviceCall(path, options, deviceId) {
+		if (!deviceId)
+			return constants.WRAPPER_RESPONSE_NO_DEVICE_ERROR
+
 		path = `${path}${path.includes('?') ? '&' : '?'}`
 
 		let response = await connector.callSpotifyApi(`${path}${deviceId ? `device_id=${deviceId}` : ''}`, options, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
@@ -168,7 +171,7 @@ class Wrapper extends EventEmitter {
 			} : null)
 
 			this.#setDevices(response?.device.id || null, (await connector.callSpotifyApi('me/player/devices')).devices)
-			this.#setDisallowFlags(response?.actions?.disallows ? Object.keys(response.actions.disallows).filter(flag => response.actions.disallows[flag]) : [])
+			this.#setDisallowFlags((response?.actions?.disallows ? Object.keys(response.actions.disallows).filter(flag => response.actions.disallows[flag]) : []).concat(response?.device.supports_volume ? [] : 'volume'))
 			this.#setCurrentlyPlayingType(response?.currently_playing_type || null)
 		} catch (e) {
 			logger.error(`An error occured while updating playback state: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
@@ -485,13 +488,17 @@ class Wrapper extends EventEmitter {
 
 	async transferPlayback(deviceId) {
 		return this.#wrapCall(async () => {
-			await this.#deviceCall('me/player', {
+			await connector.callSpotifyApi('me/player', {
 				method: 'PUT',
 
 				body: JSON.stringify({
 					device_ids: [deviceId]
 				})
-			})
+			}, [constants.API_EMPTY_RESPONSE])
+
+			this.#setDevices(deviceId, this.#lastDevices || [])
+			this.#setDisallowFlags(['volume', 'interrupting_playback', 'toggling_shuffle', 'toggling_repeat_context', 'toggling_repeat_track', 'seeking', 'skipping_next', 'skipping_prev'])
+			this.#setVolumePercent(null)
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
 		})
@@ -660,7 +667,7 @@ class Wrapper extends EventEmitter {
 	}
 
 	async setPlaybackVolume(volumePercent, deviceId = this.#lastDevice) {
-		if ((this.#lastDisallowFlags.includes('interrupting_playback') && volumePercent <= 0) || this.#lastUser?.product !== 'premium')
+		if (this.#lastDisallowFlags.includes('volume') || (this.#lastDisallowFlags.includes('interrupting_playback') && volumePercent <= 0) || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		return this.#wrapCall(async () => {
