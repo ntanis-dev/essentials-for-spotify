@@ -35,6 +35,7 @@ export class Button extends Action {
 	#flashing: any = {}
 	#statelessImage: string = ''
 	#keyUpTracker: any = {}
+	#lastImage: any = {}
 
 	marquees: any = {}
 
@@ -57,10 +58,12 @@ export class Button extends Action {
 
 		this.#flashing[action.id] = true
 
+		this.pauseMarquee(action.id)
+
 		for (let i = 0; i < times; i++) {
 			await action.setImage(image).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 			await new Promise(resolve => setTimeout(resolve, duration))
-			await action.setImage((this.constructor as typeof Button).STATABLE && (!connector.set) ? this.#statelessImage : undefined).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+			await action.setImage(this.#lastImage[action.id] ?? ((this.constructor as typeof Button).STATABLE && (!connector.set) ? this.#statelessImage : undefined)).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 			if (i + 1 < times)
 				await new Promise(resolve => setTimeout(resolve, duration))
@@ -135,6 +138,9 @@ export class Button extends Action {
 		if ((!connector.set) && (!(this.constructor as typeof Button).SETUPLESS))
 			await this.#flashImage(ev.action, 'images/states/setup-error', constants.LONG_FLASH_DURATION, constants.LONG_FLASH_TIMES)
 		else {
+			if (long)
+				await this.#flashImage(ev.action, 'images/states/long', constants.VERY_SHORT_FLASH_DURATION, constants.SHORT_FLASH_TIMES)
+
 			const response = await this.invokeWrapperAction(ev.action.id, long ? Button.TYPES.LONG_PRESS : (presses === 1 ? Button.TYPES.SINGLE_PRESS : (presses === 2 ? Button.TYPES.DOUBLE_PRESS : Button.TYPES.TRIPLE_PRESS)))
 
 			if (response === constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)
@@ -202,9 +208,11 @@ export class Button extends Action {
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
 		clearTimeout(this.#pressed[ev.action.id]?.timeout)
 		clearTimeout(this.#holding[ev.action.id])
+		clearTimeout(this.#keyUpTracker[ev.action.id]?.timeout)
 
 		delete this.#pressed[ev.action.id]
 		delete this.#holding[ev.action.id]
+		delete this.#keyUpTracker[ev.action.id]
 
 		this.contexts.splice(this.contexts.indexOf(ev.action.id), 1)
 	}
@@ -218,6 +226,7 @@ export class Button extends Action {
 	}
 
 	async setImage(context: string, image?: string) {
+		this.#lastImage[context] = image
 		await StreamDeck.client.setImage(context, image).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 

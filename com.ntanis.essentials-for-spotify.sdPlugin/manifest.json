@@ -287,7 +287,6 @@
 			"PropertyInspectorPath": "pi/song-stack-button.html",
 			"DisableAutomaticStates": true,
 			"UserTitleEnabled": false,
-			"SupportedInMultiActions": false,
 			"Controllers": [
 				"Keypad"
 			],
@@ -322,13 +321,29 @@
 			"PropertyInspectorPath": "pi/context-information.html",
 			"DisableAutomaticStates": true,
 			"UserTitleEnabled": false,
-			"SupportedInMultiActions": false,
 			"Controllers": [
 				"Keypad"
 			],
 			"States": [
 				{
 					"Image": "images/states/context-information",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
+			"Name": "Transfer Playback",
+			"UUID": "com.ntanis.essentials-for-spotify.transfer-playback-button",
+			"Icon": "images/actions/transfer-playback",
+			"Tooltip": "Allows you to transfer the playback to another device.",
+			"PropertyInspectorPath": "pi/transfer-playback-button.html",
+			"DisableAutomaticStates": true,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/transfer-playback",
 					"TitleAlignment": "middle"
 				}
 			]

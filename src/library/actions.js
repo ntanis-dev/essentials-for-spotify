@@ -17,6 +17,7 @@ import PlayContextButton from './../actions/play-context-button'
 import SongStackButton from './../actions/song-stack-button'
 import SongClipboardButton from './../actions/song-clipboard-button'
 import ContextInformationButton from './../actions/context-information-button'
+import TransferPlaybackButton from './../actions/transfer-playback-button'
 import UserInformationButton from './../actions/user-information-button'
 import VolumeControlDial from './../actions/volume-control-dial'
 import PlaybackControlDial from './../actions/playback-control-dial'
@@ -43,6 +44,7 @@ export default {
 		StreamDeck.actions.registerAction(new SongStackButton())
 		StreamDeck.actions.registerAction(new SongClipboardButton())
 		StreamDeck.actions.registerAction(new ContextInformationButton())
+		StreamDeck.actions.registerAction(new TransferPlaybackButton())
 		StreamDeck.actions.registerAction(new UserInformationButton())
 		StreamDeck.actions.registerAction(new VolumeControlDial())
 		StreamDeck.actions.registerAction(new PlaybackControlDial())

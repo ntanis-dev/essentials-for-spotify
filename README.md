@@ -69,6 +69,8 @@ You are able to configure the behavior of some of them via their settings.
   Copies the information of the current song to the clipboard.
 - **Context Information**
   Displays the information of the current context.
+- **Transfer Playback**
+  Allows you to transfer the playback to another device.
 - **User Information**
   Displays the information of the connected user.
 - **Play Context**

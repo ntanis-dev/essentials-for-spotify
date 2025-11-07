@@ -188,7 +188,7 @@ export default class SongStackButton extends Button {
 
 	async onStateSettled(context: string) {
 		await super.onStateSettled(context, true)
-		await this.#onSongChanged(wrapper.song, false, [context])
+		await this.#onSongChanged(wrapper.song, wrapper.pendingSongChange, [context])
 
 		this.#onSongTimeChanged(wrapper.song?.progress, wrapper.song?.item.duration_ms, wrapper.pendingSongChange, [context])
 	}
