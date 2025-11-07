@@ -118,7 +118,7 @@ class Wrapper extends EventEmitter {
 		if (response === constants.API_NOT_FOUND_RESPONSE) {
 			const activeDevices = this.#lastDevices || []
 
-			activeDevices.sort((a, b) => b.is_active - a.is_active)
+			activeDevices.filter(device => device.is_active)
 
 			if (activeDevices.length > 0) {
 				response = await connector.callSpotifyApi(`${path}device_id=${activeDevices[0].id}`, options, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
