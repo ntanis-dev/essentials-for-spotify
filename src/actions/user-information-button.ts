@@ -22,48 +22,57 @@ export default class UserInformationButton extends Button {
 	}
 
 	async #refreshUser(user: any, pending = false, contexts = this.contexts, force = false) {
-		for (const context of contexts) {
-			if ((!user) || typeof(user) !== 'object' || (this.marquees[context] && this.marquees[context].id !== user.id)) {
-				images.clearRaw('userProfilePicture')
-				this.clearMarquee(context)
-				this.setTitle(context, '')
-			} else if (force) {
-				this.clearMarquee(context)
-				this.setTitle(context, '')
-			}
+		const promises = []
 
-			if (!images.isRawCached('userProfilePicture'))
-				this.setImage(context, 'images/states/pending')
+		for (const context of contexts)
+			promises.push(new Promise(async (resolve) => {
+				if ((!user) || typeof(user) !== 'object' || (this.marquees[context] && this.marquees[context].id !== user.id)) {
+					images.clearRaw('userProfilePicture')
+					this.clearMarquee(context)
+					await this.setTitle(context, '')
+				} else if (force) {
+					this.clearMarquee(context)
+					await this.setTitle(context, '')
+				}
 
-			if ((!user) || typeof user !== 'object') {
-				if (!pending)
-					this.setImage(context, 'images/states/user-information')
+				if (!images.isRawCached('userProfilePicture'))
+					await this.setImage(context, 'images/states/pending')
 
-				return
-			}
+				if ((!user) || typeof user !== 'object') {
+					if (!pending)
+						await this.setImage(context, 'images/states/user-information')
 
-			const image = await images.getRaw(user.images.sort((a: any, b: any) => a.width - b.width)[0]?.url, 'userProfilePicture')
+					resolve(true)
 
-			if (!image)
-				this.setImage(context, 'images/states/user-information')
-			else
-				this.setImage(context, `data:image/jpeg;base64,${image}`)
+					return
+				}
 
-			if (this.settings[context].show?.includes('display_name'))
-				if ((!this.marquees[context]) || this.marquees[context].id !== user.id || force)
-					this.marqueeTitle(user.id, [
-						{
-							key: 'display_name',
-							value: user.display_name || user.id
-						}
-					], context)
+				const image = await images.getRaw(user.images.sort((a: any, b: any) => a.width - b.width)[0]?.url, 'userProfilePicture')
+
+				if (!image)
+					await this.setImage(context, 'images/states/user-information')
 				else
-					this.resumeMarquee(context)
-		}
+					await this.setImage(context, `data:image/jpeg;base64,${image}`)
+
+				if (this.settings[context].show?.includes('display_name'))
+					if ((!this.marquees[context]) || this.marquees[context].id !== user.id || force)
+						await this.marqueeTitle(user.id, [
+							{
+								key: 'display_name',
+								value: user.display_name || user.id
+							}
+						], context)
+					else
+						this.resumeMarquee(context)
+
+				resolve(true)
+			}))
+
+		await Promise.allSettled(promises)
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
-		super.onWillDisappear(ev)
+		await super.onWillDisappear(ev)
 		this.pauseMarquee(ev.action.id)
 	}
 
@@ -81,21 +90,23 @@ export default class UserInformationButton extends Button {
 			})
 
 		if (oldSettings.show?.length !== this.settings[context].show?.length || (oldSettings.show && this.settings[context].show && (!oldSettings.show.every((value: any, index: number) => value === this.settings[context].show[index]))))
-			this.#refreshUser(wrapper.user, false, [context], true)
+			await this.#refreshUser(wrapper.user, false, [context], true)
 	}
 
-	onStateSettled(context: string) {
-		super.onStateSettled(context, true)
+	async onStateSettled(context: string) {
+		await super.onStateSettled(context, true)
 
 		if (!wrapper.user)
-			wrapper.updateUser().then(() => this.#refreshUser(wrapper.user, false, [context]))
+			await wrapper.updateUser().then(() => this.#refreshUser(wrapper.user, false, [context]))
 		else
-			this.#refreshUser(wrapper.user, false, [context])
+			await this.#refreshUser(wrapper.user, false, [context])
 	}
 
-	onStateLoss(context: string) {
-		super.onStateLoss(context)
+	async onStateLoss(context: string) {
+		await super.onStateLoss(context)
+
 		this.clearMarquee(context)
-		this.setTitle(context, '')
+		
+		await this.setTitle(context, '')
 	}
 }

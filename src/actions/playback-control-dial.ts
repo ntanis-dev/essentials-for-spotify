@@ -27,7 +27,7 @@ export default class PlaybackControlDial extends Dial {
 		wrapper.on('songLikedStateChanged', (liked: boolean, pending: boolean = false) => this.#onSongChanged(wrapper.song, wrapper.pendingSongChange))
 	}
 
-	#updateJointFeedback(contexts = this.contexts) {
+	async #updateJointFeedback(contexts = this.contexts) {
 		if (!wrapper.device)
 			return
 
@@ -55,9 +55,11 @@ export default class PlaybackControlDial extends Dial {
 		}
 	}
 
-	#onSongChanged(song: any, pending: boolean = false, contexts = this.contexts, force = false) {
+	async #onSongChanged(song: any, pending: boolean = false, contexts = this.contexts, force = false) {
+		const promises = []
+
 		for (const context of contexts)
-			setImmediate(async () => {
+			promises.push(new Promise(async (resolve) => {
 				this.setUnpressable(context, true)
 
 				let titleMarquee = this.getMarquee(context, 'title')
@@ -89,7 +91,7 @@ export default class PlaybackControlDial extends Dial {
 
 				if (song) {
 					if (!images.isSongCached(song))
-						this.setIcon(context, 'images/icons/pending.png')
+						await this.setIcon(context, 'images/icons/pending.png')
 
 					const image = await images.getForSong(song)
 					const time = this.beautifyTime(song.progress, song.item.duration_ms, this.settings[context].show.includes('progress'), this.settings[context].show.includes('duration'))
@@ -102,29 +104,35 @@ export default class PlaybackControlDial extends Dial {
 
 					if ((!titleMarquee) || titleMarquee.id !== song.item.id || force) {
 						const title = `${this.settings[context].show.includes('name') ? song.item.name : ''}${this.settings[context].show.includes('name') && this.settings[context].show.includes('artists') ? ' - ' : ''}${this.settings[context].show.includes('artists') ? song.item.artists.map((artist: any) => artist.name).join(', ') : ''}`
-						this.marquee(undefined, 'title', title, title, 16, context)
+						await this.marquee(undefined, 'title', title, title, 16, context)
 					} else
 						this.resumeMarquee(context, 'title')
 
 					if ((!timeMarquee) || timeMarquee.id !== song.item.id || force)
-						this.marquee(undefined, 'time', time === '' ? ' ' : time, time === '' ? ' ' : `${'8'.repeat(time.length - (this.settings[context].show.includes('progress') && this.settings[context].show.includes('duration') ? 5 : 1))}${this.settings[context].show.includes('progress') && this.settings[context].show.includes('duration') ? ': : /' : ':'}`, 14, context)
+						await this.marquee(undefined, 'time', time === '' ? ' ' : time, time === '' ? ' ' : `${'8'.repeat(time.length - (this.settings[context].show.includes('progress') && this.settings[context].show.includes('duration') ? 5 : 1))}${this.settings[context].show.includes('progress') && this.settings[context].show.includes('duration') ? ': : /' : ':'}`, 14, context)
 					else
 						this.resumeMarquee(context, 'time')
 
 					if (image)
-						this.setIcon(context, this.processImage(`data:image/jpeg;base64,${image}`, this.settings[context].show.includes('liked') && song.liked, true))
+						await this.setIcon(context, this.processImage(`data:image/jpeg;base64,${image}`, this.settings[context].show.includes('liked') && song.liked ? 'top-left' : 'none'))
 					else
-						this.setIcon(context, this.originalIcon)
+						await this.setIcon(context, this.originalIcon)
 				} else if (wrapper.pendingSongChange)
-					this.setIcon(context, 'images/icons/pending.png')
+					await this.setIcon(context, 'images/icons/pending.png')
 				else
-					this.setIcon(context, this.originalIcon)
+					await this.setIcon(context, this.originalIcon)
 
 				this.setUnpressable(context, false)
-			})
+
+				resolve(true)
+			}))
+
+		await Promise.allSettled(promises)
 	}
 
-	#onSongTimeChanged(progress: number, duration: number, pending: boolean = false, contexts = this.contexts) {
+	async #onSongTimeChanged(progress: number, duration: number, pending: boolean = false, contexts = this.contexts) {
+		const promises = []
+
 		for (const context of contexts) {
 			const timeMarquee = this.getMarquee(context, 'time')
 
@@ -133,25 +141,37 @@ export default class PlaybackControlDial extends Dial {
 				this.updateMarquee(context, 'time', time === '' ? ' ' : time, time === '' ? ' ' : `${'8'.repeat(time.length - (this.settings[context].show.includes('progress') && this.settings[context].show.includes('duration') ? 5 : 1))}${this.settings[context].show.includes('progress') && this.settings[context].show.includes('duration') ? ': : /' : ':'}`)
 			}
 
-			this.#updateJointFeedback([context])
+			promises.push(this.#updateJointFeedback([context]))
 		}
+
+		await Promise.allSettled(promises)
 	}
 
-	#onPlaybackStateChanged(state: boolean, contexts = this.contexts) {
+	async #onPlaybackStateChanged(state: boolean, contexts = this.contexts) {
+		const promises = []
+
 		for (const context of contexts)
-			this.#updateJointFeedback([context])
+			promises.push(this.#updateJointFeedback([context]))
+
+		await Promise.allSettled(promises)
 	}
 
-	#onDeviceChanged(device: any, contexts = this.contexts) {
+	async #onDeviceChanged(device: any, contexts = this.contexts) {
+		const promises = []
+
 		if (!device) {
 			for (const context of contexts)
-				this.resetFeedbackLayout(context)
+				promises.push(this.resetFeedbackLayout(context))
+
+			await Promise.allSettled(promises)
 
 			return
 		}
 
 		for (const context of contexts)
-			this.#updateJointFeedback([context])
+			promises.push(this.#updateJointFeedback([context]))
+
+		await Promise.allSettled(promises)
 	}
 
 	async invokeWrapperAction(context: string, type: symbol) {
@@ -208,13 +228,13 @@ export default class PlaybackControlDial extends Dial {
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
-		super.onWillDisappear(ev)
+		await super.onWillDisappear(ev)
 		this.pauseMarquee(ev.action.id, 'title')
 		this.pauseMarquee(ev.action.id, 'time')
 	}
 
 	async resetFeedbackLayout(context: string): Promise<void> {
-		super.resetFeedbackLayout(context, {
+		await super.resetFeedbackLayout(context, {
 			title: 'Playback Control',
 			icon: this.originalIcon
 		})
@@ -229,20 +249,21 @@ export default class PlaybackControlDial extends Dial {
 			})
 
 		if (oldSettings.show?.length !== this.settings[context].show?.length || (oldSettings.show && this.settings[context].show && (!oldSettings.show.every((value: any, index: number) => value === this.settings[context].show[index]))))
-			this.#onSongChanged(wrapper.song, wrapper.pendingSongChange, [context], true)
+			await this.#onSongChanged(wrapper.song, wrapper.pendingSongChange, [context], true)
 	}
 
-	onStateLoss(context: string) {
-		super.onStateLoss(context)
+	async onStateLoss(context: string) {
+		await super.onStateLoss(context)
+
 		this.clearMarquee(context, 'title')
 		this.clearMarquee(context, 'time')
 	}
 
-	updateFeedback(context: string): void {
-		super.updateFeedback(context)
-		this.#onSongChanged(wrapper.song, false, [context])
-		this.#onSongTimeChanged(wrapper.song?.progress, wrapper.song?.item.duration_ms, false, [context])
-		this.#onPlaybackStateChanged(wrapper.playing, [context])
-		this.#onDeviceChanged(wrapper.device, [context])
+	async updateFeedback(context: string) {
+		await super.updateFeedback(context)
+		await this.#onSongChanged(wrapper.song, false, [context])
+		await this.#onSongTimeChanged(wrapper.song?.progress, wrapper.song?.item.duration_ms, false, [context])
+		await this.#onPlaybackStateChanged(wrapper.playing, [context])
+		await this.#onDeviceChanged(wrapper.device, [context])
 	}
 }

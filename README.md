@@ -72,7 +72,7 @@ You are able to configure the behavior of some of them via their settings.
 - **User Information**
   Displays the information of the connected user.
 - **Play Context**
-  Map this button to any supported Spotify URI and press it to start playing.
+  Map this button to any supported Spotify URL and press it to start playing.
 
 ### Dials
 - **Playback Control**\

@@ -266,7 +266,7 @@
 			"Name": "Play Context",
 			"UUID": "com.ntanis.essentials-for-spotify.play-context-button",
 			"Icon": "images/actions/play-context",
-			"Tooltip": "Toggles between playing and pausing the current song.",
+			"Tooltip": "Map this button to any supported Spotify URL and press it to start playing.",
 			"PropertyInspectorPath": "pi/play-context-button.html",
 			"DisableAutomaticStates": true,
 			"Controllers": [

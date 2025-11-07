@@ -84,7 +84,7 @@ export default class ItemsDial extends Dial {
 		const nameMarquee = this.getMarquee(context, 'name')
 
 		if (refreshItems) {
-			this.resetFeedbackLayout(context, {
+			await this.resetFeedbackLayout(context, {
 				name: {
 					opacity: 1.0
 				},
@@ -102,7 +102,7 @@ export default class ItemsDial extends Dial {
 				}
 			})
 
-			this.setIcon(context, 'images/icons/pending.png')
+			await this.setIcon(context, 'images/icons/pending.png')
 
 			this.#itemsPage = {}
 			this.#currentItems = {}
@@ -111,7 +111,7 @@ export default class ItemsDial extends Dial {
 			await this.#refreshItems(context)
 
 			if (this.#lastTotal === 0) {
-				this.setIcon(context, this.originalIcon)
+				await this.setIcon(context, this.originalIcon)
 
 				await this.setFeedback(context, {
 					count: {
@@ -131,7 +131,7 @@ export default class ItemsDial extends Dial {
 				return this.#refreshLayout(true, context)
 
 		if (!images.isItemCached(this.#items.items[this.#currentItems[context]]))
-			this.setIcon(context, 'images/icons/pending.png')
+			await this.setIcon(context, 'images/icons/pending.png')
 
 		await this.setFeedback(context, {
 			name: {
@@ -152,7 +152,7 @@ export default class ItemsDial extends Dial {
 			}
 		})
 
-		this.#refreshCount(context)
+		await this.#refreshCount(context)
 
 		if (nameMarquee) {
 			if (nameMarquee.original !== this.#items.items[this.#currentItems[context]].name)
@@ -160,14 +160,14 @@ export default class ItemsDial extends Dial {
 
 			this.resumeMarquee(context, 'name')
 		} else
-			this.marquee(undefined, 'name', this.#items.items[this.#currentItems[context]].name, this.#items.items[this.#currentItems[context]].name, 11, context)
+			await this.marquee(undefined, 'name', this.#items.items[this.#currentItems[context]].name, this.#items.items[this.#currentItems[context]].name, 11, context)
 
 		const image = await images.getForItem(this.#items.items[this.#currentItems[context]])
 
 		if (image)
-			this.setIcon(context, `data:image/jpeg;base64,${image}`)
+			await this.setIcon(context, `data:image/jpeg;base64,${image}`)
 		else
-			this.setIcon(context, this.originalIcon)
+			await this.setIcon(context, this.originalIcon)
 	}
 
 	async #refreshCount(context: string) {
@@ -208,8 +208,7 @@ export default class ItemsDial extends Dial {
 				}
 			}
 
-			this.#refreshCount(context)
-
+			await this.#refreshCount(context)
 			await this.#refreshLayout(false, context)
 		} else if (type === Dial.TYPES.ROTATE_COUNTERCLOCKWISE) {
 			if (this.#lastTotal <= 1)
@@ -241,8 +240,7 @@ export default class ItemsDial extends Dial {
 				}
 			}
 
-			this.#refreshCount(context)
-
+			await this.#refreshCount(context)
 			await this.#refreshLayout(false, context)
 		} else if (type === Dial.TYPES.LONG_TAP) {
 			await this.#refreshLayout(true, context)
@@ -270,7 +268,7 @@ export default class ItemsDial extends Dial {
 	}
 
 	async resetFeedbackLayout(context: string, feedback = {}): Promise<void> {
-		super.resetFeedbackLayout(context, Object.assign({
+		await super.resetFeedbackLayout(context, Object.assign({
 			icon: this.originalIcon
 		}, feedback))
 	}
@@ -279,14 +277,13 @@ export default class ItemsDial extends Dial {
         throw new Error('The fetchItems method must be implemented in a subclass.')
 	}
 
-
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
 		await super.onWillDisappear(ev)
 		this.pauseMarquee(ev.action.id, 'name')
 	}
 
-	updateFeedback(context: string): void {
-		super.updateFeedback(context)
-		this.#refreshLayout(this.#lastTotal === 0, context)
+	async updateFeedback(context: string) {
+		await super.updateFeedback(context)
+		await this.#refreshLayout(this.#lastTotal === 0, context)
 	}
 }

@@ -66,10 +66,10 @@ export class Button extends Action {
 				await new Promise(resolve => setTimeout(resolve, duration))
 		}
 
-		if ((this.constructor as typeof Button).STATABLE && connector.set)
-			this.onStateSettled(action.id)
-
 		this.#flashing[action.id] = false
+
+		if ((this.constructor as typeof Button).STATABLE && connector.set)
+			await this.onStateSettled(action.id)
 
 		this.resumeMarquee(action.id, true)
 	}
@@ -194,9 +194,9 @@ export class Button extends Action {
 
 		if ((this.constructor as typeof Button).STATABLE)
 			if (!connector.set)
-				this.onStateLoss(ev.action.id)
+				await this.onStateLoss(ev.action.id)
 			else
-				this.onStateSettled(ev.action.id)
+				await this.onStateSettled(ev.action.id)
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
@@ -223,6 +223,15 @@ export class Button extends Action {
 
 	async setState(context: string, state: any) {
 		await StreamDeck.client.setState(context, state).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck state of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+	}
+
+	async onStateSettled(context: string, skipImageReset: boolean = false) {
+		if (!skipImageReset)
+			await this.setImage(context)
+	}
+
+	async onStateLoss(context: string) {
+		await this.setImage(context, this.#statelessImage)
 	}
 
 	async marqueeTitle(id: string, data: Array<any>, context: string, forced = false) {
@@ -329,15 +338,6 @@ export class Button extends Action {
 			totalWidth += constants.CHARACTER_WIDTH_MAP[char] || 1
 
 		return totalWidth;
-	}
-
-	onStateSettled(context: string, skipImageReset: boolean = false) {
-		if (!skipImageReset)
-			this.setImage(context)
-	}
-
-	onStateLoss(context: string) {
-		this.setImage(context, this.#statelessImage)
 	}
 
 	setStatelessImage(image: string) {

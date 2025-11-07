@@ -227,7 +227,7 @@ export class Dial extends Action {
 		await super.onWillAppear(ev)
 
 		if (connector.set)
-			this.updateFeedback(ev.action.id)
+			await this.updateFeedback(ev.action.id)
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
@@ -339,7 +339,7 @@ export class Dial extends Action {
 			this.#unpressable[context] = busy
 	}
 
-	onStateSettled(context: string) { }
-	onStateLoss(context: string) { }
-	updateFeedback(context: string) { }
+	async onStateSettled(context: string) { }
+	async onStateLoss(context: string) { }
+	async updateFeedback(context: string) { }
 }

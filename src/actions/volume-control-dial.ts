@@ -20,53 +20,69 @@ export default class VolumeControlDial extends Dial {
 		wrapper.on('deviceChanged', this.#onDeviceChanged.bind(this))
 	}
 
-	#updateJointFeedback(contexts = this.contexts) {
+	async #updateJointFeedback(contexts = this.contexts) {
+		const promises = []
+
 		if (wrapper.volumePercent === null) {
 			for (const context of contexts)
-				this.resetFeedbackLayout(context)
+				promises.push(this.resetFeedbackLayout(context))
 
-			return
-		}
-
-		for (const context of contexts) {
-			this.setIcon(context, wrapper.muted ? 'images/icons/volume-control-muted.png' : 'images/icons/volume-control.png')
-
-			this.setFeedback(context, {
-				text: {
-					value: `${wrapper.muted ? wrapper.mutedVolumePercent : wrapper.volumePercent}%`,
-					opacity: wrapper.muted ? 0.5 : 1.0
-				},
-
-				icon: {
-					opacity: 1
-				},
-
-				indicator: {
-					value: wrapper.muted ? wrapper.mutedVolumePercent : wrapper.volumePercent,
-					opacity: wrapper.muted ? 0.5 : 1.0
-				}
-			})
-		}
-	}
-
-	#onVolumePercentChanged(percent: number, contexts = this.contexts) {
-		this.#updateJointFeedback(contexts)
-	}
-
-	#onMutedStateChanged(state: boolean, contexts = this.contexts) {
-		this.#updateJointFeedback(contexts)
-	}
-
-	#onDeviceChanged(device: any, contexts = this.contexts) {
-		if (!device) {
-			for (const context of contexts)
-				this.resetFeedbackLayout(context)
+			await Promise.allSettled(promises)
 
 			return
 		}
 
 		for (const context of contexts)
-			this.#updateJointFeedback([context])
+			promises.push(new Promise(async (resolve) => {
+				await this.setIcon(context, wrapper.muted ? 'images/icons/volume-control-muted.png' : 'images/icons/volume-control.png')
+
+				await this.setFeedback(context, {
+					text: {
+						value: `${wrapper.muted ? wrapper.mutedVolumePercent : wrapper.volumePercent}%`,
+						opacity: wrapper.muted ? 0.5 : 1.0
+					},
+
+					icon: {
+						opacity: 1
+					},
+
+					indicator: {
+						value: wrapper.muted ? wrapper.mutedVolumePercent : wrapper.volumePercent,
+						opacity: wrapper.muted ? 0.5 : 1.0
+					}
+				})
+
+				resolve(true)
+			}))
+
+		await Promise.allSettled(promises)
+	}
+
+	async #onVolumePercentChanged(percent: number, contexts = this.contexts) {
+		await this.#updateJointFeedback(contexts)
+	}
+
+	async #onMutedStateChanged(state: boolean, contexts = this.contexts) {
+		await this.#updateJointFeedback(contexts)
+	}
+
+	async #onDeviceChanged(device: any, contexts = this.contexts) {
+		const promises = []
+
+		if (!device) {
+			for (const context of contexts)
+				promises.push(this.resetFeedbackLayout(context))
+
+			await Promise.allSettled(promises)
+
+			return
+		}
+
+
+		for (const context of contexts)
+			promises.push(this.#updateJointFeedback([context]))
+
+		await Promise.allSettled(promises)
 	}
 
 	async invokeWrapperAction(context: string, type: symbol) {
@@ -116,7 +132,7 @@ export default class VolumeControlDial extends Dial {
 	}
 
 	async resetFeedbackLayout(context: string): Promise<void> {
-		super.resetFeedbackLayout(context, {
+		await super.resetFeedbackLayout(context, {
 			icon: this.originalIcon
 		})
 	}
@@ -130,10 +146,10 @@ export default class VolumeControlDial extends Dial {
 			})
 	}
 
-	updateFeedback(context: string): void {
-		super.updateFeedback(context)
-		this.#onMutedStateChanged(wrapper.muted, [context])
-		this.#onVolumePercentChanged(wrapper.volumePercent, [context])
-		this.#onDeviceChanged(wrapper.device, [context])
+	async updateFeedback(context: string) {
+		await super.updateFeedback(context)
+		await this.#onMutedStateChanged(wrapper.muted, [context])
+		await this.#onVolumePercentChanged(wrapper.volumePercent, [context])
+		await this.#onDeviceChanged(wrapper.device, [context])
 	}
 }

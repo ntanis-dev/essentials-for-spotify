@@ -5,17 +5,20 @@
     <script src="sdpi-components.js"></script>
 </head>
 <body>
-    <sdpi-item label="Single Press">
-        <sdpi-select setting="action">
-            <option value="open_spotify">Open in Spotify</option>
-            <option value="play_pause">Play / Pause</option>
-        </sdpi-select>
+    <sdpi-item label="Spotify URL">
+        <sdpi-textfield
+            setting="spotify_url"
+            pattern="/^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?(?:album|artist|playlist)\/[A-Za-z0-9]{22}(?:\/)?(?:\?.*)?$/i"
+            placeholder="https://open.spotify.com/..."
+            required>
+        </sdpi-textfield>
     </sdpi-item>
     <sdpi-item label="Show">
         <sdpi-checkbox-list setting="show">
             <option value="title">Name</option>
             <option value="subtitle">Artist(s) (Album / Track Context)</option>
             <option value="extra">Type</option>
+            <option value="border">Border</option>
         </sdpi-checkbox-list>
     </sdpi-item>
 </body>

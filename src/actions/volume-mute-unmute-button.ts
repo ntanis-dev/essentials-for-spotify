@@ -20,14 +20,22 @@ export default class VolumeMuteUnmuteButton extends Button {
 		wrapper.on('mutedStateChanged', this.#onMutedStateChanged.bind(this))
 	}
 
-	#onMutedStateChanged(state: boolean, contexts = this.contexts) {
+	async #onMutedStateChanged(state: boolean, contexts = this.contexts) {
+		const promises = []
+
 		for (const context of contexts)
-			if (wrapper.volumePercent === null)
-				this.setImage(context, 'images/states/volume-mute-unknown')
-			else {
-				this.setImage(context)
-				this.setState(context, state ? 1 : 0)
-			}
+			promises.push(new Promise(async (resolve) => {
+				if (wrapper.volumePercent === null)
+					await this.setImage(context, 'images/states/volume-mute-unknown')
+				else {
+					await this.setImage(context)
+					await this.setState(context, state ? 1 : 0)
+				}
+
+				resolve(true)
+			}))
+
+		await Promise.allSettled(promises)
 	}
 
 	async invokeWrapperAction(context: string) {
@@ -39,8 +47,8 @@ export default class VolumeMuteUnmuteButton extends Button {
 			return wrapper.muteVolume()
 	}
 
-	onStateSettled(context: string) {
-		super.onStateSettled(context)
-		this.#onMutedStateChanged(wrapper.muted, [context])
+	async onStateSettled(context: string) {
+		await super.onStateSettled(context)
+		await this.#onMutedStateChanged(wrapper.muted, [context])
 	}
 }

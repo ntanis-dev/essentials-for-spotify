@@ -36,24 +36,26 @@ export default class SongStackButton extends Button {
 				this.updateMarqueeEntry(context, 'time', this.beautifyTime(progress, duration, this.settings[context].show.includes('progress'), this.settings[context].show.includes('duration')))
 	}
 
-	#onSongChanged(song: any, pending: boolean = false, contexts = this.contexts, force = false) {
+	async #onSongChanged(song: any, pending: boolean = false, contexts = this.contexts, force = false) {
+		const promises = []
+
 		for (const context of contexts)
-			setImmediate(async () => {
+			promises.push(new Promise(async (resolve) => {
 				this.setUnpressable(context, true)
 
 				if ((song && this.marquees[context] && this.marquees[context].id !== song.item.id) || ((!song) && this.marquees[context]) || force) {
 					this.clearMarquee(context)
-					this.setTitle(context, '')
+					await this.setTitle(context, '')
 				}
 
 				if (song) {
 					if (!images.isSongCached(song))
-						this.setImage(context, 'images/states/pending')
+						await this.setImage(context, 'images/states/pending')
 
 					const image = await images.getForSong(song)
 
 					if ((!this.marquees[context]) || this.marquees[context].id !== song.item.id || force)
-						this.marqueeTitle(song.item.id, [
+						await this.marqueeTitle(song.item.id, [
 							this.settings[context].show.includes('name') ? {
 								key: 'title',
 								value: song.item.name
@@ -73,19 +75,23 @@ export default class SongStackButton extends Button {
 						this.resumeMarquee(context)
 
 					if (image)
-						this.setImage(context, this.processImage(`data:image/jpeg;base64,${image}`, this.settings[context].show.includes('liked') && song.liked))
+						await this.setImage(context, this.processImage(`data:image/jpeg;base64,${image}`, this.settings[context].show.includes('liked') && song.liked ? 'center' : 'none'))
 					else if (song.item.uri.includes('local:'))
-						this.setImage(context, 'images/states/local')
+						await this.setImage(context, 'images/states/local')
 					else
-						this.setImage(context)
+						await this.setImage(context)
 				} else if (pending)
-					this.setImage(context, 'images/states/pending')
+					await this.setImage(context, 'images/states/pending')
 				else
-					this.setImage(context, 'images/states/song-stack-unknown')
+					await this.setImage(context, 'images/states/song-stack-unknown')
 
 				if (!pending)
 					this.setUnpressable(context, false)
-			})
+
+				resolve(true)
+			}))
+
+		await Promise.allSettled(promises)
 	}
 
 	async #openSpotify() {
@@ -172,23 +178,26 @@ export default class SongStackButton extends Button {
 			})
 
 		if (oldSettings.show?.length !== this.settings[context].show?.length || (oldSettings.show && this.settings[context].show && (!oldSettings.show.every((value: any, index: number) => value === this.settings[context].show[index]))))
-			this.#onSongChanged(wrapper.song, wrapper.pendingSongChange, [context], true)
+			await this.#onSongChanged(wrapper.song, wrapper.pendingSongChange, [context], true)
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
-		super.onWillDisappear(ev)
+		await super.onWillDisappear(ev)
 		this.pauseMarquee(ev.action.id)
 	}
 
-	onStateSettled(context: string) {
-		super.onStateSettled(context, true)
-		this.#onSongChanged(wrapper.song, false, [context])
+	async onStateSettled(context: string) {
+		await super.onStateSettled(context, true)
+		await this.#onSongChanged(wrapper.song, false, [context])
+
 		this.#onSongTimeChanged(wrapper.song?.progress, wrapper.song?.item.duration_ms, wrapper.pendingSongChange, [context])
 	}
 
-	onStateLoss(context: string) {
-		super.onStateLoss(context)
+	async onStateLoss(context: string) {
+		await super.onStateLoss(context)
+		
 		this.clearMarquee(context)
-		this.setTitle(context, '')
+		
+		await this.setTitle(context, '')
 	}
 }

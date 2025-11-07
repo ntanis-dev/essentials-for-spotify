@@ -27,8 +27,12 @@ export default class SetupButton extends Button {
 	}
 
 	#onSetupStateChanged(state: boolean) {
+		const promises = []
+
 		for (const context of this.contexts)
-			this.setState(context, state ? 1 : 0)
+			promises.push(this.setState(context, state ? 1 : 0))
+
+		return Promise.allSettled(promises)
 	}
 
 	async invokeWrapperAction(context: string) {
@@ -50,13 +54,13 @@ export default class SetupButton extends Button {
 		return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
 	}
 
-	onStateSettled(context: string) {
-		super.onStateSettled(context)
-		this.#onSetupStateChanged(true)
+	async onStateSettled(context: string) {
+		await super.onStateSettled(context)
+		await this.#onSetupStateChanged(true)
 	}
 
-	onStateLoss(context: string) {
-		super.onStateLoss(context)
-		this.#onSetupStateChanged(false)
+	async onStateLoss(context: string) {
+		await super.onStateLoss(context)
+		await this.#onSetupStateChanged(false)
 	}
 }

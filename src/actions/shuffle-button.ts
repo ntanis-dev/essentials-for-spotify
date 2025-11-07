@@ -20,8 +20,12 @@ export default class ShuffleButton extends Button {
 	}
 
 	#onShuffleStateChanged(state: boolean, contexts = this.contexts) {
+		const promises = []
+
 		for (const context of contexts)
-			this.setState(context, state ? 1 : 0)
+			promises.push(this.setState(context, state ? 1 : 0))
+
+		return Promise.allSettled(promises)
 	}
 
 	async invokeWrapperAction(context: string) {
@@ -31,8 +35,8 @@ export default class ShuffleButton extends Button {
 			return wrapper.turnOnShuffle()
 	}
 
-	onStateSettled(context: string) {
-		super.onStateSettled(context)
-		this.#onShuffleStateChanged(wrapper.shuffleState, [context])
+	async onStateSettled(context: string) {
+		await super.onStateSettled(context)
+		await this.#onShuffleStateChanged(wrapper.shuffleState, [context])
 	}
 }

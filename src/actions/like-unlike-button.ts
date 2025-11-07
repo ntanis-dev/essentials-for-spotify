@@ -20,29 +20,37 @@ export default class LikeUnlikeButton extends Button {
 		wrapper.on('songLikedStateChanged', this.#onLikedStateChanged.bind(this))
 	}
 
-	#onLikedStateChanged(liked: boolean, pending: boolean = false, contexts = this.contexts) {
-		for (const context of contexts) {
-			this.setUnpressable(context, true)
-			this.setImage(context, pending ? 'images/states/pending' : undefined)
+	async #onLikedStateChanged(liked: boolean, pending: boolean = false, contexts = this.contexts) {
+		const promises = []
 
-			if (!pending) {
-				if (wrapper.song) {
-					this.setImage(context)
-					this.setState(context, liked ? 1 : 0)
-				} else
-					this.setImage(context, 'images/states/like-unknown')
+		for (const context of contexts)
+			promises.push(new Promise(async (resolve) => {
+				this.setUnpressable(context, true)
+				
+				await this.setImage(context, pending ? 'images/states/pending' : undefined)
 
-				this.setUnpressable(context, false)
-			}
-		}
+				if (!pending) {
+					if (wrapper.song) {
+						await this.setImage(context)
+						await this.setState(context, liked ? 1 : 0)
+					} else
+						await this.setImage(context, 'images/states/like-unknown')
+
+					this.setUnpressable(context, false)
+				}
+
+				resolve(true)
+			}))
+
+		await Promise.allSettled(promises)
 	}
 
 	async invokeWrapperAction(context: string) {
 		return wrapper.likeUnlikeCurrentSong()
 	}
 
-	onStateSettled(context: string) {
-		super.onStateSettled(context)
-		this.#onLikedStateChanged(wrapper.song?.liked, wrapper.pendingSongChange, [context])
+	async onStateSettled(context: string) {
+		await super.onStateSettled(context)
+		await this.#onLikedStateChanged(wrapper.song?.liked, wrapper.pendingSongChange, [context])
 	}
 }

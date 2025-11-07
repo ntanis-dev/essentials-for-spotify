@@ -24,8 +24,12 @@ export default class SongClipboardButton extends Button {
 	}
 
 	#onSongChanged(song: any, pending: boolean = false, contexts = this.contexts) {
+		const promises = []
+
 		for (const context of contexts)
-			this.setImage(context, pending ? 'images/states/pending' : undefined)
+			promises.push(this.setImage(context, pending ? 'images/states/pending' : undefined))
+
+		return Promise.allSettled(promises)
 	}
 
 	#copyToClipboard(text: string) {
@@ -67,6 +71,6 @@ export default class SongClipboardButton extends Button {
 
 	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
 		await super.onWillAppear(ev)
-		this.#onSongChanged(wrapper.song, false, [ev.action.id])
+		await this.#onSongChanged(wrapper.song, false, [ev.action.id])
 	}
 }

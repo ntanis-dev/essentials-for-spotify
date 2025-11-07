@@ -18,9 +18,13 @@ export default class LoopContextButton extends Button {
 		wrapper.on('repeatStateChanged', this.#onRepeatStateChanged.bind(this))
 	}
 
-	#onRepeatStateChanged(state: string, contexts = this.contexts) {
+	async #onRepeatStateChanged(state: string, contexts = this.contexts) {
+		const promises = []
+
 		for (const context of contexts)
-			this.setState(context, state === 'context' ? 1 : 0)
+			promises.push(this.setState(context, state === 'context' ? 1 : 0))
+
+		await Promise.allSettled(promises)
 	}
 
 	async invokeWrapperAction(context: string) {
@@ -30,8 +34,8 @@ export default class LoopContextButton extends Button {
 			return wrapper.turnOnContextRepeat()
 	}
 
-	onStateSettled(context: string) {
-		super.onStateSettled(context)
-		this.#onRepeatStateChanged(wrapper.repeatState, [context])
+	async onStateSettled(context: string) {
+		await super.onStateSettled(context)
+		await this.#onRepeatStateChanged(wrapper.repeatState, [context])
 	}
 }

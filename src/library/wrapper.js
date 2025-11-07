@@ -98,7 +98,7 @@ class Wrapper extends EventEmitter {
 				if (e.message.includes('Restriction violated'))
 					return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 				else
-					logger.error(`An error occured while responding to a wrapper call: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
+					logger.error(`An error occured while responding to a wrapper call: "${e.stack || e.message || 'No stack trace.'}".`)
 
 			return response
 		} finally {
@@ -208,6 +208,114 @@ class Wrapper extends EventEmitter {
 		this.emit('shuffleStateChanged', shuffleState)
 	}
 
+	async #getTypeData(type, uri, nullOnFailure = false) {
+		let title = 'Unknown ❓'
+		let subtitle = null
+		let extra = 'Unknown ❓'
+		let images = []
+
+		const id = uri.split(':')[2]
+
+		switch (type) {
+			case 'track':
+				const track = await this.#wrapCall(() => connector.callSpotifyApi(`tracks/${id}`), true)
+
+				if ((!track) && nullOnFailure)
+					return null
+
+				title = track?.name ?? 'Unknown ❓'
+				subtitle = track?.artists?.map(artist => artist.name).join(', ') ?? null
+				extra = 'Track 🎵'
+				images = track?.album?.images ?? []
+
+				break
+			case 'artist':
+				const artist = await this.#wrapCall(() => connector.callSpotifyApi(`artists/${id}`), true)
+
+				if ((!artist) && nullOnFailure)
+					return null
+
+				title = artist?.name ?? 'Unknown ❓'
+				extra = 'Artist 👤'
+				images = artist?.images ?? []
+
+				break
+
+			case 'album':
+				const album = await this.#wrapCall(() => connector.callSpotifyApi(`albums/${id}`), true)
+
+				if ((!album) && nullOnFailure)
+					return null
+
+				switch (album.album_type) {
+					case 'compilation':
+						extra = 'Compilation 🗂️'
+						break
+
+					default:
+						extra = 'Album 💿'
+						break
+				}
+
+				title = album?.name ?? 'Unknown ❓'
+				subtitle = album?.artists?.map(artist => artist.name).join(', ') ?? null
+				extra = 'Album 💿'
+				images = album?.images ?? []
+
+				break
+
+			case 'playlist':
+				const playlist = await this.#wrapCall(() => connector.callSpotifyApi(`playlists/${id}`), true)
+
+				if ((!playlist) && nullOnFailure)
+					return null
+
+				title = playlist?.name ?? 'Unknown ❓'
+				extra = 'Playlist 📃'
+				images = playlist?.images ?? []
+
+				break
+
+			case 'show':
+				const show = await this.#wrapCall(() => connector.callSpotifyApi(`shows/${id}`), true)
+
+				if ((!show) && nullOnFailure)
+					return null
+
+				title = show?.name ?? 'Unknown ❓'
+				extra = 'Show 🎙️'
+				images = show?.images ?? []
+
+				break
+
+			case 'collection':
+				title = uri.includes('user:') ? 'Liked Songs' : 'Unknown ❓'
+				extra = 'Collection 📚'
+
+				images = [{
+					width: 64,
+					height: 64,
+					url: 'https://misc.scdn.co/liked-songs/liked-songs-64.jpg'
+				}]
+
+				break
+
+			case 'local':
+				title = 'Local Files 🖥️'
+				extra = null
+				images = []
+
+				break
+		}
+
+		return {
+			title,
+			subtitle,
+			extra,
+			images
+		}
+	}
+
 	async #updatePlaybackContext(context, pending = false) {
 		this.#lastPendingContext = pending
 
@@ -221,86 +329,13 @@ class Wrapper extends EventEmitter {
 			return
 
 		if (context) {
-			const id = `${context.uri?.split(':')[2]}`
+			const typeData = await this.#getTypeData(context.type, context.uri)
 
-			let title = 'Unknown ❓'
-			let extra = 'Unknown ❓'
-			let images = []
-			let subtitle = null
-
-			switch (context.type) {
-				case 'artist':
-					const artist = await this.#wrapCall(() => connector.callSpotifyApi(`artists/${id}`), true)
-
-					title = artist?.name ?? 'Unknown ❓'
-					extra = 'Artist 👤'
-					images = artist?.images ?? []
-
-					break
-
-				case 'album':
-					const album = await this.#wrapCall(() => connector.callSpotifyApi(`albums/${id}`), true)
-
-					switch (album.album_type) {
-						case 'compilation':
-							extra = 'Compilation 🗂️'
-							break
-
-						default:
-							extra = 'Album 💿'
-							break
-					}
-
-					title = album?.name ?? 'Unknown ❓'
-					subtitle = album?.artists?.map(artist => artist.name).join(', ') ?? null
-					extra = 'Album 💿'
-					images = album?.images ?? []
-
-					break
-
-				case 'playlist':
-					const playlist = await this.#wrapCall(() => connector.callSpotifyApi(`playlists/${id}`), true)
-
-					title = playlist?.name ?? 'Unknown ❓'
-					extra = 'Playlist 📃'
-					images = playlist?.images ?? []
-
-					break
-
-				case 'show':
-					const show = await this.#wrapCall(() => connector.callSpotifyApi(`shows/${id}`), true)
-
-					title = show?.name ?? 'Unknown ❓'
-					extra = 'Show 🎙️'
-					images = show?.images ?? []
-
-					break
-
-				case 'collection':
-					title = context.uri.includes('user:') ? 'Liked Songs' : 'Unknown ❓'
-					extra = 'Collection 📚'
-
-					images = [{
-						width: 64,
-						height: 64,
-						url: 'https://misc.scdn.co/liked-songs/liked-songs-64.jpg'
-					}]
-
-					break
-
-				case 'local':
-					title = 'Local Files 🖥️'
-					extra = null
-					images = []
-
-					break
-			}
-
-			context.id = id
-			context.images = images
-			context.title = title
-			context.subtitle = subtitle
-			context.extra = extra
+			context.id = `${context.uri?.split(':')[2]}`
+			context.images = typeData.images
+			context.title = typeData.title
+			context.subtitle = typeData.subtitle
+			context.extra = typeData.extra
 		}
 
 		this.#updatePlaybackStateStatus = 'skip'
@@ -811,6 +846,36 @@ class Wrapper extends EventEmitter {
 				total: response.albums.total
 			}
 		}, true)
+	}
+
+	async getInformationOnUrl(url) {
+		try {
+			const realUrl = new URL(url)
+
+			realUrl.search = ''
+
+			const type = realUrl.pathname.split('/')[1]
+			const id = realUrl.pathname.split('/')[2]
+			const uri = `spotify:${type}:${id}`
+
+			if (!['artist', 'album', 'playlist', 'show', 'collection', 'local', 'track'].includes(type))
+				return null
+
+			const typeData = await this.#getTypeData(type, uri, true)
+
+			return typeData ? {
+				url,
+				uri,
+				id,
+				type,
+				title: typeData.title,
+				subtitle: typeData.subtitle,
+				extra: typeData.extra,
+				images: typeData.images
+			} : null
+		} catch {
+			return null
+		}
 	}
 
 	get playing() {
