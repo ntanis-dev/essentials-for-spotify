@@ -95,30 +95,46 @@ export class Button extends Action {
 			long: false
 		}
 
-		if ((!this.#holding[ev.action.id]) && (this.constructor as typeof Button).HOLDABLE)
-			this.#holding[ev.action.id] = setTimeout(() => {
-				if (this.#pressed[ev.action.id]) {
-					this.#holding[ev.action.id] = true
-					this.onKeyDown(ev)
-				}
-			}, constants.BUTTON_HOLD_DELAY)
-		else if ((!(this.constructor as typeof Button).HOLDABLE) && (this.constructor as typeof Button).MULTI)
+		if ((!this.#holding[ev.action.id]) && (this.constructor as typeof Button).HOLDABLE) {
+			this.#holding[ev.action.id] = {
+				held: false,
+				resolve: null,
+				promiseTimeout: null,
+				timeout: setTimeout(() => {
+					if (this.#pressed[ev.action.id] && this.#holding[ev.action.id]) {
+						this.#holding[ev.action.id].held = true
+						this.onKeyDown(ev)
+					}
+				}, constants.BUTTON_HOLD_DELAY)
+			}
+
+			await new Promise(resolve => {
+				this.#holding[ev.action.id].resolve = resolve
+				this.#holding[ev.action.id].promiseTimeout = setTimeout(resolve, constants.BUTTON_HOLD_DELAY + 25)
+			})
+
+			if (!this.#holding[ev.action.id])
+				return
+		} else if ((!(this.constructor as typeof Button).HOLDABLE) && (this.constructor as typeof Button).MULTI)
 			this.#pressed[ev.action.id].timeout = setTimeout(async () => {
-				this.#pressed[ev.action.id].long = true
-				await this.#invokePress(ev, true, 1)
+				if (this.#pressed[ev.action.id]) {
+					this.#pressed[ev.action.id].long = true
+					await this.#invokePress(ev, true, 1)
+				}
 			}, constants.BUTTON_HOLD_DELAY)
 
 		if (this.#holding[ev.action.id] || (!(this.constructor as typeof Button).MULTI))
 			if ((!connector.set) && (!(this.constructor as typeof Button).SETUPLESS))
 				await this.#flashImage(ev.action, 'images/states/setup-error', constants.LONG_FLASH_DURATION, constants.LONG_FLASH_TIMES)
 			else {
+				const held = this.#holding[ev.action.id]?.held || false
 				const startedInvokingAt = Date.now()
 				const response = await this.invokeWrapperAction(ev.action.id, this.#holding[ev.action.id] ? Button.TYPES.HOLDING : Button.TYPES.SINGLE_PRESS)
 
 				if (response === constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)
 					await this.#flashImage(ev.action, 'images/states/success', constants.SHORT_FLASH_DURATION, constants.SHORT_FLASH_TIMES)
 
-				if ((response === constants.WRAPPER_RESPONSE_SUCCESS || response === constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE) && this.#holding[ev.action.id] === true)
+				if ((response === constants.WRAPPER_RESPONSE_SUCCESS || response === constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE) && (held || this.#holding[ev.action.id]?.held) && this.#pressed[ev.action.id])
 					this.#pressed[ev.action.id].timeout = setTimeout(() => {
 						if (this.#pressed[ev.action.id])
 							this.onKeyDown(ev)
@@ -167,10 +183,41 @@ export class Button extends Action {
 	}
 
 	async onKeyUp(ev: KeyUpEvent<any>) {
-		if (this.#busy[ev.action.id] || this.#unpressable[ev.action.id] || (this.constructor as typeof Button).ACTIONLESS)
+		if (this.#busy[ev.action.id] || this.#unpressable[ev.action.id] || (this.constructor as typeof Button).ACTIONLESS) {
+			let wasPressedInHold = false
+
+			if (this.#holding[ev.action.id] && (!this.#holding[ev.action.id].held)) {
+				const resolve = this.#holding[ev.action.id].resolve
+				const promiseTimeout = this.#holding[ev.action.id].promiseTimeout
+
+				delete this.#holding[ev.action.id]
+
+				clearTimeout(promiseTimeout)
+				resolve()
+
+				wasPressedInHold = true
+			} else if (this.#holding[ev.action.id]) {
+				clearTimeout(this.#holding[ev.action.id].timeout)
+				delete this.#holding[ev.action.id]
+			}
+
+			if (this.#pressed[ev.action.id]) {
+				clearTimeout(this.#pressed[ev.action.id].timeout)
+				delete this.#pressed[ev.action.id]
+			}
+
+			if (wasPressedInHold) {
+				await this.#invokePress(ev, false, 1)
+				delete this.#busy[ev.action.id]
+			}
+
 			return
+		}
 
 		this.#busy[ev.action.id] = true
+
+		clearTimeout(this.#pressed[ev.action.id].timeout)
+		clearTimeout(this.#holding[ev.action.id]?.timeout)
 
 		if (this.#pressed[ev.action.id])
 			if ((!this.#holding[ev.action.id]) && (this.constructor as typeof Button).MULTI && (!this.#pressed[ev.action.id].long))
@@ -193,9 +240,6 @@ export class Button extends Action {
 						}, constants.BUTTON_MULTI_PRESS_INTERVAL)
 					}
 				}
-
-		clearTimeout(this.#pressed[ev.action.id].timeout)
-		clearTimeout(this.#holding[ev.action.id])
 
 		delete this.#pressed[ev.action.id]
 		delete this.#holding[ev.action.id]
@@ -222,7 +266,7 @@ export class Button extends Action {
 			await this.#flashing[ev.action.id]
 
 		clearTimeout(this.#pressed[ev.action.id]?.timeout)
-		clearTimeout(this.#holding[ev.action.id])
+		clearTimeout(this.#holding[ev.action.id]?.timeout)
 		clearTimeout(this.#keyUpTracker[ev.action.id]?.timeout)
 
 		delete this.#pressed[ev.action.id]

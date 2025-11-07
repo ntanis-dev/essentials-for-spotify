@@ -6,22 +6,13 @@ import {
 	Button
 } from './button.js'
 
-import constants from '../library/constants.js'
 import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.forward-seek-button' })
 export default class ForwardSeekButton extends Button {
 	static readonly HOLDABLE = true
 
-	async invokeWrapperAction(context: string) {
-		if (wrapper.song)
-			if (wrapper.song.progress + constants.SEEK_STEP_SIZE < wrapper.song.item.duration_ms)
-				return wrapper.forwardSeek(wrapper.song, constants.SEEK_STEP_SIZE)
-			else
-				return constants.WRAPPER_RESPONSE_SUCCESS
-		else if (wrapper.pendingSongChange)
-			return constants.WRAPPER_RESPONSE_BUSY
-		else
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+	async invokeWrapperAction(context: string, type: symbol) {
+		return wrapper.forwardSeek()
 	}
 }

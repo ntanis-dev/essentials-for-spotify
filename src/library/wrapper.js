@@ -513,6 +513,46 @@ class Wrapper extends EventEmitter {
 		this.#updatePlaybackContext(null, true)
 	}
 
+	async #forwardSeekRaw(song, time, deviceId = this.#lastDeviceId) {
+		if (this.#lastDisallowFlags.includes('seeking') || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
+		return this.#wrapCall(async () => {
+			await this.#deviceCall(`me/player/seek?position_ms=${song.progress + time}`, {
+				method: 'PUT'
+			}, deviceId)
+
+			this.#setSong({
+				item: song.item,
+				liked: song.liked,
+				progress: song.progress + time
+			})
+
+			return constants.WRAPPER_RESPONSE_SUCCESS
+		})
+	}
+
+	async #backwardSeekRaw(song, time, deviceId = this.#lastDeviceId) {
+		if (this.#lastDisallowFlags.includes('seeking') || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
+		return this.#wrapCall(async () => {
+			const newProgress = Math.max(0, song.progress - time)
+
+			await this.#deviceCall(`me/player/seek?position_ms=${newProgress}`, {
+				method: 'PUT'
+			}, deviceId)
+
+			this.#setSong({
+				item: song.item,
+				liked: song.liked,
+				progress: newProgress
+			})
+
+			return constants.WRAPPER_RESPONSE_SUCCESS
+		})
+	}
+
 	async transferPlayback(deviceId) {
 		return this.#wrapCall(async () => {
 			await connector.callSpotifyApi('me/player', {
@@ -739,6 +779,27 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
+	async forwardSeek() {
+		if (this.song)
+			if (this.song.progress + constants.SEEK_STEP_SIZE < this.song.item.duration_ms)
+				return this.#forwardSeekRaw(this.song, constants.SEEK_STEP_SIZE)
+			else
+				return constants.WRAPPER_RESPONSE_SUCCESS
+		else if (this.pendingSongChange)
+			return constants.WRAPPER_RESPONSE_BUSY
+		else
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+	}
+
+	async backwardSeek() {
+		if (this.song)
+			return this.#backwardSeekRaw(this.song, constants.SEEK_STEP_SIZE)
+		else if (this.pendingSongChange)
+			return constants.WRAPPER_RESPONSE_BUSY
+		else
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+	}
+
 	async unlikeSong(song) {
 		return this.#wrapCall(async () => {
 			await connector.callSpotifyApi(`me/tracks?ids=${song.item.id}`, {
@@ -762,46 +823,6 @@ class Wrapper extends EventEmitter {
 			return this.unlikeSong(this.#lastSong)
 		else
 			return this.likeSong(this.#lastSong)
-	}
-
-	async forwardSeek(song, time, deviceId = this.#lastDeviceId) {
-		if (this.#lastDisallowFlags.includes('seeking') || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-
-		return this.#wrapCall(async () => {
-			await this.#deviceCall(`me/player/seek?position_ms=${song.progress + time}`, {
-				method: 'PUT'
-			}, deviceId)
-
-			this.#setSong({
-				item: song.item,
-				liked: song.liked,
-				progress: song.progress + time
-			})
-
-			return constants.WRAPPER_RESPONSE_SUCCESS
-		})
-	}
-
-	async backwardSeek(song, time, deviceId = this.#lastDeviceId) {
-		if (this.#lastDisallowFlags.includes('seeking') || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-
-		return this.#wrapCall(async () => {
-			const newProgress = Math.max(0, song.progress - time)
-
-			await this.#deviceCall(`me/player/seek?position_ms=${newProgress}`, {
-				method: 'PUT'
-			}, deviceId)
-
-			this.#setSong({
-				item: song.item,
-				liked: song.liked,
-				progress: newProgress
-			})
-
-			return constants.WRAPPER_RESPONSE_SUCCESS
-		})
 	}
 
 	async playItem(item, deviceId = this.#lastDeviceId) {
