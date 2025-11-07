@@ -113,23 +113,23 @@ You are able to configure the behavior of some of them via their settings.
 
 ## Visual Indicators
 
-![Success](https://github.com/user-attachments/assets/621d9891-e6a7-4a36-a8b3-0b12eaf05832) **Success**: It worked!
+![Success](https://github.com/user-attachments/assets/150234ae-402c-4871-979c-682ff019bf79) **Success**: It worked!
 
-![Pending](https://github.com/user-attachments/assets/5a36166b-580b-487c-a659-6686719190f1) **Pending**: Something is loading, please wait.
+![Pending](https://github.com/user-attachments/assets/b8df816e-6746-4e7e-99a2-1c201124a67d) **Pending**: Something is loading, please wait.
 
-![Busy](https://github.com/user-attachments/assets/2bc68ab5-f008-48cb-ac84-577d46ed59db) **Busy**: The action you're trying to perform is currently busy, wait a bit and try again later.
+![Busy](https://github.com/user-attachments/assets/a701040a-b53c-403d-a1df-afab7de51c07) **Busy**: The action you're trying to perform is currently busy, wait a bit and try again later.
 
-![API Rate Limited](https://github.com/user-attachments/assets/f43bf816-4d42-47e4-8421-b8a2ae5dbe28) **API Rate Limited**: You're doing actions too fast, wait a bit and try again later.
+![API Rate Limited](https://github.com/user-attachments/assets/f6f82429-95e2-4188-b532-e6430565d1aa) **API Rate Limited**: You're doing actions too fast, wait a bit and try again later.
 
-![Not Available](https://github.com/user-attachments/assets/5fed6fdd-9ce1-47f1-862a-a69d74b792e7) **Not Available**: The action you are trying to perform is not available due to current restrictions.
+![Not Available](https://github.com/user-attachments/assets/2ffa7ea1-7771-43a5-88ad-90894def3d8d) **Not Available**: The action you are trying to perform is not available due to current restrictions.
 
-![No Device](https://github.com/user-attachments/assets/28b90f74-b710-412d-8f04-a8f32837a3ed) **No Device**: A device cannot be found, start your Spotify client or app, play a song and try again.
+![No Device](https://github.com/user-attachments/assets/da68a0f5-b821-4bd5-92d8-a2b63d7b254b) **No Device**: A device cannot be found, start your Spotify client or app, play a song and try again.
 
-![Fatal Error](https://github.com/user-attachments/assets/b95624df-c0c8-4be9-8d70-7549532c7dcf) **Fatal Error**: A fatal error has occured, please [create a new issue](https://github.com/ntanis-dev/essentials-for-spotify/issues/new).
+![Fatal Error](https://github.com/user-attachments/assets/4510f39a-648b-4eae-b52f-a028d02bbb42) **Fatal Error**: A fatal error has occured, please [create a new issue](https://github.com/ntanis-dev/essentials-for-spotify/issues/new).
 
-![API Error](https://github.com/user-attachments/assets/b7d329bc-f8c1-455e-abf7-18a5352ed09b) **API Error**: Something is wrong, try again later and if the issue persists [create a new issue](https://github.com/ntanis-dev/essentials-for-spotify/issues/new).
+![API Error](https://github.com/user-attachments/assets/c59c878e-390b-4d7c-9b8b-30e059a9c033) **API Error**: Something is wrong, try again later and if the issue persists [create a new issue](https://github.com/ntanis-dev/essentials-for-spotify/issues/new).
 
-![Setup Error](https://github.com/user-attachments/assets/f138e85b-3e8a-4c6a-8d27-245453328d65) **Setup Error**: The setup has not been completed yet, please complete the setup first and try again.
+![Setup Error](https://github.com/user-attachments/assets/250f3832-8075-4289-9d91-80674d350e14) **Setup Error**: The setup has not been completed yet, please complete the setup first and try again.
 
 When a questionmark "?" appears on top of a button, that indicates that the plugin is not sure of the button state.
 
