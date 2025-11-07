@@ -19,9 +19,22 @@ export default class PlayContextButton extends Button {
 		[context: string]: any
 	} = {}
 
+	#forcedActiveContexts: {
+		[context: string]: boolean
+	} = {}
+
 	constructor() {
 		super()
 		this.setStatelessImage('images/states/play-context-unknown')
+
+		wrapper.on('playbackContextChanged', () => {
+			for (const context of this.contexts)
+				if (wrapper.playbackContext?.uri === this.#cachedPlayContexts[context]?.uri)
+					delete this.#forcedActiveContexts[context]
+
+			for (const context of this.contexts)
+				this.#updatePlayContext(context, this.settings[context])
+		})
 	}
 
 	async #updatePlayContext(context: string, oldSettings: any = undefined) {
@@ -29,7 +42,7 @@ export default class PlayContextButton extends Button {
 
 		const badUrl = !/^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?(?:album|artist|playlist)\/[A-Za-z0-9]{22}(?:\/)?(?:\?.*)?$/.test(this.settings[context].spotify_url)
 
-		if ((!oldSettings) || badUrl || this.settings[context].spotify_url !== this.#cachedPlayContexts[context]?.url || (!(oldSettings.show || []).every((entry: string) => entry === 'border' || (this.settings[context].show || []).includes(entry))) || (!(this.settings[context].show || []).every((entry: string) => entry === 'border' || (oldSettings.show || []).includes(entry))))
+		if ((!oldSettings) || badUrl || this.settings[context].spotify_url !== this.#cachedPlayContexts[context]?.url || (!(oldSettings.show || []).every((entry: string) => entry === 'active_border' || entry === 'inactive_border' || (this.settings[context].show || []).includes(entry))) || (!(this.settings[context].show || []).every((entry: string) => entry === 'active_border' || entry === 'inactive_border' || (oldSettings.show || []).includes(entry))))
 			this.clearMarquee(context)
 
 		if (this.settings[context].spotify_url !== this.#cachedPlayContexts[context]?.url || badUrl) {
@@ -71,7 +84,7 @@ export default class PlayContextButton extends Button {
 				this.resumeMarquee(context)
 
 			if (image)
-				await this.setImage(context, this.processImage(`data:image/jpeg;base64,${image}`, 'none', this.settings[context].show.includes('border')))
+				await this.setImage(context, this.processImage(`data:image/jpeg;base64,${image}`, 'none', (this.settings[context].show.includes('active_border') && (wrapper.playbackContext?.uri === this.#cachedPlayContexts[context].uri || this.#forcedActiveContexts[context] === this.#cachedPlayContexts[context].uri)) ? (wrapper.playbackContext?.uri === this.#cachedPlayContexts[context].uri ? '#1db954' : '#dab824') : (this.settings[context].show.includes('inactive_border') ? '#888888' : null)))
 			else if (this.#cachedPlayContexts[context].type === 'local')
 				await this.setImage(context, 'images/states/local')
 			else
@@ -86,9 +99,15 @@ export default class PlayContextButton extends Button {
 		if (this.#cachedPlayContexts[context]) {
 			const response = await wrapper.playItem(this.#cachedPlayContexts[context])
 
-			if (response === constants.WRAPPER_RESPONSE_SUCCESS)
+			if (response === constants.WRAPPER_RESPONSE_SUCCESS) {
+				this.#forcedActiveContexts = {}
+				this.#forcedActiveContexts[context] = this.#cachedPlayContexts[context].uri
+
+				for (const ctx of this.contexts)
+					setImmediate(() => this.#updatePlayContext(ctx, this.settings[ctx]))
+
 				return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
-			else
+			} else
 				return response
 		} else
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
@@ -99,7 +118,7 @@ export default class PlayContextButton extends Button {
 
 		if (!this.settings[context].show)
 			await this.setSettings(context, {
-				show: ['title', 'extra', 'subtitle', 'border']
+				show: ['title', 'extra', 'subtitle', 'active_border', 'inactive_border']
 			})
 
 		if (this.#cachedPlayContexts[context]?.url !== this.settings[context].spotify_url || oldSettings.show?.length !== this.settings[context].show?.length || (oldSettings.show && this.settings[context].show && (!oldSettings.show.every((value: any, index: number) => value === this.settings[context].show[index]))))

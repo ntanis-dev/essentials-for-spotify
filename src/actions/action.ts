@@ -100,8 +100,8 @@ export class Action extends SingletonAction {
 		return lines.join('\n')
 	}
 
-	processImage(iconDataUrl: string, heart: 'top-left' | 'center' | 'none', border: boolean = false): string {
-		if ((heart === 'none' && (!border)))
+	processImage(iconDataUrl: string, heart: 'top-left' | 'center' | 'none', borderColor: string | null = null): string {
+		if ((heart === 'none' && (!borderColor)))
 			return iconDataUrl
 
 		const iconSize = 120
@@ -113,12 +113,12 @@ export class Action extends SingletonAction {
 		const availableWidth = iconSize - (heartPadding * 2)
 		const availableHeight = iconSize - (heartPadding * 2)
 
-		const borderStrokeWidth = border ? 8 : 0
-		const borderInset = border ? borderStrokeWidth / 2 : 0
-		const glowRadius = border ? Math.max(4, Math.round(borderStrokeWidth * 1.25)) : 0
+		const borderStrokeWidth = borderColor ? 12 : 0
+		const borderInset = borderColor ? borderStrokeWidth / 2 : 0
+		const glowRadius = borderColor ? Math.max(4, Math.round(borderStrokeWidth * 1.25)) : 0
 
-		const borderRect = border ? `
-			<rect x="${borderInset}" y="${borderInset}" width="${iconSize - (borderInset * 2)}" height="${iconSize - (borderInset * 2)}" fill="none" stroke="#1db954" stroke-width="${borderStrokeWidth}" shape-rendering="geometricPrecision"/>
+		const borderRect = borderColor ? `
+			<rect x="${borderInset}" y="${borderInset}" width="${iconSize - (borderInset * 2)}" height="${iconSize - (borderInset * 2)}" fill="none" stroke="${borderColor}" stroke-width="${borderStrokeWidth}" shape-rendering="geometricPrecision"/>
 		` : ''
 
 		let scaleFactor = Math.min(availableWidth / originalWidth, availableHeight / originalHeight)
@@ -147,7 +147,7 @@ export class Action extends SingletonAction {
 				vector-effect="non-scaling-stroke"/>
 		` : ''
 
-		const innerGlowRect = border? `
+		const innerGlowRect = borderColor? `
 			<rect x="${borderInset}" y="${borderInset}" width="${iconSize - (borderInset * 2)}" height="${iconSize - (borderInset * 2)}" fill="white" filter="url(#innerGlow)"/>
 		` : ''
 
@@ -162,7 +162,7 @@ export class Action extends SingletonAction {
 				<filter id="innerGlow" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
 					<feGaussianBlur in="SourceAlpha" stdDeviation="${glowRadius}" result="blur"/>
 					<feComposite in="SourceAlpha" in2="blur" operator="out" result="innerEdge"/>
-					<feFlood flood-color="#1db954" flood-opacity="1" result="glowColor"/>
+					<feFlood flood-color="#${borderColor}" flood-opacity="1" result="glowColor"/>
 					<feComposite in="glowColor" in2="innerEdge" operator="in" result="coloredGlow"/>
 					<feComposite in="coloredGlow" in2="coloredGlow" operator="over"/>
 				</filter>

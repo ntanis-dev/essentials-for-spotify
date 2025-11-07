@@ -117,8 +117,15 @@ class Wrapper extends EventEmitter {
 	}
 
 	async #deviceCall(path, options, deviceId) {
-		if (!deviceId)
-			throw new constants.NoDeviceError('No device specified.')
+		if (!deviceId) {
+			if (this.#lastDevice)
+				throw new constants.NoDeviceError('No device specified.')
+
+			const activeDevices = this.#lastDevices || []
+
+			if (activeDevices.length > 0)
+				this.#setDevices(activeDevices.filter(device => device.type !== 'Speaker')[0], activeDevices)
+		}
 
 		path = `${path}${path.includes('?') ? '&' : '?'}`
 
