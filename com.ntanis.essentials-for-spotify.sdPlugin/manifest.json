@@ -345,11 +345,6 @@
 				{
 					"Image": "images/states/transfer-playback",
 					"TitleAlignment": "middle"
-				},
-
-				{
-					"Image": "images/states/transfer-playback-offline",
-					"TitleAlignment": "middle"
 				}
 			]
 		},

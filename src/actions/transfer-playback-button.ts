@@ -1,6 +1,7 @@
 import StreamDeck, {
 	action,
-	SendToPluginEvent
+	SendToPluginEvent,
+	WillAppearEvent
 } from '@elgato/streamdeck'
 
 import {
@@ -9,15 +10,22 @@ import {
 
 import constants from '../library/constants.js'
 import wrapper from './../library/wrapper.js'
+import connector from '../library/connector.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.transfer-playback-button' })
 export default class TransferPlaybackButton extends Button {
+	static readonly STATABLE = true
+
 	constructor() {
 		super()
 		wrapper.on('devicesChanged', this.#updateDevices.bind(this))
+		this.setStatelessImage('images/states/transfer-playback-unknown')
 	}
 
 	async #updateDevices(devices: any, contexts = this.contexts) {
+		if (!connector.set)
+			return
+
 		const promises = []
 		const items: any = []
 
@@ -50,7 +58,11 @@ export default class TransferPlaybackButton extends Button {
 				})
 
 				await this.setTitle(context, this.settings[context]?.spotify_device_label ? this.splitToLines(this.settings[context]?.spotify_device_label) : (this.settings[context]?.spotify_device_id ? 'Unknown\nDevice' : 'No Device\nSelected'))
-				await this.setState(context, deviceOnline ? 0 : 1)
+
+				if (deviceOnline)
+					await this.setImage(context, 'images/states/transfer-playback')
+				else
+					await this.setImage(context, 'images/states/transfer-playback-offline')
 
 				resolve(true)
 			}))
@@ -79,5 +91,15 @@ export default class TransferPlaybackButton extends Button {
 
 	async onSettingsUpdated(context: string, oldSettings: any) {
 		await this.#updateDevices(wrapper.devices, [context])
+	}
+
+	async onStateSettled(context: string) {
+		await super.onStateSettled(context, true)
+		await this.#updateDevices(wrapper.devices, [context])
+	}
+
+	async onStateLoss(context: string) {
+		await super.onStateLoss(context)
+		await this.setTitle(context, '')
 	}
 }
