@@ -35,46 +35,66 @@ There's absolutely no obligation, but you may do so through my **[donate portal]
 What's described here is the default and intended functionality of the buttons.\
 You are able to configure the behavior of some of them via their settings. 
 
-- **Setup**
+- **Setup**\
   Start here to setup Essentials for Spotify or to reset the setup process.
-- **Play / Pause**
+
+- **Play / Pause**\
   Toggles between playing and pausing the current song.
-- **Previous Song**
+  
+- **Previous Song**\
   Skips to the previous song.
-- **Next Song**
+  
+- **Next Song**\
   Advances to the next song.
-- **Backward Seek**
+  
+- **Backward Seek**\
   Seek backward in the current song.
-- **Forward Seek**
+  
+- **Forward Seek**\
   Seek forward in the current song.
-- **Shuffle** 
+  
+- **Shuffle** \
   Activates or deactivates shuffle play.
-- **Loop Context**
+  
+- **Loop Context**\
   Repeats the current playlist or album.
-- **Loop Song**
+  
+- **Loop Song**\
   Repeats the current song.
-- **Like / Unlike**
+  
+- **Like / Unlike**\
   Adds the current song to your liked songs or removes it if already liked.
-- **Explicit Indicator**
+  
+- **Explicit Indicator**\
   Shows whether the current song is explicit or not.
-- **Volume Up**
+  
+- **Volume Up**\
   Increases the playback volume.
-- **Volume Down**
+  
+- **Volume Down**\
   Decreases the playback volume.
-- **Volume Mute / Unmute** 
+  
+- **Volume Mute / Unmute** \
   Toggles between muting and unmuting the volume.
-- **Song Stack**
+  
+- **Song Stack**\
   Displays the information of the current song and offers a variety of control actions.
-- **Song Clipboard**
+  
+- **Song Clipboard**\
   Copies the information of the current song to the clipboard.
-- **Context Information**
+  
+- **Context Information**\
   Displays the information of the current context.
-- **Transfer Playback**
+  
+- **Transfer Playback**\
   Allows you to transfer the playback to another device.
-- **User Information**
+  
+- **User Information**\
   Displays the information of the connected user.
-- **Play Context**
+  
+- **Play Context**\
   Map this button to any supported Spotify URL and press it to start playing.
+  
 
 ### Dials
 - **Playback Control**\
