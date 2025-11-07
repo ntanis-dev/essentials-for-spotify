@@ -1,6 +1,5 @@
 import constants from './constants'
 import logger from './logger'
-import wrapper from './wrapper'
 
 import {
 	fetch
