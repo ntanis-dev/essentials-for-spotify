@@ -25,6 +25,7 @@ class Wrapper extends EventEmitter {
 	#lastSongTimeUpdateAt = null
 	#lastPlaybackContext = null
 	#lastPlaybackStateUpdate = null
+	#lastExpectedCdnKeepAlive = null
 	#lastRepeatState = null
 	#lastCurrentlyPlayingType = null
 	#lastUser = null
@@ -150,14 +151,20 @@ class Wrapper extends EventEmitter {
 		if (this.#lastPlaybackStateUpdate && (Date.now() - this.#lastPlaybackStateUpdate < constants.INTERVAL_UPDATE_PLAYBACK_STATE) && (!force))
 			return
 
+		const shouldKeepAliveExpectedCdn = this.#lastExpectedCdnKeepAlive && (Date.now() - this.#lastExpectedCdnKeepAlive < constants.INTERVAL_KEEP_ALIVE_EXPECTED_CDN_IN_PLAYBACK_STATE)
+
+		if (shouldKeepAliveExpectedCdn)
+			this.#lastExpectedCdnKeepAlive = Date.now()
+
 		this.#lastPlaybackStateUpdate = Date.now()
 		this.#updatePlaybackStateStatus = 'updating'
 
 		try {
-			for (const domain of images.expectedCdnDomains)
-				fetch(`https://${domain}/`, {
-					method: 'HEAD'
-				}).catch(() => {})
+			if (shouldKeepAliveExpectedCdn)
+				for (const domain of images.expectedCdnDomains)
+					fetch(`https://${domain}/`, {
+						method: 'HEAD'
+					}).catch(() => {})
 
 			let response = await connector.callSpotifyApi('me/player', undefined, [constants.API_EMPTY_RESPONSE])
 
