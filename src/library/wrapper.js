@@ -121,7 +121,7 @@ class Wrapper extends EventEmitter {
 			if (this.#lastDevice)
 				throw new constants.NoDeviceError('No device specified.')
 
-			const activeDevices = this.#lastDevices?.filter(device => device.type !== 'Speaker')
+			const activeDevices = this.#lastDevices.filter(device => device.type !== 'Speaker')
 
 			if (activeDevices.length > 0)
 				this.#setDevices(activeDevices[0], activeDevices)
@@ -132,7 +132,7 @@ class Wrapper extends EventEmitter {
 		let response = await connector.callSpotifyApi(`${path}${deviceId ? `device_id=${deviceId}` : ''}`, options, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
 
 		if (response === constants.API_NOT_FOUND_RESPONSE) {
-			const activeDevices = this.#lastDevices?.filter(device => device.is_active)
+			const activeDevices = this.#lastDevices.filter(device => device.is_active)
 
 			if (activeDevices.length > 0) {
 				response = await connector.callSpotifyApi(`${path}device_id=${activeDevices[0].id}`, options, [constants.API_NOT_FOUND_RESPONSE, constants.API_EMPTY_RESPONSE])
