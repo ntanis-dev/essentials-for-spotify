@@ -18,8 +18,8 @@ import logger from './../library/logger.js'
 export default class SetupButton extends Button {
 	static readonly SETUPLESS = true
 	static readonly STATABLE = true
-
-	#fake = false
+	
+	readonly FAKE = false
 
 	constructor() {
 		super()
@@ -36,7 +36,7 @@ export default class SetupButton extends Button {
 	}
 
 	async invokeWrapperAction(context: string) {
-		if (this.#fake)
+		if (this.FAKE)
 			if (connector.set)
 				connector.fakeOff()
 			else

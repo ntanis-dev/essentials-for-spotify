@@ -21,7 +21,7 @@ export default class TransferPlaybackButton extends Button {
 		const promises = []
 		const items: any = []
 
-		for (const context of contexts) {
+		for (const context of contexts)
 			for (const device of devices)
 				if (device.id !== this.settings[context]?.spotify_device_id)
 					items.push({
@@ -29,13 +29,6 @@ export default class TransferPlaybackButton extends Button {
 						label: device.name
 					})
 
-			if (this.settings[context]?.spotify_device_id)
-				items.unshift({
-					value: this.settings[context]?.spotify_device_id,
-					label: this.settings[context]?.spotify_device_label ?? 'Unknown\nDevice'
-				})
-		}
-		
 		for (const context of contexts)
 			promises.push(new Promise(async resolve => {
 				const deviceOnline = devices.some((device: any) => device.id === this.settings[context]?.spotify_device_id)
@@ -45,12 +38,18 @@ export default class TransferPlaybackButton extends Button {
 						spotify_device_label: (this.settings[context]?.spotify_device_id) ? (wrapper.devices.find((device: any) => device.id === this.settings[context].spotify_device_id)?.name) : undefined
 					})
 
+				if (this.settings[context]?.spotify_device_id)
+					items.unshift({
+						value: this.settings[context]?.spotify_device_id,
+						label: deviceOnline ? (this.settings[context]?.spotify_device_label ?? 'Unknown\nDevice') : (this.settings[context]?.spotify_device_label ? `${this.settings[context]?.spotify_device_label} (Offline)` : 'Unknown\nDevice (Offline)')
+					})
+
 				await StreamDeck.client.sendToPropertyInspector(context, {
 					event: 'getDevices',
 					items
 				})
 
-				await this.setTitle(context, this.settings[context]?.spotify_device_label ? this.splitToLines(this.settings[context]?.spotify_device_label) : 'Unknown\nDevice')
+				await this.setTitle(context, this.settings[context]?.spotify_device_label ? this.splitToLines(this.settings[context]?.spotify_device_label) : (this.settings[context]?.spotify_device_id ? 'Unknown\nDevice' : 'No Device\nSelected'))
 				await this.setState(context, deviceOnline ? 0 : 1)
 
 				resolve(true)
