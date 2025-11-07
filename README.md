@@ -40,61 +40,61 @@ You are able to configure the behavior of some of them via their settings.
 
 - **Play / Pause**\
   Toggles between playing and pausing the current song.
-  
+
 - **Previous Song**\
   Skips to the previous song.
-  
+
 - **Next Song**\
   Advances to the next song.
-  
+
 - **Backward Seek**\
   Seek backward in the current song.
-  
+
 - **Forward Seek**\
   Seek forward in the current song.
-  
+
 - **Shuffle** \
   Activates or deactivates shuffle play.
-  
+
 - **Loop Context**\
   Repeats the current playlist or album.
-  
+
 - **Loop Song**\
   Repeats the current song.
-  
+
 - **Like / Unlike**\
   Adds the current song to your liked songs or removes it if already liked.
-  
+
 - **Explicit Indicator**\
   Shows whether the current song is explicit or not.
-  
+
 - **Volume Up**\
   Increases the playback volume.
-  
+
 - **Volume Down**\
   Decreases the playback volume.
-  
+
 - **Volume Mute / Unmute** \
   Toggles between muting and unmuting the volume.
-  
+
 - **Song Stack**\
   Displays the information of the current song and offers a variety of control actions.
-  
+
 - **Song Clipboard**\
   Copies the information of the current song to the clipboard.
-  
+
 - **Context Information**\
   Displays the information of the current context.
-  
+
 - **Transfer Playback**\
   Allows you to transfer the playback to another device.
-  
+
 - **User Information**\
   Displays the information of the connected user.
-  
+
 - **Play Context**\
   Map this button to any supported Spotify URL and press it to start playing.
-  
+
 
 ### Dials
 - **Playback Control**\
@@ -111,7 +111,7 @@ You are able to configure the behavior of some of them via their settings.
   - Push: Hold Mute
   - Touch: Mute / Unmute
 - **My Playlists**\
-  Navigate and play through your playlists.
+  Navigate and play through your playlists and liked songs.
   
   - Rotate: Navigate  
   - Push: Play

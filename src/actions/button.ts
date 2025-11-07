@@ -235,12 +235,16 @@ export class Button extends Action {
 
 	async setTitle(context: string, title: string) {
 		this.#lastTitle[context] = title
-		await StreamDeck.client.setTitle(context, title).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck title of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+
+		if (!this.#flashing[context])
+			await StreamDeck.client.setTitle(context, title).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck title of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
 	async setImage(context: string, image?: string) {
 		this.#lastImage[context] = image
-		await StreamDeck.client.setImage(context, image).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+
+		if (!this.#flashing[context])
+			await StreamDeck.client.setImage(context, image).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
 	async setState(context: string, state: any) {
