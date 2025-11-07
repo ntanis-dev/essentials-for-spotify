@@ -115,6 +115,8 @@ export default class PlaybackControlDial extends Dial {
 
 					if (image)
 						await this.setIcon(context, this.processImage(`data:image/jpeg;base64,${image}`, this.settings[context].show.includes('liked') && song.liked ? 'top-left' : 'none'))
+					else if (song.item.uri.includes('local:'))
+						await this.setIcon(context, 'images/states/local')
 					else
 						await this.setIcon(context, this.originalIcon)
 				} else if (wrapper.pendingSongChange)
