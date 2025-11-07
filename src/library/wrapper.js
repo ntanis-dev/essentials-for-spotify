@@ -483,6 +483,20 @@ class Wrapper extends EventEmitter {
 		this.#updatePlaybackContext(null, true)
 	}
 
+	async transferPlayback(deviceId) {
+		return this.#wrapCall(async () => {
+			await this.#deviceCall('me/player', {
+				method: 'PUT',
+
+				body: JSON.stringify({
+					device_ids: [deviceId]
+				})
+			})
+
+			return constants.WRAPPER_RESPONSE_SUCCESS
+		})
+	}
+
 	async updateUser() {
 		return this.#wrapCall(async () => {
 			let userResponse = await connector.callSpotifyApi('me')
@@ -924,6 +938,10 @@ class Wrapper extends EventEmitter {
 
 	get pendingContextChange() {
 		return this.#lastPendingContext
+	}
+
+	get devices() {
+		return this.#lastDevices
 	}
 }
 

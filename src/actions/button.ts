@@ -36,6 +36,7 @@ export class Button extends Action {
 	#statelessImage: string = ''
 	#keyUpTracker: any = {}
 	#lastImage: any = {}
+	#lastTitle: any = {}
 
 	marquees: any = {}
 
@@ -56,25 +57,30 @@ export class Button extends Action {
 	async #flashImage(action: any, image: string, duration: number = 500, times = 2) {
 		action.setTitle('')
 
-		this.#flashing[action.id] = true
+		this.#flashing[action.id] = new Promise(async resolve => {
+			this.pauseMarquee(action.id)
 
-		this.pauseMarquee(action.id)
-
-		for (let i = 0; i < times; i++) {
-			await action.setImage(image).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
-			await new Promise(resolve => setTimeout(resolve, duration))
-			await action.setImage(this.#lastImage[action.id] ?? ((this.constructor as typeof Button).STATABLE && (!connector.set) ? this.#statelessImage : undefined)).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
-
-			if (i + 1 < times)
+			for (let i = 0; i < times; i++) {
+				await action.setImage(image).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 				await new Promise(resolve => setTimeout(resolve, duration))
-		}
+				await action.setImage(this.#lastImage[action.id] ?? ((this.constructor as typeof Button).STATABLE && (!connector.set) ? this.#statelessImage : undefined)).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
-		this.#flashing[action.id] = false
+				if (i + 1 < times)
+					await new Promise(resolve => setTimeout(resolve, duration))
+			}
 
-		if ((this.constructor as typeof Button).STATABLE && connector.set)
-			await this.onStateSettled(action.id)
+			if (this.#lastTitle[action.id])
+				await action.setTitle(this.#lastTitle[action.id])
 
-		this.resumeMarquee(action.id, true)
+			delete this.#flashing[action.id]
+
+			if ((this.constructor as typeof Button).STATABLE && connector.set)
+				await this.onStateSettled(action.id)
+
+			this.resumeMarquee(action.id, true)
+
+			resolve(true)
+		})
 	}
 
 	async onKeyDown(ev: KeyDownEvent<any>) {
@@ -198,6 +204,9 @@ export class Button extends Action {
 	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
 		await super.onWillAppear(ev)
 
+		await this.setImage(ev.action.id, this.#lastImage[ev.action.id] ?? ((this.constructor as typeof Button).STATABLE && (!connector.set) ? this.#statelessImage : undefined))
+		await this.setTitle(ev.action.id, this.#lastTitle[ev.action.id] ?? '')
+
 		if ((this.constructor as typeof Button).STATABLE)
 			if (!connector.set)
 				await this.onStateLoss(ev.action.id)
@@ -206,6 +215,11 @@ export class Button extends Action {
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
+		await super.onWillDisappear(ev)
+
+		if (this.#flashing[ev.action.id])
+			await this.#flashing[ev.action.id]
+
 		clearTimeout(this.#pressed[ev.action.id]?.timeout)
 		clearTimeout(this.#holding[ev.action.id])
 		clearTimeout(this.#keyUpTracker[ev.action.id]?.timeout)
@@ -213,8 +227,6 @@ export class Button extends Action {
 		delete this.#pressed[ev.action.id]
 		delete this.#holding[ev.action.id]
 		delete this.#keyUpTracker[ev.action.id]
-
-		this.contexts.splice(this.contexts.indexOf(ev.action.id), 1)
 	}
 
 	async invokeWrapperAction(context: string, type: symbol): Promise<Symbol> {
@@ -222,6 +234,7 @@ export class Button extends Action {
 	}
 
 	async setTitle(context: string, title: string) {
+		this.#lastTitle[context] = title
 		await StreamDeck.client.setTitle(context, title).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck title of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 

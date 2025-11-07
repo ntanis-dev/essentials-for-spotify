@@ -1,0 +1,84 @@
+import StreamDeck, {
+	action,
+	SendToPluginEvent
+} from '@elgato/streamdeck'
+
+import {
+	Button
+} from './button.js'
+
+import constants from '../library/constants.js'
+import wrapper from './../library/wrapper.js'
+
+@action({ UUID: 'com.ntanis.essentials-for-spotify.transfer-playback-button' })
+export default class TransferPlaybackButton extends Button {
+	constructor() {
+		super()
+		wrapper.on('devicesChanged', this.#updateDevices.bind(this))
+	}
+
+	async #updateDevices(devices: any, contexts = this.contexts) {
+		const promises = []
+		const items: any = []
+
+		for (const context of contexts) {
+			for (const device of devices)
+				if (device.id !== this.settings[context]?.spotify_device_id)
+					items.push({
+						value: device.id,
+						label: device.name
+					})
+
+			if (this.settings[context]?.spotify_device_id)
+				items.unshift({
+					value: this.settings[context]?.spotify_device_id,
+					label: this.settings[context]?.spotify_device_label ?? 'Unknown\nDevice'
+				})
+		}
+		
+		for (const context of contexts)
+			promises.push(new Promise(async resolve => {
+				const deviceOnline = devices.some((device: any) => device.id === this.settings[context]?.spotify_device_id)
+
+				if (deviceOnline)
+					await this.setSettings(context, {
+						spotify_device_label: (this.settings[context]?.spotify_device_id) ? (wrapper.devices.find((device: any) => device.id === this.settings[context].spotify_device_id)?.name) : undefined
+					})
+
+				await StreamDeck.client.sendToPropertyInspector(context, {
+					event: 'getDevices',
+					items
+				})
+
+				await this.setTitle(context, this.settings[context]?.spotify_device_label ? this.splitToLines(this.settings[context]?.spotify_device_label) : 'Unknown\nDevice')
+				await this.setState(context, deviceOnline ? 0 : 1)
+
+				resolve(true)
+			}))
+
+
+		await Promise.allSettled(promises)
+	}
+
+	async invokeWrapperAction(context: string) {
+		if ((!this.settings[context]?.spotify_device_id) || (!wrapper.devices.some((device: any) => device.id === this.settings[context]?.spotify_device_id)))
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+		else {
+			const response = await wrapper.transferPlayback(this.settings[context]?.spotify_device_id)
+
+			if (response === constants.WRAPPER_RESPONSE_SUCCESS)
+				return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
+			else
+				return response
+		}
+	}
+
+	async onSendToPlugin(ev: SendToPluginEvent<any, any>): Promise<void> {
+		if (ev.payload?.event === 'getDevices')
+			await this.#updateDevices(wrapper.devices, [ev.action.id])
+	}
+
+	async onSettingsUpdated(context: string, oldSettings: any) {
+		await this.#updateDevices(wrapper.devices, [context])
+	}
+}

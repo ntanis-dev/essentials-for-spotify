@@ -76,7 +76,7 @@ class Connector extends EventEmitter {
 			return constants.API_NOT_FOUND_RESPONSE
 
 		if (response.status !== 200)
-			throw new constants.ApiError(response.status, `The Spotify API call "${path}" failed with status "${response.status}" and body "${await response.text()}".`)
+			throw new constants.ApiError(response.status, `The Spotify API call "${path}" with body ${JSON.stringify(options.body ?? {})} failed with status "${response.status}" and body "${await response.text()}".`)
 
 		if (response.headers.get('content-type')?.includes('application/json'))
 			return response.json()

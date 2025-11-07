@@ -1,6 +1,7 @@
 import StreamDeck, {
 	SingletonAction,
 	WillAppearEvent,
+	WillDisappearEvent,
 	DidReceiveSettingsEvent
 } from '@elgato/streamdeck'
 
@@ -32,7 +33,10 @@ export class Action extends SingletonAction {
 
 		if (connector.set)
 			await this.onSettingsUpdated(ev.action.id, oldSettings)
-		
+	}
+
+	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
+		this.contexts.splice(this.contexts.indexOf(ev.action.id), 1)
 	}
 
 	async onDidReceiveSettings(ev: DidReceiveSettingsEvent<any>): Promise<void> {
@@ -55,6 +59,46 @@ export class Action extends SingletonAction {
 	}
 
 	async onSettingsUpdated(context: string, oldSettings: any) { }
+
+	splitToLines(text: string, maxLineLength: number = 9, maxLines: number = 5): string {
+		const ELLIPSIS = '...'
+
+		const truncateWithEllipsis = (s: string, limit: number): string => {
+			if (limit <= 0)
+				return ''
+
+			if (s.length <= limit)
+				return s
+
+			if (limit <= ELLIPSIS.length)
+				return s.slice(0, limit)
+
+			return s.slice(0, limit - ELLIPSIS.length) + ELLIPSIS
+		}
+
+		const tokens = text.trim().split(/[ \t]+|[-–—_\/\\.:|]+/).filter(Boolean)
+		const lines: string[] = []
+
+		for (let i = 0; i < tokens.length; i++) {
+			if (lines.length < maxLines - 1) {
+				lines.push(truncateWithEllipsis(tokens[i], maxLineLength))
+				continue
+			}
+
+			if (lines.length === maxLines - 1)
+				if (i < tokens.length - 1) {
+					lines.push(truncateWithEllipsis(ELLIPSIS, maxLineLength))
+					break
+				} else {
+					lines.push(truncateWithEllipsis(tokens[i], maxLineLength))
+					break
+				}
+
+			break
+		}
+
+		return lines.join('\n')
+	}
 
 	processImage(iconDataUrl: string, heart: 'top-left' | 'center' | 'none', border: boolean = false): string {
 		if ((heart === 'none' && (!border)))

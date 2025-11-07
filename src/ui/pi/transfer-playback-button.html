@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head lang="en">
+    <meta charset="utf-8" />
+    <script src="sdpi-components.js"></script>
+</head>
+<body>
+    <sdpi-item label="Device">
+        <sdpi-select
+            id="deviceSelect"
+            setting="spotify_device_id"
+            placeholder="Choose a Device"
+            datasource="getDevices"
+            loading="Loading..."
+            hot-reload>
+        </sdpi-select>
+    </sdpi-item>
+</body>
+</html>
