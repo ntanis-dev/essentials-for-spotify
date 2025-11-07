@@ -98,7 +98,7 @@ class Wrapper extends EventEmitter {
 			if (e instanceof constants.ApiError)
 				response = e.status == 429 ? constants.WRAPPER_RESPONSE_API_RATE_LIMITED : constants.WRAPPER_RESPONSE_API_ERROR
 			else if (e instanceof constants.NoDeviceError)
-				response = constants.WRAPPER_RESPONSE_NO_DEVICE_ERROR
+				return constants.WRAPPER_RESPONSE_NO_DEVICE_ERROR
 
 			if (response !== constants.WRAPPER_RESPONSE_API_RATE_LIMITED)
 				if (e.message.includes('Restriction violated'))
@@ -118,7 +118,7 @@ class Wrapper extends EventEmitter {
 
 	async #deviceCall(path, options, deviceId) {
 		if (!deviceId)
-			return constants.WRAPPER_RESPONSE_NO_DEVICE_ERROR
+			throw new constants.NoDeviceError('No device specified.')
 
 		path = `${path}${path.includes('?') ? '&' : '?'}`
 
@@ -187,7 +187,7 @@ class Wrapper extends EventEmitter {
 				progress: response.progress_ms
 			} : null)
 
-			this.#setDevices(response?.device.id || null, (await connector.callSpotifyApi('me/player/devices')).devices)
+			this.#setDevices(response?.device.id ?? this.#lastDevice ?? null, (await connector.callSpotifyApi('me/player/devices')).devices)
 			this.#setDisallowFlags((response?.actions?.disallows ? Object.keys(response.actions.disallows).filter(flag => response.actions.disallows[flag]) : []).concat(response?.device.supports_volume ? [] : 'volume'))
 			this.#setCurrentlyPlayingType(response?.currently_playing_type || null)
 		} catch (e) {
