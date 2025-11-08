@@ -28,7 +28,10 @@ export default class ShuffleButton extends Button {
 		return Promise.allSettled(promises)
 	}
 
-	async invokeWrapperAction(context: string) {
+	async invokeWrapperAction(context: string, type: symbol) {
+		if (type === Button.TYPES.RELEASED)
+			return
+
 		if (wrapper.shuffleState)
 			return wrapper.turnOffShuffle()
 		else

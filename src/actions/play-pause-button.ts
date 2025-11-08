@@ -26,7 +26,10 @@ export default class PlayPauseButton extends Button {
 		await Promise.allSettled(promises)
 	}
 
-	async invokeWrapperAction(context: string) {
+	async invokeWrapperAction(context: string, type: symbol) {
+		if (type === Button.TYPES.RELEASED)
+			return
+
 		if (wrapper.playing && this.settings[context]?.action !== 'play')
 			return wrapper.pausePlayback()
 		else if ((!wrapper.playing) && this.settings[context]?.action !== 'pause')

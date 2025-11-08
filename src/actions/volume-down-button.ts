@@ -13,7 +13,10 @@ import wrapper from './../library/wrapper.js'
 export default class VolumeDownButton extends Button {
 	static readonly HOLDABLE = true
 
-	async invokeWrapperAction(context: string) {
+	async invokeWrapperAction(context: string, type: symbol) {
+		if (type === Button.TYPES.RELEASED)
+			return
+
 		if (wrapper.volumePercent === null)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 

@@ -76,7 +76,10 @@ export default class UserInformationButton extends Button {
 		this.pauseMarquee(ev.action.id)
 	}
 
-	async invokeWrapperAction(context: string) {
+	async invokeWrapperAction(context: string, type: symbol) {
+		if (type === Button.TYPES.RELEASED)
+			return
+
 		await this.#refreshUser(null, true, [context])
 		return await wrapper.updateUser()
 	}

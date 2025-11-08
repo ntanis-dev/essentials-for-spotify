@@ -35,7 +35,10 @@ export default class SetupButton extends Button {
 		return Promise.allSettled(promises)
 	}
 
-	async invokeWrapperAction(context: string) {
+	async invokeWrapperAction(context: string, type: symbol) {
+		if (type === Button.TYPES.RELEASED)
+			return
+
 		if (this.FAKE)
 			if (connector.set)
 				connector.fakeOff()

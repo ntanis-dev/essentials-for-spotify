@@ -27,7 +27,10 @@ export default class LoopContextButton extends Button {
 		await Promise.allSettled(promises)
 	}
 
-	async invokeWrapperAction(context: string) {
+	async invokeWrapperAction(context: string, type: symbol) {
+		if (type === Button.TYPES.RELEASED)
+			return
+
 		if (wrapper.repeatState === 'context')
 			return wrapper.turnOffRepeat()
 		else

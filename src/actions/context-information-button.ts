@@ -85,7 +85,10 @@ export default class ContextInformationButton extends Button {
 		await Promise.allSettled(promises)
 	}
 
-	async invokeWrapperAction(context: string) {
+	async invokeWrapperAction(context: string, type: symbol) {
+		if (type === Button.TYPES.RELEASED)
+			return
+
 		if (this.settings[context].action === 'play_pause')
 			return wrapper.togglePlayback()
 		else if (this.settings[context].action === 'open_spotify')

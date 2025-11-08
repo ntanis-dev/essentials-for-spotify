@@ -71,7 +71,10 @@ export default class TransferPlaybackButton extends Button {
 		await Promise.allSettled(promises)
 	}
 
-	async invokeWrapperAction(context: string) {
+	async invokeWrapperAction(context: string, type: symbol) {
+		if (type === Button.TYPES.RELEASED)
+			return
+
 		if ((!this.settings[context]?.spotify_device_id) || (!wrapper.devices.some((device: any) => device.id === this.settings[context]?.spotify_device_id)))
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 		else {

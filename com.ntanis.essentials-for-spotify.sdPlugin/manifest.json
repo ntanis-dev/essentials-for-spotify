@@ -49,7 +49,7 @@
 			"Name": "Previous Song",
 			"UUID": "com.ntanis.essentials-for-spotify.previous-song-button",
 			"Icon": "images/actions/previous",
-			"Tooltip": "Skips to the previous song.",
+			"Tooltip": "Skips to the previous song. Hold for backward seek.",
 			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
@@ -65,7 +65,7 @@
 			"Name": "Next Song",
 			"UUID": "com.ntanis.essentials-for-spotify.next-song-button",
 			"Icon": "images/actions/next",
-			"Tooltip": "Advances to the next song.",
+			"Tooltip": "Advances to the next song. Hold for forward seek.",
 			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"

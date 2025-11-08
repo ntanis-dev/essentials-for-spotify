@@ -38,7 +38,10 @@ export default class VolumeMuteUnmuteButton extends Button {
 		await Promise.allSettled(promises)
 	}
 
-	async invokeWrapperAction(context: string) {
+	async invokeWrapperAction(context: string, type: symbol) {
+		if (type === Button.TYPES.RELEASED)
+			return
+
 		if (wrapper.volumePercent === null)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 		else if (wrapper.muted)

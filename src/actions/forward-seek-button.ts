@@ -13,6 +13,9 @@ export default class ForwardSeekButton extends Button {
 	static readonly HOLDABLE = true
 
 	async invokeWrapperAction(context: string, type: symbol) {
+		if (type === Button.TYPES.RELEASED)
+			return
+
 		return wrapper.forwardSeek()
 	}
 }

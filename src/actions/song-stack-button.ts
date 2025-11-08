@@ -137,6 +137,9 @@ export default class SongStackButton extends Button {
 	}
 
 	async invokeWrapperAction(context: string, type: symbol) {
+		if (type === Button.TYPES.RELEASED)
+			return
+
 		if (type === Button.TYPES.SINGLE_PRESS)
 			return this.#invokePress(context, this.settings[context].single_press)
 		else if (type === Button.TYPES.DOUBLE_PRESS)

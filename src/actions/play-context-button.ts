@@ -95,7 +95,10 @@ export default class PlayContextButton extends Button {
 		this.setUnpressable(context, false)
 	}
 
-	async invokeWrapperAction(context: string) {
+	async invokeWrapperAction(context: string, type: symbol) {
+		if (type === Button.TYPES.RELEASED)
+			return
+
 		if (this.#cachedPlayContexts[context]) {
 			const response = await wrapper.playItem(this.#cachedPlayContexts[context])
 

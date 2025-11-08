@@ -42,10 +42,10 @@ You are able to configure the behavior of some of them via their settings.
   Toggles between playing and pausing the current song.
 
 - **Previous Song**\
-  Skips to the previous song.
+  Skips to the previous song. Hold for backward seek.
 
 - **Next Song**\
-  Advances to the next song.
+  Advances to the next song. Hold for forward seek.
 
 - **Backward Seek**\
   Seek backward in the current song.
