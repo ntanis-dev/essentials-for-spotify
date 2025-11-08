@@ -92,6 +92,7 @@ export class Button extends Action {
 
 		this.#pressed[ev.action.id] = {
 			at: Date.now(),
+			invoked: false,
 			timeout: null,
 			long: false
 		}
@@ -128,6 +129,8 @@ export class Button extends Action {
 			if ((!connector.set) && (!(this.constructor as typeof Button).SETUPLESS))
 				await this.#flashImage(ev.action, 'images/states/setup-error', constants.LONG_FLASH_DURATION, constants.LONG_FLASH_TIMES)
 			else {
+				this.#pressed[ev.action.id].invoked = true
+
 				const held = this.#holding[ev.action.id]?.held || false
 				const startedInvokingAt = Date.now()
 				const response = await this.invokeWrapperAction(ev.action.id, this.#holding[ev.action.id] ? Button.TYPES.HOLDING : Button.TYPES.SINGLE_PRESS)
@@ -153,9 +156,6 @@ export class Button extends Action {
 				else if (response === constants.WRAPPER_RESPONSE_BUSY)
 					await this.#flashImage(ev.action, 'images/states/busy', constants.SHORT_FLASH_DURATION, constants.SHORT_FLASH_TIMES)
 			}
-
-		if (!this.#pressed[ev.action.id])
-			await this.invokeWrapperAction(ev.action.id, Button.TYPES.RELEASED)
 
 		delete this.#busy[ev.action.id]
 	}
@@ -203,9 +203,7 @@ export class Button extends Action {
 				wasReleasedBeforeHoldDelay = true
 			} else if (this.#holding[ev.action.id]) {
 				wasHeld = true
-
 				clearTimeout(this.#holding[ev.action.id].timeout)
-
 				delete this.#holding[ev.action.id]
 			}
 
@@ -219,7 +217,8 @@ export class Button extends Action {
 					if (wasReleasedBeforeHoldDelay)
 						await this.#invokePress(ev, false, 1)
 
-					await this.invokeWrapperAction(ev.action.id, Button.TYPES.RELEASED)
+					if (this.#pressed[ev.action.id]?.invoked || wasReleasedBeforeHoldDelay)
+						await this.invokeWrapperAction(ev.action.id, Button.TYPES.RELEASED)
 				}
 
 				if (wasReleasedBeforeHoldDelay)
