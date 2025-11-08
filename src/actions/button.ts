@@ -91,7 +91,6 @@ export class Button extends Action {
 		this.#busy[ev.action.id] = true
 
 		this.#pressed[ev.action.id] = {
-			at: Date.now(),
 			invoked: false,
 			timeout: null,
 			long: false
@@ -121,6 +120,7 @@ export class Button extends Action {
 			this.#pressed[ev.action.id].timeout = setTimeout(async () => {
 				if (this.#pressed[ev.action.id]) {
 					this.#pressed[ev.action.id].long = true
+					this.#pressed[ev.action.id].invoked = true
 					await this.#invokePress(ev, true, 1)
 				}
 			}, constants.BUTTON_HOLD_DELAY)
@@ -156,6 +156,11 @@ export class Button extends Action {
 				else if (response === constants.WRAPPER_RESPONSE_BUSY)
 					await this.#flashImage(ev.action, 'images/states/busy', constants.SHORT_FLASH_DURATION, constants.SHORT_FLASH_TIMES)
 			}
+
+		if ((!this.#holding[ev.action.id]) && this.#pressed[ev.action.id]?.invoked) {
+			this.#pressed[ev.action.id].invoked = false
+			await this.invokeWrapperAction(ev.action.id, Button.TYPES.RELEASED)
+		}
 
 		delete this.#busy[ev.action.id]
 	}
@@ -208,17 +213,17 @@ export class Button extends Action {
 			}
 
 			if ((!(this.constructor as typeof Button).MULTI) || wasHeld) {
-				if (this.#pressed[ev.action.id]) {
-					clearTimeout(this.#pressed[ev.action.id].timeout)
-					delete this.#pressed[ev.action.id]
-				}
-
 				if ((!this.#unpressable[ev.action.id]) && (!(this.constructor as typeof Button).ACTIONLESS)) {
 					if (wasReleasedBeforeHoldDelay)
 						await this.#invokePress(ev, false, 1)
 
 					if (this.#pressed[ev.action.id]?.invoked || wasReleasedBeforeHoldDelay)
 						await this.invokeWrapperAction(ev.action.id, Button.TYPES.RELEASED)
+				}
+
+				if (this.#pressed[ev.action.id]) {
+					clearTimeout(this.#pressed[ev.action.id].timeout)
+					delete this.#pressed[ev.action.id]
 				}
 
 				if (wasReleasedBeforeHoldDelay)
@@ -238,9 +243,7 @@ export class Button extends Action {
 
 		if (this.#pressed[ev.action.id])
 			if ((!this.#holding[ev.action.id]) && (this.constructor as typeof Button).MULTI && (!this.#pressed[ev.action.id].long))
-				if (this.#pressed[ev.action.id].at + constants.BUTTON_HOLD_DELAY <= Date.now())
-					await this.#invokePress(ev, true, 1)
-				else if ((!this.#keyUpTracker[ev.action.id]) || this.#keyUpTracker[ev.action.id].presses < 3) {
+				if ((!this.#keyUpTracker[ev.action.id]) || this.#keyUpTracker[ev.action.id].presses < 3) {
 					clearTimeout(this.#keyUpTracker[ev.action.id]?.timeout)
 
 					this.#keyUpTracker[ev.action.id] = {
@@ -251,6 +254,7 @@ export class Button extends Action {
 							this.#busy[ev.action.id] = true
 
 							await this.#invokePress(ev, false, this.#keyUpTracker[ev.action.id].presses)
+							await this.invokeWrapperAction(ev.action.id, Button.TYPES.RELEASED)
 
 							delete this.#keyUpTracker[ev.action.id]
 							delete this.#busy[ev.action.id]
@@ -258,12 +262,11 @@ export class Button extends Action {
 					}
 				}
 
-				
+		if (this.#pressed[ev.action.id]?.invoked)
+			await this.invokeWrapperAction(ev.action.id, Button.TYPES.RELEASED)
+
 		delete this.#pressed[ev.action.id]
 		delete this.#holding[ev.action.id]
-
-		await this.invokeWrapperAction(ev.action.id, Button.TYPES.RELEASED)
-
 		delete this.#busy[ev.action.id]
 	}
 
