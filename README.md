@@ -62,6 +62,9 @@ You are able to configure the behavior of some of them via their settings.
 - **Loop Song**\
   Repeats the current song.
 
+- **Playback Mode**\
+  A button that combines shuffle, loop context and loop song into one.
+
 - **Like / Unlike**\
   Adds the current song to your liked songs or removes it if already liked.
 

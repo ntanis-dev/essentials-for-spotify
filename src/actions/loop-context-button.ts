@@ -31,10 +31,7 @@ export default class LoopContextButton extends Button {
 		if (type === Button.TYPES.RELEASED)
 			return
 
-		if (wrapper.repeatState === 'context')
-			return wrapper.turnOffRepeat()
-		else
-			return wrapper.turnOnContextRepeat()
+		return wrapper.toggleContextRepeat()
 	}
 
 	async onStateSettled(context: string) {

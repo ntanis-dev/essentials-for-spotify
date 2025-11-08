@@ -31,10 +31,7 @@ export default class LoopSongButton extends Button {
 		if (type === Button.TYPES.RELEASED)
 			return
 
-		if (wrapper.repeatState === 'track')
-			return wrapper.turnOffRepeat()
-		else
-			return wrapper.turnOnTrackRepeat()
+		return wrapper.toggleTrackRepeat()
 	}
 
 	async onStateSettled(context: string) {

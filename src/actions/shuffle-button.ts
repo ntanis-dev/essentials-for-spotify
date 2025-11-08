@@ -6,7 +6,6 @@ import {
 	Button
 } from './button.js'
 
-import constants from '../library/constants.js'
 import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.shuffle-button' })
@@ -19,7 +18,7 @@ export default class ShuffleButton extends Button {
 		wrapper.on('shuffleStateChanged', this.#onShuffleStateChanged.bind(this))
 	}
 
-	#onShuffleStateChanged(state: boolean, contexts = this.contexts) {
+	async #onShuffleStateChanged(state: boolean, contexts = this.contexts) {
 		const promises = []
 
 		for (const context of contexts)
@@ -32,10 +31,7 @@ export default class ShuffleButton extends Button {
 		if (type === Button.TYPES.RELEASED)
 			return
 
-		if (wrapper.shuffleState)
-			return wrapper.turnOffShuffle()
-		else
-			return wrapper.turnOnShuffle()
+		return wrapper.toggleShuffle()
 	}
 
 	async onStateSettled(context: string) {

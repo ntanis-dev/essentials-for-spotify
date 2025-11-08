@@ -622,6 +622,27 @@ class Wrapper extends EventEmitter {
 			return this.resumePlayback()
 	}
 
+	async toggleShuffle() {
+		if (this.#lastShuffleState)
+			return this.turnOffShuffle()
+		else
+			return this.turnOnShuffle()
+	}
+
+	async toggleTrackRepeat() {
+		if (this.#lastRepeatState === 'track')
+			return this.turnOffRepeat()
+		else
+			return this.turnOnTrackRepeat()
+	}
+
+	async toggleContextRepeat() {
+		if (this.#lastRepeatState === 'context')
+			return this.turnOffRepeat()
+		else
+			return this.turnOnContextRepeat()
+	}
+
 	async nextSong(deviceId = this.#lastDeviceId) {
 		if (this.#lastDisallowFlags.includes('skipping_next') || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
@@ -685,7 +706,7 @@ class Wrapper extends EventEmitter {
 			this.#setShuffleState(false)
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
-		})
+		}, true)
 	}
 
 	async turnOnContextRepeat(deviceId = this.#lastDeviceId) {
@@ -730,7 +751,7 @@ class Wrapper extends EventEmitter {
 			this.#setRepeatState('off')
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
-		})
+		}, true)
 	}
 
 	async setPlaybackVolume(volumePercent, deviceId = this.#lastDeviceId) {

@@ -170,6 +170,23 @@
 			]
 		},
 		{
+			"Name": "Playback Mode",
+			"UUID": "com.ntanis.essentials-for-spotify.playback-mode-button",
+			"Icon": "images/actions/playback-mode",
+			"Tooltip": "A button that combines shuffle, loop context and loop song into one.",
+			"PropertyInspectorPath": "pi/playback-mode-button.html",
+			"DisableAutomaticStates": true,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/playback-mode-0-0-0",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
 			"Name": "Like / Unlike",
 			"UUID": "com.ntanis.essentials-for-spotify.like-unlike-button",
 			"Icon": "images/actions/like-unlike",

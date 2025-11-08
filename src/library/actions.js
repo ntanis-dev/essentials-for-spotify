@@ -5,9 +5,10 @@ import PreviousSongButton from './../actions/previous-song-button'
 import NextSongButton from './../actions/next-song-button'
 import BackwardSeekButton from './../actions/backward-seek-button'
 import ForwardSeekButton from './../actions/forward-seek-button'
+import ShuffleButton from './../actions/shuffle-button'
 import LoopContextButton from './../actions/loop-context-button'
 import LoopSongButton from '../actions/loop-song-button'
-import ShuffleButton from './../actions/shuffle-button'
+import PlaybackModeButton from './../actions/playback-mode-button'
 import LikeUnlikeButton from './../actions/like-unlike-button'
 import SongExplicitButton from './../actions/song-explicit-button'
 import VolumeUpButton from './../actions/volume-up-button'
@@ -32,9 +33,10 @@ export default {
 		StreamDeck.actions.registerAction(new NextSongButton())
 		StreamDeck.actions.registerAction(new BackwardSeekButton())
 		StreamDeck.actions.registerAction(new ForwardSeekButton())
+		StreamDeck.actions.registerAction(new ShuffleButton())
 		StreamDeck.actions.registerAction(new LoopContextButton())
 		StreamDeck.actions.registerAction(new LoopSongButton())
-		StreamDeck.actions.registerAction(new ShuffleButton())
+		StreamDeck.actions.registerAction(new PlaybackModeButton())
 		StreamDeck.actions.registerAction(new LikeUnlikeButton())
 		StreamDeck.actions.registerAction(new SongExplicitButton())
 		StreamDeck.actions.registerAction(new VolumeUpButton())

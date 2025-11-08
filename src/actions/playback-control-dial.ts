@@ -10,7 +10,6 @@ import {
 import constants from './../library/constants.js'
 import images from './../library/images.js'
 import wrapper from './../library/wrapper.js'
-import logger from './../library/logger.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.playback-control-dial' })
 export default class PlaybackControlDial extends Dial {
