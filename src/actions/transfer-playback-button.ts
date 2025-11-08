@@ -31,7 +31,7 @@ export default class TransferPlaybackButton extends Button {
 
 		for (const context of contexts)
 			for (const device of devices)
-				if (device.id !== this.settings[context]?.spotify_device_id)
+				if (device.id !== this.settings[context].spotify_device_id)
 					items.push({
 						value: device.id,
 						label: device.name
@@ -39,17 +39,17 @@ export default class TransferPlaybackButton extends Button {
 
 		for (const context of contexts)
 			promises.push(new Promise(async resolve => {
-				const deviceOnline = devices.some((device: any) => device.id === this.settings[context]?.spotify_device_id)
+				const deviceOnline = devices.some((device: any) => device.id === this.settings[context].spotify_device_id)
 
 				if (deviceOnline)
 					await this.setSettings(context, {
-						spotify_device_label: (this.settings[context]?.spotify_device_id) ? (wrapper.devices.find((device: any) => device.id === this.settings[context].spotify_device_id)?.name) : undefined
+						spotify_device_label: (this.settings[context].spotify_device_id) ? (wrapper.devices.find((device: any) => device.id === this.settings[context].spotify_device_id)?.name) : undefined
 					})
 
-				if (this.settings[context]?.spotify_device_id)
+				if (this.settings[context].spotify_device_id)
 					items.unshift({
-						value: this.settings[context]?.spotify_device_id,
-						label: deviceOnline ? (this.settings[context]?.spotify_device_label ?? 'Unknown\nDevice') : (this.settings[context]?.spotify_device_label ? `${this.settings[context]?.spotify_device_label} (Offline)` : 'Unknown\nDevice (Offline)')
+						value: this.settings[context].spotify_device_id,
+						label: deviceOnline ? (this.settings[context].spotify_device_label ?? 'Unknown\nDevice') : (this.settings[context].spotify_device_label ? `${this.settings[context].spotify_device_label} (Offline)` : 'Unknown\nDevice (Offline)')
 					})
 
 				await StreamDeck.client.sendToPropertyInspector(context, {
@@ -57,7 +57,7 @@ export default class TransferPlaybackButton extends Button {
 					items
 				})
 
-				await this.setTitle(context, this.settings[context]?.spotify_device_label ? this.splitToLines(this.settings[context]?.spotify_device_label) : (this.settings[context]?.spotify_device_id ? 'Unknown\nDevice' : 'No Device\nSelected'))
+				await this.setTitle(context, this.settings[context].spotify_device_label ? this.splitToLines(this.settings[context].spotify_device_label) : (this.settings[context].spotify_device_id ? 'Unknown\nDevice' : 'No Device\nSelected'))
 
 				if (deviceOnline)
 					await this.setImage(context, 'images/states/transfer-playback')
@@ -75,10 +75,10 @@ export default class TransferPlaybackButton extends Button {
 		if (type === Button.TYPES.RELEASED)
 			return
 
-		if ((!this.settings[context]?.spotify_device_id) || (!wrapper.devices.some((device: any) => device.id === this.settings[context]?.spotify_device_id)))
+		if ((!this.settings[context].spotify_device_id) || (!wrapper.devices.some((device: any) => device.id === this.settings[context].spotify_device_id)))
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 		else {
-			const response = await wrapper.transferPlayback(this.settings[context]?.spotify_device_id)
+			const response = await wrapper.transferPlayback(this.settings[context].spotify_device_id)
 
 			if (response === constants.WRAPPER_RESPONSE_SUCCESS)
 				return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE

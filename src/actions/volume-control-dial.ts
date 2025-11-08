@@ -90,15 +90,15 @@ export default class VolumeControlDial extends Dial {
 			if (wrapper.volumePercent === null)
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
-			return wrapper.setPlaybackVolume((wrapper.muted ? wrapper.mutedVolumePercent : wrapper.volumePercent) + this.settings[context]?.step)
+			return wrapper.setPlaybackVolume((wrapper.muted ? wrapper.mutedVolumePercent : wrapper.volumePercent) + this.settings[context].step)
 		} else if (type === Dial.TYPES.ROTATE_COUNTERCLOCKWISE) {
 			if (wrapper.volumePercent === null)
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
-			if (wrapper.muted && wrapper.mutedVolumePercent > this.settings[context]?.step)
+			if (wrapper.muted && wrapper.mutedVolumePercent > this.settings[context].step)
 				await wrapper.unmuteVolume()
 
-			return wrapper.setPlaybackVolume(wrapper.volumePercent - this.settings[context]?.step)
+			return wrapper.setPlaybackVolume(wrapper.volumePercent - this.settings[context].step)
 		} else if (type === Dial.TYPES.TAP) {
 			if (wrapper.volumePercent === null)
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
@@ -142,7 +142,7 @@ export default class VolumeControlDial extends Dial {
 
 		if (!this.settings[context].step)
 			await this.setSettings(context, {
-				step: 5
+				step: constants.DEFAULT_VOLUME_STEP
 			})
 	}
 

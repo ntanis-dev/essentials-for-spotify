@@ -20,9 +20,18 @@ export default class VolumeDownButton extends Button {
 		if (wrapper.volumePercent === null)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
-		if (wrapper.muted && wrapper.mutedVolumePercent > constants.VOLUME_STEP_SIZE)
+		if (wrapper.muted && wrapper.mutedVolumePercent > this.settings[context].step)
 			await wrapper.unmuteVolume()
 
-		return wrapper.setPlaybackVolume(wrapper.volumePercent - constants.VOLUME_STEP_SIZE)
+		return wrapper.setPlaybackVolume(wrapper.volumePercent - this.settings[context].step)
+	}
+
+	async onSettingsUpdated(context: string, oldSettings: any): Promise<void> {
+		await super.onSettingsUpdated(context, oldSettings)
+
+		if (!this.settings[context].step)
+			await this.setSettings(context, {
+				step: constants.DEFAULT_VOLUME_STEP
+			})
 	}
 }

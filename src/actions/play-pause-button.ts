@@ -20,7 +20,7 @@ export default class PlayPauseButton extends Button {
 		const promises = []
 
 		for (const context of contexts)
-			if (this.settings[context]?.action === 'play_pause')
+			if (this.settings[context].action === 'play_pause')
 				promises.push(this.setState(context, state ? 1 : 0))
 
 		await Promise.allSettled(promises)
@@ -30,9 +30,9 @@ export default class PlayPauseButton extends Button {
 		if (type === Button.TYPES.RELEASED)
 			return
 
-		if (wrapper.playing && this.settings[context]?.action !== 'play')
+		if (wrapper.playing && this.settings[context].action !== 'play')
 			return wrapper.pausePlayback()
-		else if ((!wrapper.playing) && this.settings[context]?.action !== 'pause')
+		else if ((!wrapper.playing) && this.settings[context].action !== 'pause')
 			return wrapper.resumePlayback()
 	}
 
