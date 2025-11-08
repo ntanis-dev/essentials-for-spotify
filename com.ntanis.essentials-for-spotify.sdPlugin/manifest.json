@@ -215,6 +215,7 @@
 			"UUID": "com.ntanis.essentials-for-spotify.volume-up-button",
 			"Icon": "images/actions/volume-up",
 			"Tooltip": "Increases the playback volume.",
+			"PropertyInspectorPath": "pi/volume-up-button.html",
 			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
@@ -231,6 +232,7 @@
 			"UUID": "com.ntanis.essentials-for-spotify.volume-down-button",
 			"Icon": "images/actions/volume-down",
 			"Tooltip": "Decreases the playback volume.",
+			"PropertyInspectorPath": "pi/volume-down-button.html",
 			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
