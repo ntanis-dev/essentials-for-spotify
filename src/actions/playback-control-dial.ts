@@ -186,8 +186,8 @@ export default class PlaybackControlDial extends Dial {
 				return constants.WRAPPER_RESPONSE_BUSY
 			else if (!this.isHolding(context))
 				return wrapper.nextSong()
-			else if (wrapper.song && wrapper.song.progress + constants.SEEK_STEP_SIZE < wrapper.song.item.duration_ms)
-				return wrapper.forwardSeek(wrapper.song, constants.SEEK_STEP_SIZE)
+			else if (wrapper.song && wrapper.song.progress + (this.settings.step ?? constants.DEFAULT_SEEK_STEP_SIZE) < wrapper.song.item.duration_ms)
+				return wrapper.forwardSeek(wrapper.song, (this.settings.step ?? constants.DEFAULT_SEEK_STEP_SIZE))
 			else
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 		} else if (type === Dial.TYPES.ROTATE_COUNTERCLOCKWISE) {
@@ -201,7 +201,7 @@ export default class PlaybackControlDial extends Dial {
 			else if (!this.isHolding(context))
 				return wrapper.previousSong()
 			else if (wrapper.song)
-				return wrapper.backwardSeek(wrapper.song, constants.SEEK_STEP_SIZE)
+				return wrapper.backwardSeek(wrapper.song, (this.settings.step ?? constants.DEFAULT_SEEK_STEP_SIZE))
 			else
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 		} else if (type === Dial.TYPES.TAP)
@@ -247,6 +247,11 @@ export default class PlaybackControlDial extends Dial {
 		if (!this.settings[context].show)
 			await this.setSettings(context, {
 				show: ['name', 'artists', 'progress', 'duration', 'liked']
+			})
+
+		if (!this.settings[context].step)
+			await this.setSettings(context, {
+				step: constants.DEFAULT_SEEK_STEP_SIZE
 			})
 
 		if (oldSettings.show?.length !== this.settings[context].show?.length || (oldSettings.show && this.settings[context].show && (!oldSettings.show.every((value: any, index: number) => value === this.settings[context].show[index]))))

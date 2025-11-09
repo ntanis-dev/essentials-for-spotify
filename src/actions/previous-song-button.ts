@@ -7,6 +7,7 @@ import {
 } from './button.js'
 
 import wrapper from './../library/wrapper.js'
+import constants from './../library/constants.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.previous-song-button' })
 export default class PreviousSongButton extends Button {
@@ -22,7 +23,16 @@ export default class PreviousSongButton extends Button {
 			return wrapper.previousSong()
 		else if (type === Button.TYPES.HOLDING) {
 			await this.setImage(context, 'images/states/backward-seek')
-			return wrapper.backwardSeek()
+			return wrapper.backwardSeek(this.settings[context].step)
 		}
+	}
+
+	async onSettingsUpdated(context: string, oldSettings: any): Promise<void> {
+		await super.onSettingsUpdated(context, oldSettings)
+
+		if (!this.settings[context].step)
+			await this.setSettings(context, {
+				step: constants.DEFAULT_SEEK_STEP_SIZE
+			})
 	}
 }

@@ -800,10 +800,10 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async forwardSeek() {
+	async forwardSeek(step = constants.DEFAULT_SEEK_STEP_SIZE) {
 		if (this.song)
-			if (this.song.progress + constants.SEEK_STEP_SIZE < this.song.item.duration_ms)
-				return this.#forwardSeekRaw(this.song, constants.SEEK_STEP_SIZE)
+			if (this.song.progress + step < this.song.item.duration_ms)
+				return this.#forwardSeekRaw(this.song, step)
 			else
 				return constants.WRAPPER_RESPONSE_SUCCESS
 		else if (this.pendingSongChange)
@@ -812,9 +812,9 @@ class Wrapper extends EventEmitter {
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 
-	async backwardSeek() {
+	async backwardSeek(step = constants.DEFAULT_SEEK_STEP_SIZE) {
 		if (this.song)
-			return this.#backwardSeekRaw(this.song, constants.SEEK_STEP_SIZE)
+			return this.#backwardSeekRaw(this.song, step)
 		else if (this.pendingSongChange)
 			return constants.WRAPPER_RESPONSE_BUSY
 		else
