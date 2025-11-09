@@ -18,20 +18,6 @@ import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.song-clipboard-button' })
 export default class SongClipboardButton extends Button {
-	constructor() {
-		super()
-		wrapper.on('songChanged', this.#onSongChanged.bind(this))
-	}
-
-	#onSongChanged(song: any, pending: boolean = false, contexts = this.contexts) {
-		const promises = []
-
-		for (const context of contexts)
-			promises.push(this.setImage(context, pending ? 'images/states/pending' : undefined))
-
-		return Promise.allSettled(promises)
-	}
-
 	#copyToClipboard(text: string) {
 		let process = null
 
@@ -70,10 +56,5 @@ export default class SongClipboardButton extends Button {
 			return this.#copyToClipboard(`${wrapper.song.item.name} - ${wrapper.song.item.artists.map((artist: any) => artist.name).join(', ')} \n${wrapper.song.item.external_urls.spotify}`)
 
 		return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-	}
-
-	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
-		await super.onWillAppear(ev)
-		await this.#onSongChanged(wrapper.song, false, [ev.action.id])
 	}
 }
