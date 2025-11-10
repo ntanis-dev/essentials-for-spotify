@@ -170,18 +170,18 @@
 			]
 		},
 		{
-			"Name": "Playback Mode",
-			"UUID": "com.ntanis.essentials-for-spotify.playback-mode-button",
-			"Icon": "images/actions/playback-mode",
+			"Name": "Shuffle & Loop Stack",
+			"UUID": "com.ntanis.essentials-for-spotify.shuffle-loop-stack-button",
+			"Icon": "images/actions/shuffle-loop-stack",
 			"Tooltip": "A button that combines shuffle, loop context and loop song into one.",
-			"PropertyInspectorPath": "pi/playback-mode-button.html",
+			"PropertyInspectorPath": "pi/shuffle-loop-stack-button.html",
 			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
 			],
 			"States": [
 				{
-					"Image": "images/states/playback-mode-0-0-0",
+					"Image": "images/states/shuffle-loop-stack-0-0-0",
 					"TitleAlignment": "middle"
 				}
 			]
