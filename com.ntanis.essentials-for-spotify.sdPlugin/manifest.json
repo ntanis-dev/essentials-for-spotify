@@ -80,6 +80,24 @@
 			]
 		},
 		{
+			"Name": "Song Stack",
+			"UUID": "com.ntanis.essentials-for-spotify.song-stack-button",
+			"Icon": "images/actions/song-stack",
+			"Tooltip": "Displays the information of the current song and offers a variety of control actions.",
+			"PropertyInspectorPath": "pi/song-stack-button.html",
+			"DisableAutomaticStates": true,
+			"UserTitleEnabled": false,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/song-stack",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
 			"Name": "Backward Seek",
 			"UUID": "com.ntanis.essentials-for-spotify.backward-seek-button",
 			"Icon": "images/actions/backward-seek",
@@ -320,24 +338,6 @@
 			]
 		},
 		{
-			"Name": "Song Stack",
-			"UUID": "com.ntanis.essentials-for-spotify.song-stack-button",
-			"Icon": "images/actions/song-stack",
-			"Tooltip": "Displays the information of the current song and offers a variety of control actions.",
-			"PropertyInspectorPath": "pi/song-stack-button.html",
-			"DisableAutomaticStates": true,
-			"UserTitleEnabled": false,
-			"Controllers": [
-				"Keypad"
-			],
-			"States": [
-				{
-					"Image": "images/states/song-stack",
-					"TitleAlignment": "middle"
-				}
-			]
-		},
-		{
 			"Name": "Song Clipboard",
 			"UUID": "com.ntanis.essentials-for-spotify.song-clipboard-button",
 			"Icon": "images/actions/song-clipboard",
@@ -543,6 +543,12 @@
 		{
 			"Name": "SDP",
 			"DeviceType": 7,
+			"Readonly": false,
+			"DontAutoSwitchWhenInstalled": false
+		},
+		{
+			"Name": "SDN",
+			"DeviceType": 1,
 			"Readonly": false,
 			"DontAutoSwitchWhenInstalled": false
 		}
