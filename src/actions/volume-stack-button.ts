@@ -8,7 +8,6 @@ import {
 
 import constants from '../library/constants.js'
 import wrapper from './../library/wrapper.js'
-import logger from '../library/logger.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.volume-stack-button' })
 export default class VolumeStackButton extends Button {
@@ -28,8 +27,6 @@ export default class VolumeStackButton extends Button {
 
 	async #onStateChanged(contexts = this.contexts) {
 		const promises = []
-
-		logger.info(`images/states/volume-stack-${this.#roundToNext(wrapper.muted ? (wrapper.mutedVolumePercent ?? wrapper.volumePercent) : wrapper.volumePercent)}${wrapper.muted ? '-muted' : ''}`)
 
 		for (const context of contexts)
 			if (((!wrapper.muted) && wrapper.volumePercent === null) || (wrapper.muted && wrapper.mutedVolumePercent === null && wrapper.volumePercent === null))
