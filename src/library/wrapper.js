@@ -786,7 +786,9 @@ class Wrapper extends EventEmitter {
 		const lastVolumePercent = this.#lastVolumePercent
 
 		return this.#setPlaybackVolume(0, deviceId).then(response => {
-			this.#setMuted(lastVolumePercent)
+			if (response === constants.WRAPPER_RESPONSE_SUCCESS)
+				this.#setMuted(lastVolumePercent)
+
 			return response
 		})
 	}
