@@ -207,7 +207,7 @@ export default class PlaybackControlDial extends Dial {
 		} else if (type === Dial.TYPES.TAP)
 			return wrapper.togglePlayback()
 		else if (type === Dial.TYPES.LONG_TAP)
-			return wrapper.likeUnlikeCurrentSong()
+			return wrapper.toggleCurrentSongLike()
 		else
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}

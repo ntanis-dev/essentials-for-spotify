@@ -848,13 +848,22 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async likeUnlikeCurrentSong() {
+	async toggleCurrentSongLike() {
 		if (!this.#lastSong?.item.id)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 		else if (this.#lastSong.liked)
 			return this.unlikeSong(this.#lastSong)
 		else
 			return this.likeSong(this.#lastSong)
+	}
+
+	async toggleVolumeMute() {
+		if (this.#lastVolumePercent === null)
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+		else if (this.muted)
+			return this.unmuteVolume()
+		else
+			return this.muteVolume()
 	}
 
 	async playItem(item, deviceId = this.#lastDeviceId) {

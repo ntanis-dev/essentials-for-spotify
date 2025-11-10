@@ -42,12 +42,7 @@ export default class VolumeMuteUnmuteButton extends Button {
 		if (type === Button.TYPES.RELEASED)
 			return
 
-		if (wrapper.volumePercent === null)
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-		else if (wrapper.muted)
-			return wrapper.unmuteVolume()
-		else
-			return wrapper.muteVolume()
+		return wrapper.toggleVolumeMute()
 	}
 
 	async onStateSettled(context: string) {

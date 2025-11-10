@@ -49,7 +49,7 @@ export default class LikeUnlikeButton extends Button {
 		if (type === Button.TYPES.RELEASED)
 			return
 
-		return wrapper.likeUnlikeCurrentSong()
+		return wrapper.toggleCurrentSongLike()
 	}
 
 	async onStateSettled(context: string) {

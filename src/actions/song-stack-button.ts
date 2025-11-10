@@ -132,7 +132,7 @@ export default class SongStackButton extends Button {
 				return wrapper.previousSong()
 			
 			case 'like_unlike':
-				return wrapper.likeUnlikeCurrentSong()
+				return wrapper.toggleCurrentSongLike()
 		}
 	}
 

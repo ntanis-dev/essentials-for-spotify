@@ -96,23 +96,16 @@ export default class VolumeControlDial extends Dial {
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 			else
 				return wrapper.volumeDown(this.settings[context].step)
-		else if (type === Dial.TYPES.TAP) {
-			if (wrapper.volumePercent === null)
-				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-
-			if (wrapper.muted)
-				return wrapper.unmuteVolume()
-			else
-				return wrapper.muteVolume()
-		} else
+		else if (type === Dial.TYPES.TAP)
+			return wrapper.toggleVolumeMute()
+		else
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 
 	async invokeHoldWrapperAction(context: string) {
 		if (wrapper.volumePercent === null)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-
-		if (!wrapper.muted)
+		else if (!wrapper.muted)
 			return wrapper.muteVolume()
 		else
 			return constants.WRAPPER_RESPONSE_SUCCESS
@@ -121,8 +114,7 @@ export default class VolumeControlDial extends Dial {
 	async invokeHoldReleaseWrapperAction(context: string) {
 		if (wrapper.volumePercent === null)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-
-		if (wrapper.muted)
+		else if (wrapper.muted)
 			return wrapper.unmuteVolume()
 		else
 			return constants.WRAPPER_RESPONSE_SUCCESS

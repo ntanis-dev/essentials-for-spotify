@@ -17,26 +17,17 @@ export default class ModeStackButton extends Button {
 	constructor() {
 		super()
 		this.setStatelessImage('images/states/mode-stack-unknown')
-		wrapper.on('shuffleStateChanged', this.#onShuffleStateChanged.bind(this))
-		wrapper.on('repeatStateChanged', this.#onRepeatStateChanged.bind(this))
+		wrapper.on('shuffleStateChanged', (state: boolean) => this.#onStateChanged())
+		wrapper.on('repeatStateChanged', (state: string) => this.#onStateChanged())
 	}
 
-	async #onShuffleStateChanged(state: boolean, contexts = this.contexts) {
+	async #onStateChanged(contexts = this.contexts) {
 		const promises = []
 
 		for (const context of contexts)
-			promises.push(this.setImage(context, `images/states/mode-stack-${state ? '1' : '0'}-${wrapper.repeatState === 'track' ? '1' : '0'}-${wrapper.repeatState === 'context' ? '1' : '0'}`))
+			promises.push(this.setImage(context, `images/states/mode-stack-${wrapper.shuffleState ? '1' : '0'}-${wrapper.repeatState === 'track' ? '1' : '0'}-${wrapper.repeatState === 'context' ? '1' : '0'}`))
 
 		return Promise.allSettled(promises)
-	}
-
-	async #onRepeatStateChanged(state: string, contexts = this.contexts) {
-		const promises = []
-
-		for (const context of contexts)
-			promises.push(this.setImage(context, `images/states/mode-stack-${wrapper.shuffleState ? '1' : '0'}-${state === 'track' ? '1' : '0'}-${state === 'context' ? '1' : '0'}`))
-
-		await Promise.allSettled(promises)
 	}
 
 	async #invokePress(context: string, action: string) {
@@ -106,8 +97,7 @@ export default class ModeStackButton extends Button {
 
 	async onStateSettled(context: string) {
 		await super.onStateSettled(context)
-		await this.#onShuffleStateChanged(wrapper.shuffleState, [context])
-		await this.#onRepeatStateChanged(wrapper.repeatState, [context])
+		await this.#onStateChanged([context])
 	}
 }
 
