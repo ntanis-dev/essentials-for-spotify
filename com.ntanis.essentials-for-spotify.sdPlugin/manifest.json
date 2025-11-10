@@ -286,6 +286,23 @@
 			]
 		},
 		{
+			"Name": "Volume Stack",
+			"UUID": "com.ntanis.essentials-for-spotify.volume-stack-button",
+			"Icon": "images/actions/volume-stack",
+			"Tooltip": "A button that combines volume up, volume down and volume mute / unmute into one.",
+			"PropertyInspectorPath": "pi/volume-stack-button.html",
+			"DisableAutomaticStates": true,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/volume-stack",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
 			"Name": "Play Context",
 			"UUID": "com.ntanis.essentials-for-spotify.play-context-button",
 			"Icon": "images/actions/play-context",

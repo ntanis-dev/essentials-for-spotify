@@ -14,6 +14,7 @@ import SongExplicitButton from './../actions/song-explicit-button'
 import VolumeUpButton from './../actions/volume-up-button'
 import VolumeDownButton from './../actions/volume-down-button'
 import VolumeMuteUnmuteButton from './../actions/volume-mute-unmute-button'
+import VolumeStackButton from './../actions/volume-stack-button'
 import PlayContextButton from './../actions/play-context-button'
 import SongStackButton from './../actions/song-stack-button'
 import SongClipboardButton from './../actions/song-clipboard-button'
@@ -42,6 +43,7 @@ export default {
 		StreamDeck.actions.registerAction(new VolumeUpButton())
 		StreamDeck.actions.registerAction(new VolumeDownButton())
 		StreamDeck.actions.registerAction(new VolumeMuteUnmuteButton())
+		StreamDeck.actions.registerAction(new VolumeStackButton())
 		StreamDeck.actions.registerAction(new PlayContextButton())
 		StreamDeck.actions.registerAction(new SongStackButton())
 		StreamDeck.actions.registerAction(new SongClipboardButton())

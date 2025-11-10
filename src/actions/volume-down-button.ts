@@ -20,10 +20,7 @@ export default class VolumeDownButton extends Button {
 		if (wrapper.volumePercent === null)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
-		if (wrapper.muted && wrapper.mutedVolumePercent > this.settings[context].step)
-			await wrapper.unmuteVolume()
-
-		return wrapper.setPlaybackVolume(wrapper.volumePercent - this.settings[context].step)
+		return wrapper.volumeDown(this.settings[context].step)
 	}
 
 	async onSettingsUpdated(context: string, oldSettings: any): Promise<void> {

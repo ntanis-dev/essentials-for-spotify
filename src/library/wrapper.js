@@ -203,36 +203,6 @@ class Wrapper extends EventEmitter {
 		}
 	}
 
-	#setPlaying(playing) {
-		if (this.#lastPlaying === playing)
-			return
-
-		if (playing)
-			this.#lastSongTimeUpdateAt = Date.now()
-
-		this.#updatePlaybackStateStatus = 'skip'
-		this.#lastPlaying = playing
-		this.emit('playbackStateChanged', playing)
-	}
-
-	#setRepeatState(repeatState) {
-		if (this.#lastRepeatState === repeatState)
-			return
-
-		this.#updatePlaybackStateStatus = 'skip'
-		this.#lastRepeatState = repeatState
-		this.emit('repeatStateChanged', repeatState)
-	}
-
-	#setShuffleState(shuffleState) {
-		if (this.#lastShuffleState === shuffleState)
-			return
-
-		this.#updatePlaybackStateStatus = 'skip'
-		this.#lastShuffleState = shuffleState
-		this.emit('shuffleStateChanged', shuffleState)
-	}
-
 	async #getTypeData(type, uri, nullOnFailure = false) {
 		let title = 'Unknown ❓'
 		let subtitle = null
@@ -366,6 +336,138 @@ class Wrapper extends EventEmitter {
 		this.#updatePlaybackStateStatus = 'skip'
 		this.#lastPlaybackContext = context
 		this.emit('playbackContextChanged', context, pending)
+	}
+
+	async #forwardSeekRaw(song, time, deviceId = this.#lastDeviceId) {
+		if (this.#lastDisallowFlags.includes('seeking') || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
+		return this.#wrapCall(async () => {
+			await this.#deviceCall(`me/player/seek?position_ms=${song.progress + time}`, {
+				method: 'PUT'
+			}, deviceId)
+
+			this.#setSong({
+				item: song.item,
+				liked: song.liked,
+				progress: song.progress + time
+			})
+
+			return constants.WRAPPER_RESPONSE_SUCCESS
+		})
+	}
+
+	async #backwardSeekRaw(song, time, deviceId = this.#lastDeviceId) {
+		if (this.#lastDisallowFlags.includes('seeking') || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
+		return this.#wrapCall(async () => {
+			const newProgress = Math.max(0, song.progress - time)
+
+			await this.#deviceCall(`me/player/seek?position_ms=${newProgress}`, {
+				method: 'PUT'
+			}, deviceId)
+
+			this.#setSong({
+				item: song.item,
+				liked: song.liked,
+				progress: newProgress
+			})
+
+			return constants.WRAPPER_RESPONSE_SUCCESS
+		})
+	}
+
+	async #turnOnShuffle(deviceId = this.#lastDeviceId) {
+		if (this.#lastDisallowFlags.includes('toggling_shuffle') || this.#lastUser?.product !== 'premium')
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
+		return this.#wrapCall(async () => {
+			await this.#deviceCall('me/player/shuffle?state=true', {
+				method: 'PUT'
+			}, deviceId)
+
+			this.#setShuffleState(true)
+
+			return constants.WRAPPER_RESPONSE_SUCCESS
+		})
+	}
+
+	async #turnOnContextRepeat(deviceId = this.#lastDeviceId) {
+		if (this.#lastDisallowFlags.includes('toggling_repeat_context') || this.#lastUser?.product !== 'premium')
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
+		return this.#wrapCall(async () => {
+			await this.#deviceCall('me/player/repeat?state=context', {
+				method: 'PUT'
+			}, deviceId)
+
+			this.#setRepeatState('context')
+
+			return constants.WRAPPER_RESPONSE_SUCCESS
+		})
+	}
+
+	async #turnOnTrackRepeat(deviceId = this.#lastDeviceId) {
+		if (this.#lastDisallowFlags.includes('toggling_repeat_track') || this.#lastUser?.product !== 'premium')
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
+		return this.#wrapCall(async () => {
+			await this.#deviceCall('me/player/repeat?state=track', {
+				method: 'PUT'
+			}, deviceId)
+
+			this.#setRepeatState('track')
+
+			return constants.WRAPPER_RESPONSE_SUCCESS
+		})
+	}
+
+	async #setPlaybackVolume(volumePercent, deviceId = this.#lastDeviceId) {
+		if (this.#lastDisallowFlags.includes('volume') || (this.#lastDisallowFlags.includes('interrupting_playback') && volumePercent <= 0) || this.#lastUser?.product !== 'premium')
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
+		return this.#wrapCall(async () => {
+			volumePercent = Math.max(0, Math.min(100, volumePercent))
+
+			await this.#deviceCall(`me/player/volume?volume_percent=${volumePercent}`, {
+				method: 'PUT'
+			}, deviceId)
+
+			this.#setVolumePercent(volumePercent)
+
+			return constants.WRAPPER_RESPONSE_SUCCESS
+		})
+	}
+
+	#setPlaying(playing) {
+		if (this.#lastPlaying === playing)
+			return
+
+		if (playing)
+			this.#lastSongTimeUpdateAt = Date.now()
+
+		this.#updatePlaybackStateStatus = 'skip'
+		this.#lastPlaying = playing
+		this.emit('playbackStateChanged', playing)
+	}
+
+	#setRepeatState(repeatState) {
+		if (this.#lastRepeatState === repeatState)
+			return
+
+		this.#updatePlaybackStateStatus = 'skip'
+		this.#lastRepeatState = repeatState
+		this.emit('repeatStateChanged', repeatState)
+	}
+
+	#setShuffleState(shuffleState) {
+		if (this.#lastShuffleState === shuffleState)
+			return
+
+		this.#updatePlaybackStateStatus = 'skip'
+		this.#lastShuffleState = shuffleState
+		this.emit('shuffleStateChanged', shuffleState)
 	}
 
 	#setVolumePercent(volumePercent) {
@@ -513,46 +615,6 @@ class Wrapper extends EventEmitter {
 		this.#updatePlaybackContext(null, true)
 	}
 
-	async #forwardSeekRaw(song, time, deviceId = this.#lastDeviceId) {
-		if (this.#lastDisallowFlags.includes('seeking') || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-
-		return this.#wrapCall(async () => {
-			await this.#deviceCall(`me/player/seek?position_ms=${song.progress + time}`, {
-				method: 'PUT'
-			}, deviceId)
-
-			this.#setSong({
-				item: song.item,
-				liked: song.liked,
-				progress: song.progress + time
-			})
-
-			return constants.WRAPPER_RESPONSE_SUCCESS
-		})
-	}
-
-	async #backwardSeekRaw(song, time, deviceId = this.#lastDeviceId) {
-		if (this.#lastDisallowFlags.includes('seeking') || this.#lastDisallowFlags.includes('interrupting_playback') || this.#lastUser?.product !== 'premium')
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-
-		return this.#wrapCall(async () => {
-			const newProgress = Math.max(0, song.progress - time)
-
-			await this.#deviceCall(`me/player/seek?position_ms=${newProgress}`, {
-				method: 'PUT'
-			}, deviceId)
-
-			this.#setSong({
-				item: song.item,
-				liked: song.liked,
-				progress: newProgress
-			})
-
-			return constants.WRAPPER_RESPONSE_SUCCESS
-		})
-	}
-
 	async transferPlayback(deviceId) {
 		return this.#wrapCall(async () => {
 			await connector.callSpotifyApi('me/player', {
@@ -626,21 +688,32 @@ class Wrapper extends EventEmitter {
 		if (this.#lastShuffleState)
 			return this.turnOffShuffle()
 		else
-			return this.turnOnShuffle()
+			return this.#turnOnShuffle()
 	}
 
 	async toggleTrackRepeat() {
 		if (this.#lastRepeatState === 'track')
 			return this.turnOffRepeat()
 		else
-			return this.turnOnTrackRepeat()
+			return this.#turnOnTrackRepeat()
 	}
 
 	async toggleContextRepeat() {
 		if (this.#lastRepeatState === 'context')
 			return this.turnOffRepeat()
 		else
-			return this.turnOnContextRepeat()
+			return this.#turnOnContextRepeat()
+	}
+
+	async volumeDown(step = constants.DEFAULT_VOLUME_STEP) {
+		if (this.#lastMuted !== false && (this.#lastMuted || 0) > step)
+			await this.unmuteVolume()
+
+		return this.#setPlaybackVolume(this.#lastVolumePercent - step)
+	}
+
+	async volumeUp(step = constants.DEFAULT_VOLUME_STEP) {
+		return this.#setPlaybackVolume((this.#lastMuted !== false ? (this.#lastMuted || 0) : this.#lastVolumePercent) + step)
 	}
 
 	async nextSong(deviceId = this.#lastDeviceId) {
@@ -679,21 +752,6 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async turnOnShuffle(deviceId = this.#lastDeviceId) {
-		if (this.#lastDisallowFlags.includes('toggling_shuffle') || this.#lastUser?.product !== 'premium')
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-
-		return this.#wrapCall(async () => {
-			await this.#deviceCall('me/player/shuffle?state=true', {
-				method: 'PUT'
-			}, deviceId)
-
-			this.#setShuffleState(true)
-
-			return constants.WRAPPER_RESPONSE_SUCCESS
-		})
-	}
-
 	async turnOffShuffle(deviceId = this.#lastDeviceId) {
 		if (this.#lastDisallowFlags.includes('toggling_shuffle') || this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
@@ -707,36 +765,6 @@ class Wrapper extends EventEmitter {
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
 		}, true)
-	}
-
-	async turnOnContextRepeat(deviceId = this.#lastDeviceId) {
-		if (this.#lastDisallowFlags.includes('toggling_repeat_context') || this.#lastUser?.product !== 'premium')
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-
-		return this.#wrapCall(async () => {
-			await this.#deviceCall('me/player/repeat?state=context', {
-				method: 'PUT'
-			}, deviceId)
-
-			this.#setRepeatState('context')
-
-			return constants.WRAPPER_RESPONSE_SUCCESS
-		})
-	}
-
-	async turnOnTrackRepeat(deviceId = this.#lastDeviceId) {
-		if (this.#lastDisallowFlags.includes('toggling_repeat_track') || this.#lastUser?.product !== 'premium')
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-
-		return this.#wrapCall(async () => {
-			await this.#deviceCall('me/player/repeat?state=track', {
-				method: 'PUT'
-			}, deviceId)
-
-			this.#setRepeatState('track')
-
-			return constants.WRAPPER_RESPONSE_SUCCESS
-		})
 	}
 
 	async turnOffRepeat(deviceId = this.#lastDeviceId) {
@@ -754,34 +782,17 @@ class Wrapper extends EventEmitter {
 		}, true)
 	}
 
-	async setPlaybackVolume(volumePercent, deviceId = this.#lastDeviceId) {
-		if (this.#lastDisallowFlags.includes('volume') || (this.#lastDisallowFlags.includes('interrupting_playback') && volumePercent <= 0) || this.#lastUser?.product !== 'premium')
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-
-		return this.#wrapCall(async () => {
-			volumePercent = Math.max(0, Math.min(100, volumePercent))
-
-			await this.#deviceCall(`me/player/volume?volume_percent=${volumePercent}`, {
-				method: 'PUT'
-			}, deviceId)
-
-			this.#setVolumePercent(volumePercent)
-
-			return constants.WRAPPER_RESPONSE_SUCCESS
-		})
-	}
-
 	async muteVolume(deviceId = this.#lastDeviceId) {
 		const lastVolumePercent = this.#lastVolumePercent
 
-		return this.setPlaybackVolume(0, deviceId).then(response => {
+		return this.#setPlaybackVolume(0, deviceId).then(response => {
 			this.#setMuted(lastVolumePercent)
 			return response
 		})
 	}
 
 	async unmuteVolume(deviceId = this.#lastDeviceId) {
-		return this.setPlaybackVolume(this.#lastMuted || constants.VOLUME_PERCENT_MUTE_RESTORE, deviceId)
+		return this.#setPlaybackVolume(this.#lastMuted || constants.VOLUME_PERCENT_MUTE_RESTORE, deviceId)
 	}
 
 	async likeSong(song) {
