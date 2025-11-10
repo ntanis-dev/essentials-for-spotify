@@ -17,7 +17,7 @@ A **[Spotify Premium](https://www.spotify.com/premium/)** account is required to
 
 ### Layouts
 
-  Perfect layouts for **Stream Deck MK.2**, **Stream Deck Neo** and **Stream Deck +**.
+  Perfect layouts for **Stream Deck Neo**, **Stream Deck MK.2** and **Stream Deck +**.
   
   **Stream Deck Neo**\
   ![Stream Deck Neo Layout](https://github.com/user-attachments/assets/366705c3-d17e-4436-99ae-99d1223a2ad0)
