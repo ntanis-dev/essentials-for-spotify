@@ -5,11 +5,6 @@
 Effortlessly control your [Spotify](https://www.spotify.com/) through your [Elgato Stream Deck](https://www.elgato.com/us/en/s/welcome-to-stream-deck).\
 A **[Spotify Premium](https://www.spotify.com/premium/)** account is required to use the full functionality of this plugin.
 
-## Donations
-
-If you've found my work helpful, any contribution is greatly appreciated.\
-There's absolutely no obligation, but you may do so through my **[donate portal](https://donate.ntanis.dev/)**.
-
 ## Features
 
 - **Plug-and-Play Setup**: In-browser, step-by-step setup; have it running in under a minute.
@@ -22,13 +17,16 @@ There's absolutely no obligation, but you may do so through my **[donate portal]
 
 ### Layouts
 
-  Perfect layouts for **Stream Deck MK.2** and **Stream Deck +**.
+  Perfect layouts for **Stream Deck MK.2**, **Stream Deck Neo** and **Stream Deck +**.
+  
+  **Stream Deck Neo**\
+  ![Stream Deck Neo Layout](https://github.com/user-attachments/assets/366705c3-d17e-4436-99ae-99d1223a2ad0)
 
   **Stream Deck MK.2**\
-  ![Stream Deck MK.2 Layout](https://github.com/user-attachments/assets/f6158298-0964-45ad-a21c-76c96336877d)
+  ![Stream Deck MK.2 Layout](https://github.com/user-attachments/assets/e35e98c3-9f26-4e7e-ae5e-574dc08980de)
 
   **Stream Deck +**\
-  ![Stream Deck + Layout](https://github.com/user-attachments/assets/9832d67e-9bb6-4def-8af4-7cd1cbefa0c8)
+  ![Stream Deck + Layout](https://github.com/user-attachments/assets/9dae1e9f-34f6-4e7d-921c-a5bba3277832)
 
 ### Buttons
 
@@ -179,6 +177,15 @@ To install and use the plugin, follow these steps:
 I started this project in plain JavaScript, then halfway through rewrote the buttons and dials in TypeScript.\
 However I never had the grit to port the rest, so now it’s a hybrid mess, sorry about that. 😁\
 I only built it because when I got my first Stream Deck, every available Spotify control plugin fell short for my taste.
+
+## Support & Community
+
+If you are experiencing issues or you just want to join our community, feel free to [join our Discord server](https://discord.ntanis.dev/). 
+
+## Donations
+
+If you've found my work helpful, any contribution is greatly appreciated.\
+There's absolutely no obligation, but you may do so through my **[donate portal](https://donate.ntanis.dev/)**.
 
 ## Disclaimer
 
