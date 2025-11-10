@@ -62,7 +62,7 @@ You are able to configure the behavior of some of them via their settings.
 - **Loop Song**\
   Repeats the current song.
 
-- **Playback Mode**\
+- **Mode Stack**\
   A button that combines shuffle, loop context and loop song into one.
 
 - **Like / Unlike**\
@@ -79,6 +79,9 @@ You are able to configure the behavior of some of them via their settings.
 
 - **Volume Mute / Unmute** \
   Toggles between muting and unmuting the volume.
+
+- **Volume Stack** \
+  A button that combines volume up, volume down and volume mute / unmute into one.
 
 - **Song Stack**\
   Displays the information of the current song and offers a variety of control actions.
