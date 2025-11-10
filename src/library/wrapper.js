@@ -812,6 +812,8 @@ class Wrapper extends EventEmitter {
 	}
 
 	async forwardSeek(step = constants.DEFAULT_SEEK_STEP_SIZE) {
+		step = step * 1000
+
 		if (this.song)
 			if (this.song.progress + step < this.song.item.duration_ms)
 				return this.#forwardSeekRaw(this.song, step)
@@ -824,6 +826,8 @@ class Wrapper extends EventEmitter {
 	}
 
 	async backwardSeek(step = constants.DEFAULT_SEEK_STEP_SIZE) {
+		step = step * 1000
+
 		if (this.song)
 			return this.#backwardSeekRaw(this.song, step)
 		else if (this.pendingSongChange)
