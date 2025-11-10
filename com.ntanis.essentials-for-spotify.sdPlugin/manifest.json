@@ -50,6 +50,7 @@
 			"UUID": "com.ntanis.essentials-for-spotify.previous-song-button",
 			"Icon": "images/actions/previous",
 			"Tooltip": "Skips to the previous song. Hold for backward seek.",
+			"PropertyInspectorPath": "pi/previous-song-button.html",
 			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
@@ -66,6 +67,7 @@
 			"UUID": "com.ntanis.essentials-for-spotify.next-song-button",
 			"Icon": "images/actions/next",
 			"Tooltip": "Advances to the next song. Hold for forward seek.",
+			"PropertyInspectorPath": "pi/next-song-button.html",
 			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
@@ -82,6 +84,7 @@
 			"UUID": "com.ntanis.essentials-for-spotify.backward-seek-button",
 			"Icon": "images/actions/backward-seek",
 			"Tooltip": "Seek backward in the current song.",
+			"PropertyInspectorPath": "pi/backward-seek-button.html",
 			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
@@ -98,6 +101,7 @@
 			"UUID": "com.ntanis.essentials-for-spotify.forward-seek-button",
 			"Icon": "images/actions/forward-seek",
 			"Tooltip": "Seek forward in the current song.",
+			"PropertyInspectorPath": "pi/forward-seek-button.html",
 			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"
