@@ -8,6 +8,7 @@ import {
 
 import constants from '../library/constants.js'
 import wrapper from './../library/wrapper.js'
+import logger from '../library/logger.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.volume-stack-button' })
 export default class VolumeStackButton extends Button {
@@ -21,18 +22,20 @@ export default class VolumeStackButton extends Button {
 		wrapper.on('volumePercentChanged', (percent: number) => this.#onStateChanged())
 	}
 
-	#roundToNext10(percent: number) {
-		return Math.min(100, Math.ceil(percent / 10) * 10)
+	#roundToNext(percent: number) {
+		return Math.max(10, Math.min(100, Math.floor(percent / 10) * 10))
 	}
 
 	async #onStateChanged(contexts = this.contexts) {
 		const promises = []
 
+		logger.info(`images/states/volume-stack-${this.#roundToNext(wrapper.muted ? (wrapper.mutedVolumePercent ?? wrapper.volumePercent) : wrapper.volumePercent)}${wrapper.muted ? '-muted' : ''}`)
+
 		for (const context of contexts)
-			if (((!wrapper.muted) && wrapper.volumePercent === null) || (wrapper.muted && wrapper.mutedVolumePercent === null))
-				promises.push(this.setImage(context, 'images/states/volume-stack-unknown'))
+			if (((!wrapper.muted) && wrapper.volumePercent === null) || (wrapper.muted && wrapper.mutedVolumePercent === null && wrapper.volumePercent === null))
+				promises.push(this.setImage(context))
 			else
-				promises.push(this.setImage(context, `images/states/volume-stack-${this.#roundToNext10(wrapper.muted ? wrapper.mutedVolumePercent : wrapper.volumePercent)}${wrapper.muted ? '-muted' : ''}`))
+				promises.push(this.setImage(context, `images/states/volume-stack-${this.#roundToNext(wrapper.muted ? (wrapper.mutedVolumePercent ?? wrapper.volumePercent) : wrapper.volumePercent)}${wrapper.muted ? '-muted' : ''}`))
 
 		return Promise.allSettled(promises)
 	}
@@ -71,7 +74,7 @@ export default class VolumeStackButton extends Button {
 
 		if (!this.settings[context].step)
 			await this.setSettings(context, {
-				step: constants.DEFAULT_VOLUME_STEP
+				step: constants.DEFAULT_VOLUME_STACK_STEP
 			})
 
 		if (!this.settings[context].single_press)
@@ -88,5 +91,10 @@ export default class VolumeStackButton extends Button {
 			await this.setSettings(context, {
 				long_press: 'volume_mute_unmute'
 			})
+	}
+
+	async onStateSettled(context: string) {
+		await super.onStateSettled(context, true)
+		await this.#onStateChanged([context])
 	}
 }

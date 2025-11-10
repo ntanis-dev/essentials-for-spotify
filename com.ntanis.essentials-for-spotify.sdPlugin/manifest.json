@@ -297,7 +297,7 @@
 			],
 			"States": [
 				{
-					"Image": "images/states/volume-stack",
+					"Image": "images/states/volume-stack-unknown",
 					"TitleAlignment": "middle"
 				}
 			]

@@ -707,13 +707,13 @@ class Wrapper extends EventEmitter {
 
 	async volumeDown(step = constants.DEFAULT_VOLUME_STEP) {
 		if (this.#lastMuted !== false && (this.#lastMuted || 0) > step)
-			await this.unmuteVolume()
-
-		return this.#setPlaybackVolume(this.#lastVolumePercent - step)
+			return this.unmuteVolume()
+		else
+			return this.#setPlaybackVolume(this.#lastVolumePercent - step)
 	}
 
 	async volumeUp(step = constants.DEFAULT_VOLUME_STEP) {
-		return this.#setPlaybackVolume((this.#lastMuted !== false ? (this.#lastMuted || 0) : this.#lastVolumePercent) + step)
+		return this.#setPlaybackVolume((this.#lastMuted !== false ? (this.#lastMuted || 0) : this.#lastVolumePercent) + (this.#lastMuted !== false ? 0 : step))
 	}
 
 	async nextSong(deviceId = this.#lastDeviceId) {

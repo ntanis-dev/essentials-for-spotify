@@ -280,7 +280,7 @@ export class Button extends Action {
 			if (!connector.set)
 				await this.onStateLoss(ev.action.id)
 			else
-				await this.onStateSettled(ev.action.id)
+				await this.onStateSettled(ev.action.id, true)
 	}
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
