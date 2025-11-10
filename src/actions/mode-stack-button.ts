@@ -9,14 +9,14 @@ import {
 import wrapper from './../library/wrapper.js'
 import constants from '../library/constants.js'
 
-@action({ UUID: 'com.ntanis.essentials-for-spotify.playback-mode-button' })
-export default class PlaybackButton extends Button {
+@action({ UUID: 'com.ntanis.essentials-for-spotify.mode-stack-button' })
+export default class ModeStackButton extends Button {
 	static readonly STATABLE = true
 	static readonly MULTI = true
 
 	constructor() {
 		super()
-		this.setStatelessImage('images/states/playback-mode-unknown')
+		this.setStatelessImage('images/states/mode-stack-unknown')
 		wrapper.on('shuffleStateChanged', this.#onShuffleStateChanged.bind(this))
 		wrapper.on('repeatStateChanged', this.#onRepeatStateChanged.bind(this))
 	}
@@ -25,7 +25,7 @@ export default class PlaybackButton extends Button {
 		const promises = []
 
 		for (const context of contexts)
-			promises.push(this.setImage(context, `images/states/playback-mode-${state ? '1' : '0'}-${wrapper.repeatState === 'track' ? '1' : '0'}-${wrapper.repeatState === 'context' ? '1' : '0'}`))
+			promises.push(this.setImage(context, `images/states/mode-stack-${state ? '1' : '0'}-${wrapper.repeatState === 'track' ? '1' : '0'}-${wrapper.repeatState === 'context' ? '1' : '0'}`))
 
 		return Promise.allSettled(promises)
 	}
@@ -34,7 +34,7 @@ export default class PlaybackButton extends Button {
 		const promises = []
 
 		for (const context of contexts)
-			promises.push(this.setImage(context, `images/states/playback-mode-${wrapper.shuffleState ? '1' : '0'}-${state === 'track' ? '1' : '0'}-${state === 'context' ? '1' : '0'}`))
+			promises.push(this.setImage(context, `images/states/mode-stack-${wrapper.shuffleState ? '1' : '0'}-${state === 'track' ? '1' : '0'}-${state === 'context' ? '1' : '0'}`))
 
 		await Promise.allSettled(promises)
 	}
