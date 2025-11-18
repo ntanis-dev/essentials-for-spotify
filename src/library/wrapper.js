@@ -555,7 +555,7 @@ class Wrapper extends EventEmitter {
 			if (timeChanged)
 				this.emit('songTimeChanged', song.progress, song.item.duration_ms, pending)
 
-			if (this.#lastSong.progress > this.#lastSong.item.duration_ms)
+			if (this.#lastSong.progress >= this.#lastSong.item.duration_ms)
 				this.#onSongChangeExpected(true)
 		}
 	}
