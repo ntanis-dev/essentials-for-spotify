@@ -186,8 +186,8 @@ export default class PlaybackControlDial extends Dial {
 				return constants.WRAPPER_RESPONSE_BUSY
 			else if (!this.isHolding(context))
 				return wrapper.nextSong()
-			else if (wrapper.song && wrapper.song.progress + (this.settings.step ?? constants.DEFAULT_SEEK_STEP_SIZE) < wrapper.song.item.duration_ms)
-				return wrapper.forwardSeek(wrapper.song, (this.settings.step ?? constants.DEFAULT_SEEK_STEP_SIZE))
+			else if (wrapper.song && wrapper.song.progress + (this.settings[context].step ?? constants.DEFAULT_SEEK_STEP_SIZE) < wrapper.song.item.duration_ms)
+				return wrapper.forwardSeek(this.settings[context].step ?? constants.DEFAULT_SEEK_STEP_SIZE)
 			else
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 		} else if (type === Dial.TYPES.ROTATE_COUNTERCLOCKWISE) {
@@ -201,7 +201,7 @@ export default class PlaybackControlDial extends Dial {
 			else if (!this.isHolding(context))
 				return wrapper.previousSong()
 			else if (wrapper.song)
-				return wrapper.backwardSeek(wrapper.song, (this.settings.step ?? constants.DEFAULT_SEEK_STEP_SIZE))
+				return wrapper.backwardSeek(this.settings[context].step ?? constants.DEFAULT_SEEK_STEP_SIZE)
 			else
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 		} else if (type === Dial.TYPES.TAP)
