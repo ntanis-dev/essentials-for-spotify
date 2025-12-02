@@ -99,6 +99,8 @@ You are able to configure the behavior of some of them via their settings.
 - **Play Context**\
   Map this button to any supported Spotify URL and press it to start playing.
 
+- **Add to Playlist**\
+  Adds the currently playing song to a selected playlist. Choose your playlist from the settings and optionally display the playlist name and/or song name with automatic scrolling for long text.
 
 ### Dials
 - **Playback Control**\
