@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head lang="en">
+    <meta charset="utf-8" />
+    <script src="sdpi-components.js"></script>
+</head>
+<body>
+    <sdpi-item label="Playlist">
+        <sdpi-select
+            setting="playlist_id"
+            placeholder="Choose a Playlist"
+            datasource="getPlaylists"
+            loading="⏳"
+            hot-reload>
+        </sdpi-select>
+    </sdpi-item>
+    <sdpi-item label="Show">
+        <sdpi-checkbox-list setting="show">
+            <option value="playlist">Playlist</option>
+            <option value="name">Name</option>
+        </sdpi-checkbox-list>
+    </sdpi-item>
+</body>
+</html>

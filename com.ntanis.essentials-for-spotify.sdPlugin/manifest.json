@@ -229,6 +229,24 @@
 			]
 		},
 		{
+			"Name": "Add to Playlist",
+			"UUID": "com.ntanis.essentials-for-spotify.add-to-playlist-button",
+			"Icon": "images/actions/add-to-playlist",
+			"Tooltip": "Adds the currently playing song to a specific playlist.",
+			"PropertyInspectorPath": "pi/add-to-playlist-button.html",
+			"DisableAutomaticStates": true,
+			"UserTitleEnabled": false,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/add-to-playlist",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
 			"Name": "Explicit Indicator",
 			"UUID": "com.ntanis.essentials-for-spotify.song-explicit-button",
 			"Icon": "images/actions/song-explicit",
