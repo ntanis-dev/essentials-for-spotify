@@ -41,17 +41,11 @@ export default class ContextInformationButton extends Button {
 		const imageSource = this.settings[context]?.image_source || 'context'
 		
 		if (imageSource === 'album' && song?.item?.album) {
-			// Use album image
-			const albumInfo = {
-				uri: song.item.album.uri,
-				images: song.item.album.images || [],
-				type: 'album'
-			}
-			
-			if (!images.isItemCached(albumInfo))
+			// Use album image - leverage the song cache which already has the album cover
+			if (!images.isSongCached(song))
 				await this.setImage(context, 'images/states/pending')
 
-			const image = await images.getForItem(albumInfo)
+			const image = await images.getForSong(song)
 
 			if (image)
 				await this.setImage(context, `data:image/jpeg;base64,${image}`)
