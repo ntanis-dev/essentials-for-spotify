@@ -5,8 +5,21 @@ import constants from './constants'
 import logger from './logger'
 
 import {
-	fetch
+	fetch,
+	ProxyAgent
 } from 'undici'
+
+import {
+	v4
+} from 'uuid'
+
+const proxyAgent = false ? new ProxyAgent({
+	uri: 'http://127.0.0.1:8000',
+
+	requestTls: {
+		rejectUnauthorized: false
+	}
+}) : undefined
 
 class Connector extends EventEmitter {
 	#accessToken = null
@@ -19,6 +32,7 @@ class Connector extends EventEmitter {
 	#setup = false
 	#faked = false
 	#error = false
+	#state = null
 
 	#setSetup(state) {
 		this.#setup = state
@@ -28,6 +42,7 @@ class Connector extends EventEmitter {
 	async #refreshAccessToken() {
 		const response = await fetch('https://accounts.spotify.com/api/token', {
 			method: 'POST',
+			dispatcher: proxyAgent,
 
 			body: new URLSearchParams({
 				refresh_token: this.#refreshToken,
@@ -54,6 +69,7 @@ class Connector extends EventEmitter {
 
 		let response = await fetch(`https://api.spotify.com/v1/${path}`, {
 			...options,
+			dispatcher: proxyAgent,
 
 			headers: {
 				...options.headers,
@@ -66,6 +82,7 @@ class Connector extends EventEmitter {
 
 			response = await fetch(`https://api.spotify.com/v1/${path}`, {
 				...options,
+				dispatcher: proxyAgent,
 
 				headers: {
 					...options.headers,
@@ -126,10 +143,11 @@ class Connector extends EventEmitter {
 						root: './bin/setup'
 					})
 				}
-			else if (req.query.code && (!this.#setup) && this.#clientId && this.#clientSecret)
+			else if (req.query.code && req.query.state === this.#state && (!this.#setup) && this.#clientId && this.#clientSecret)
 				try {
 					const response = await fetch('https://accounts.spotify.com/api/token', {
 						method: 'POST',
+						dispatcher: proxyAgent,
 
 						body: new URLSearchParams({
 							code: req.query.code,
@@ -187,7 +205,8 @@ class Connector extends EventEmitter {
 			} else {
 				this.#clientId = req.body.clientId
 				this.#clientSecret = req.body.clientSecret
-				res.redirect(`https://accounts.spotify.com/authorize?response_type=code&client_id=${this.#clientId}&scope=${encodeURIComponent(constants.CONNECTOR_DEFAULT_SCOPES.join(' '))}&redirect_uri=${encodeURIComponent(`http://127.0.0.1:${this.#port}`)}`);
+				this.#state = v4()
+				res.redirect(`https://accounts.spotify.com/authorize?response_type=code&client_id=${this.#clientId}&scope=${encodeURIComponent(constants.CONNECTOR_DEFAULT_SCOPES.join(' '))}&redirect_uri=${encodeURIComponent(`http://127.0.0.1:${this.#port}`)}&state=${this.#state}`);
 			}
 		})
 
