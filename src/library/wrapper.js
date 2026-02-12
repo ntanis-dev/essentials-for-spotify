@@ -863,6 +863,28 @@ class Wrapper extends EventEmitter {
 			return this.likeSong(this.#lastSong)
 	}
 
+	async addSongToPlaylist(playlistId, trackUri) {
+		return this.#wrapCall(async () => {
+			if (playlistId === 'tracks') {
+				const trackId = trackUri.split(':')[2]
+
+				await connector.callSpotifyApi(`me/tracks?ids=${trackId}`, {
+					method: 'PUT'
+				})
+			} else {
+				await connector.callSpotifyApi(`playlists/${playlistId}/tracks`, {
+					method: 'POST',
+
+					body: JSON.stringify({
+						uris: [trackUri]
+					})
+				})
+			}
+
+			return constants.WRAPPER_RESPONSE_SUCCESS
+		})
+	}
+
 	async toggleVolumeMute() {
 		if (this.#lastVolumePercent === null)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
@@ -918,6 +940,53 @@ class Wrapper extends EventEmitter {
 				}))),
 
 				total: playlists.total
+			}
+		}, true)
+	}
+
+	async getUserPlaylists(page = 1) {
+		return this.#wrapCall(async () => {
+			const tracks = await connector.callSpotifyApi(`me/tracks?limit=1&offset=0`)
+			const playlists = await connector.callSpotifyApi(`me/playlists?limit=${constants.WRAPPER_ITEMS_PER_PAGE}&offset=${(page - 1) * constants.WRAPPER_ITEMS_PER_PAGE}`)
+
+			return {
+				status: constants.WRAPPER_RESPONSE_SUCCESS,
+
+				items: [tracks.total > 0 ? {
+					id: 'tracks',
+					type: 'collection',
+					name: 'Liked Songs',
+
+					images: [{
+						width: 64,
+						height: 64,
+						url: 'https://misc.scdn.co/liked-songs/liked-songs-64.jpg'
+					}]
+				} : null].concat(playlists.items.map(playlist => ({
+					id: playlist.id,
+					type: 'playlist',
+					name: playlist.name,
+					images: playlist.images,
+					owner: playlist.owner,
+					collaborative: playlist.collaborative
+				}))),
+
+				total: playlists.total
+			}
+		}, true)
+	}
+
+	async getCurrentTrack() {
+		return this.#wrapCall(async () => {
+			const response = await connector.callSpotifyApi('me/player/currently-playing', undefined, [constants.API_EMPTY_RESPONSE])
+
+			if (response === constants.API_EMPTY_RESPONSE || !response?.item)
+				return null
+
+			return {
+				id: response.item.id,
+				uri: response.item.uri,
+				name: response.item.name
 			}
 		}, true)
 	}
