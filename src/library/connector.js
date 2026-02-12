@@ -13,7 +13,7 @@ import {
 	v4
 } from 'uuid'
 
-const proxyAgent = false ? new ProxyAgent({
+const proxyAgent = true ? new ProxyAgent({
 	uri: 'http://127.0.0.1:8000',
 
 	requestTls: {

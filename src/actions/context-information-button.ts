@@ -29,19 +29,15 @@ export default class ContextInformationButton extends Button {
 	}
 
 	async #onSongChanged(song: any, pending: boolean = false) {
-		// Only update image when image_source is set to 'album'
-		for (const context of this.contexts) {
-			if (this.settings[context]?.image_source === 'album' && wrapper.playbackContext) {
+		for (const context of this.contexts)
+			if (this.settings[context]?.image_source === 'album' && wrapper.playbackContext)
 				await this.#updateImage(context, wrapper.playbackContext, song, pending)
-			}
-		}
 	}
 
 	async #updateImage(context: string, playbackContext: any, song: any, pending: boolean) {
 		const imageSource = this.settings[context]?.image_source || 'context'
 		
 		if (imageSource === 'album' && song?.item?.album) {
-			// Use album image - leverage the song cache which already has the album cover
 			if (!images.isSongCached(song))
 				await this.setImage(context, 'images/states/pending')
 
@@ -53,25 +49,22 @@ export default class ContextInformationButton extends Button {
 				await this.setImage(context, 'images/states/local')
 			else
 				await this.setImage(context)
-		} else {
-			// Use context image (original behavior)
-			if (playbackContext) {
-				if (!images.isItemCached(playbackContext))
-					await this.setImage(context, 'images/states/pending')
-
-				const image = await images.getForItem(playbackContext)
-
-				if (image)
-					await this.setImage(context, `data:image/jpeg;base64,${image}`)
-				else if (playbackContext.type === 'local')
-					await this.setImage(context, 'images/states/local')
-				else
-					await this.setImage(context)
-			} else if (pending)
+		} else if (playbackContext) {
+			if (!images.isItemCached(playbackContext))
 				await this.setImage(context, 'images/states/pending')
+
+			const image = await images.getForItem(playbackContext)
+
+			if (image)
+				await this.setImage(context, `data:image/jpeg;base64,${image}`)
+			else if (playbackContext.type === 'local')
+				await this.setImage(context, 'images/states/local')
 			else
-				await this.setImage(context, 'images/states/context-information-unknown')
-		}
+				await this.setImage(context)
+		} else if (pending)
+			await this.setImage(context, 'images/states/pending')
+		else
+			await this.setImage(context, 'images/states/context-information-unknown')
 	}
 
 	async #onPlaybackContextChanged(playbackContext: any, pending: boolean = false, contexts = this.contexts, force = false) {
@@ -174,7 +167,6 @@ export default class ContextInformationButton extends Button {
 		if (oldSettings.show?.length !== this.settings[context].show?.length || (oldSettings.show && this.settings[context].show && (!oldSettings.show.every((value: any, index: number) => value === this.settings[context].show[index]))))
 			await this.#onPlaybackContextChanged(wrapper.playbackContext, wrapper.pendingPlaybackContext, [context], true)
 
-		// Update image when image_source changes
 		if (oldSettings.image_source !== this.settings[context].image_source && wrapper.playbackContext)
 			await this.#updateImage(context, wrapper.playbackContext, wrapper.song, wrapper.pendingPlaybackContext)
 	}

@@ -232,7 +232,7 @@
 			"Name": "Add to Playlist",
 			"UUID": "com.ntanis.essentials-for-spotify.add-to-playlist-button",
 			"Icon": "images/actions/add-to-playlist",
-			"Tooltip": "Adds the currently playing song to a specific playlist.",
+			"Tooltip": "Adds the currently playing song to a selected playlist of yours.",
 			"PropertyInspectorPath": "pi/add-to-playlist-button.html",
 			"DisableAutomaticStates": true,
 			"UserTitleEnabled": false,
