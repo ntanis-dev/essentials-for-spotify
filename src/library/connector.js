@@ -170,7 +170,7 @@ class Connector extends EventEmitter {
 					this.#accessToken = data.access_token
 					this.#setSetup(true)
 
-					StreamDeck.client.setGlobalSettings({
+					StreamDeck.settings.setGlobalSettings({
 						clientId: this.#clientId,
 						clientSecret: this.#clientSecret,
 						refreshToken: this.#refreshToken,
@@ -218,7 +218,10 @@ class Connector extends EventEmitter {
 				this.invalidateSetup(true)
 			})
 		else
-			this.#server = this.#app.listen(this.#port, () => logger.info(`Connector setup server listening on port "${this.#port}".`))
+			this.#server = this.#app.listen(this.#port, (err) => {
+				if (err) return logger.error(`Failed to start connector setup server on port "${this.#port}": "${err.message || 'No message.'}"`)
+				logger.info(`Connector setup server listening on port "${this.#port}".`)
+			})
 	}
 
 	invalidateSetup(force = false) {
@@ -232,9 +235,12 @@ class Connector extends EventEmitter {
 		this.#clientId = null
 		this.#clientSecret = null
 
-		this.#server = this.#app.listen(this.#port, () => logger.info(`Connector setup server listening on port "${this.#port}".`))
+		this.#server = this.#app.listen(this.#port, (err) => {
+			if (err) return logger.error(`Failed to start connector setup server on port "${this.#port}": "${err.message || 'No message.'}"`)
+			logger.info(`Connector setup server listening on port "${this.#port}".`)
+		})
 
-		StreamDeck.client.setGlobalSettings({
+		StreamDeck.settings.setGlobalSettings({
 			clientId: null,
 			clientSecret: null,
 			refreshToken: null,

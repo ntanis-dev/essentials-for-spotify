@@ -1,4 +1,4 @@
-import StreamDeck, {
+import {
 	DialUpEvent,
 	DialDownEvent,
 	DialRotateEvent,
@@ -203,11 +203,11 @@ export class Dial extends Action {
 		marqueeData.timeout = setTimeout(() => this.marquee(id, marqueeData.key, marqueeData.original, marqueeData.countable, marqueeData.visible, context), isInitial ? constants.DIAL_MARQUEE_INTERVAL_INITIAL : constants.DIAL_MARQUEE_INTERVAL)
 	}
 
-	async onDialRotate(ev: DialRotateEvent<object>): Promise<void> {
+	async onDialRotate(ev: DialRotateEvent<any>): Promise<void> {
 		return this.#processAction(ev.action, ev.payload.ticks > 0 ? Dial.TYPES.ROTATE_CLOCKWISE : Dial.TYPES.ROTATE_COUNTERCLOCKWISE)
 	}
 
-	async onDialUp(ev: DialUpEvent<object>): Promise<void> {
+	async onDialUp(ev: DialUpEvent<any>): Promise<void> {
 		if ((this.constructor as typeof Dial).HOLDABLE)
 			while (this.#busy[ev.action.id])
 				await new Promise(resolve => setTimeout(resolve, 100))
@@ -215,11 +215,11 @@ export class Dial extends Action {
 		return this.#processAction(ev.action, Dial.TYPES.UP)
 	}
 
-	async onDialDown(ev: DialDownEvent<object>): Promise<void> {
+	async onDialDown(ev: DialDownEvent<any>): Promise<void> {
 		return this.#processAction(ev.action, Dial.TYPES.DOWN)
 	}
 
-	async onTouchTap(ev: TouchTapEvent<object>): Promise<void> {
+	async onTouchTap(ev: TouchTapEvent<any>): Promise<void> {
 		return this.#processAction(ev.action, ev.payload.hold ? Dial.TYPES.LONG_TAP : Dial.TYPES.TAP)
 	}
 
@@ -252,11 +252,11 @@ export class Dial extends Action {
 		if (((!this.contexts.includes(context)) || (!connector.set)) && (!force))
 			return
 
-		await StreamDeck.client.setFeedback(context, feedback).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+		await this.actionObjects.get(context)?.setFeedback(feedback).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
 	async showAlert(context: string) {
-		await StreamDeck.client.showAlert(context).catch((e: any) => logger.error(`An error occurred while showing the Stream Deck alert of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+		await this.actionObjects.get(context)?.showAlert().catch((e: any) => logger.error(`An error occurred while showing the Stream Deck alert of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
 	async setIcon(context: string, icon: string, force = false) {
@@ -265,7 +265,7 @@ export class Dial extends Action {
 
 		this.icon = icon
 
-		await StreamDeck.client.setFeedback(context, {
+		await this.actionObjects.get(context)?.setFeedback({
 			icon
 		}).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
@@ -274,10 +274,10 @@ export class Dial extends Action {
 		for (const key in this.#marquees)
 			this.pauseMarquee(context, this.#marquees[key].key)
 
-		await StreamDeck.client.setFeedbackLayout(context, this.layout).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback layout of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+		await this.actionObjects.get(context)?.setFeedbackLayout(this.layout).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback layout of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 		if (feedback)
-			await StreamDeck.client.setFeedback(context, feedback).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+			await this.actionObjects.get(context)?.setFeedback(feedback).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
 	isHolding(context: string) {

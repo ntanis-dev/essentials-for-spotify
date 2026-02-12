@@ -30,7 +30,7 @@ setGlobalDispatcher(dispatcher)
 StreamDeck.connect().then(() => {
 	logger.info('Connected to Stream Deck.')
 
-	StreamDeck.client.getGlobalSettings().then(settings => {
+	StreamDeck.settings.getGlobalSettings().then(settings => {
 		if (settings.clientId && settings.clientSecret && settings.refreshToken) {
 			logger.info('Found global settings.')
 			connector.startSetup(settings.clientId, settings.clientSecret, settings.refreshToken)

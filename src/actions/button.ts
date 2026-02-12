@@ -1,4 +1,4 @@
-import StreamDeck, {
+import {
 	KeyDownEvent,
 	KeyUpEvent,
 	WillAppearEvent,
@@ -309,18 +309,18 @@ export class Button extends Action {
 		this.#lastTitle[context] = title
 
 		if (!this.#flashing[context])
-			await StreamDeck.client.setTitle(context, title).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck title of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+			await this.actionObjects.get(context)?.setTitle(title).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck title of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
 	async setImage(context: string, image?: string) {
 		this.#lastImage[context] = image
 
 		if (!this.#flashing[context])
-			await StreamDeck.client.setImage(context, image).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+			await this.actionObjects.get(context)?.setImage(image).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck image of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
 	async setState(context: string, state: any) {
-		await StreamDeck.client.setState(context, state).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck state of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+		await this.actionObjects.get(context)?.setState(state).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck state of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
 	async onStateSettled(context: string, skipImageReset: boolean = false) {

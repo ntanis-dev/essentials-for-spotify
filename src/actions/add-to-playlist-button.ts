@@ -105,7 +105,7 @@ export default class AddToPlaylistButton extends Button {
 			} catch (e) { }
 
 		for (const context of contexts) {
-			await StreamDeck.client.sendToPropertyInspector(context, {
+			await StreamDeck.ui.sendToPropertyInspector({
 				event: 'getPlaylists',
 				items
 			}).catch(() => {})

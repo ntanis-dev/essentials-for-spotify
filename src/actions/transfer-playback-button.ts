@@ -52,7 +52,7 @@ export default class TransferPlaybackButton extends Button {
 						label: deviceOnline ? (this.settings[context].spotify_device_label ?? 'Unknown\nDevice') : (this.settings[context].spotify_device_label ? `${this.settings[context].spotify_device_label} (Offline)` : 'Unknown\nDevice (Offline)')
 					})
 
-				await StreamDeck.client.sendToPropertyInspector(context, {
+				await StreamDeck.ui.sendToPropertyInspector({
 					event: 'getDevices',
 					items
 				})

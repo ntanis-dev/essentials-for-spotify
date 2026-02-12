@@ -1,4 +1,4 @@
-import StreamDeck, {
+import {
 	SingletonAction,
 	WillAppearEvent,
 	WillDisappearEvent,
@@ -11,6 +11,7 @@ import logger from '../library/logger.js'
 export class Action extends SingletonAction {
 	settings: any = {}
 	contexts: Array<string> = []
+	actionObjects: Map<string, any> = new Map()
 
 	constructor() {
 		super()
@@ -22,10 +23,11 @@ export class Action extends SingletonAction {
 		})
 	}
 
-	async onWillAppear(ev: WillAppearEvent<object>): Promise<void> {
+	async onWillAppear(ev: WillAppearEvent<any>): Promise<void> {
 		await super.onWillAppear?.(ev)
 
 		this.contexts.push(ev.action.id)
+		this.actionObjects.set(ev.action.id, ev.action)
 
 		const oldSettings = JSON.parse(JSON.stringify(this.settings[ev.action.id] || {}))
 
@@ -37,6 +39,7 @@ export class Action extends SingletonAction {
 
 	async onWillDisappear(ev: WillDisappearEvent<any>): Promise<void> {
 		this.contexts.splice(this.contexts.indexOf(ev.action.id), 1)
+		this.actionObjects.delete(ev.action.id)
 	}
 
 	async onDidReceiveSettings(ev: DidReceiveSettingsEvent<any>): Promise<void> {
@@ -52,7 +55,7 @@ export class Action extends SingletonAction {
 
 		Object.assign(this.settings[context], settings)
 		
-		await StreamDeck.client.setSettings(context, this.settings[context]).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck settings of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+		await this.actionObjects.get(context)?.setSettings(this.settings[context]).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck settings of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 		if ((!internal) && connector.set)
 			await this.onSettingsUpdated(context, oldSettings)
