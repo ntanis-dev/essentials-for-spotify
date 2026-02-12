@@ -196,14 +196,14 @@ class Connector extends EventEmitter {
 		if (this.#refreshToken)
 			this.#refreshAccessToken().then(() => this.#setSetup(true)).catch(e => {
 				logger.error(`An error occured while setting up the connector: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
-				this.invalidateSetup()
+				this.invalidateSetup(true)
 			})
 		else
 			this.#server = this.#app.listen(this.#port, () => logger.info(`Connector setup server listening on port "${this.#port}".`))
 	}
 
-	invalidateSetup() {
-		if (!this.#setup)
+	invalidateSetup(force = false) {
+		if ((!force) && (!this.#setup))
 			return
 
 		this.#setSetup(false)
