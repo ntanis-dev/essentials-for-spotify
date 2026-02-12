@@ -121,6 +121,14 @@ You are able to configure the behavior of some of them via their settings.
   - Push: Play
   - Touch: Play
   - Long Touch: Refresh  
+  - Extra Playlists (in action settings): Add one Spotify playlist URL per line to pin playlists that may not be returned by the Spotify API (for example some Spotify-owned playlists in Development Mode).
+
+  Example:
+  ```text
+  https://open.spotify.com/playlist/37i9dQZF1EQpoj8u9Hn81e?si=c592b10f6ada4223
+  https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M
+  https://open.spotify.com/playlist/37i9dQZF1DX0XUsuxWHRQd
+  ```
 - **New Releases**\
   Navigate and play through your personalized new releases.
   

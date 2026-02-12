@@ -22,7 +22,7 @@ export default class ItemsDial extends Dial {
 		if (this.#itemsPage[context] === undefined)
 			this.#itemsPage[context] = 1
 
-		const apiCall = await this.fetchItems(this.#itemsPage[context])
+		const apiCall = await this.fetchItems(this.#itemsPage[context], context)
 
 		if ((!apiCall) || typeof apiCall !== 'object' || (apiCall.status !== constants.WRAPPER_RESPONSE_SUCCESS && apiCall.status !== constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)) {
 			this.resetFeedbackLayout(context, {
@@ -273,7 +273,7 @@ export default class ItemsDial extends Dial {
 		}, feedback))
 	}
 
-	async fetchItems(page: number): Promise<any> {
+	async fetchItems(page: number, context: string): Promise<any> {
         throw new Error('The fetchItems method must be implemented in a subclass.')
 	}
 

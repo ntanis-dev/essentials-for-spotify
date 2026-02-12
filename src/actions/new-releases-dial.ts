@@ -12,7 +12,7 @@ export default class NewReleasesDial extends ItemsDial {
 		super('layouts/items-layout.json', 'images/icons/items.png')
 	}
 
-	async fetchItems(page: number) {
+	async fetchItems(page: number, _context: string) {
 		return await wrapper.getNewReleases(page)
 	}
 }

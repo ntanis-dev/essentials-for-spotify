@@ -45,7 +45,8 @@ const CONNECTOR_DEFAULT_SCOPES = [
 	'user-read-private',
 	'user-library-read',
 	'user-library-modify',
-	'playlist-read-private'
+	'playlist-read-private',
+	'playlist-read-collaborative'
 ]
 
 const CHARACTER_WIDTH_MAP = {

@@ -892,32 +892,73 @@ class Wrapper extends EventEmitter {
 		})
 	}
 
-	async getPlaylists(page = 1) {
+	async getPlaylists(page = 1, customItems = []) {
 		return this.#wrapCall(async () => {
 			const tracks = await connector.callSpotifyApi(`me/tracks?limit=1&offset=0`)
-			const playlists = await connector.callSpotifyApi(`me/playlists?limit=${constants.WRAPPER_ITEMS_PER_PAGE}&offset=${(page - 1) * constants.WRAPPER_ITEMS_PER_PAGE}`)
+			const perPage = constants.WRAPPER_ITEMS_PER_PAGE
+			const staticItems = [tracks.total > 0 ? {
+				id: 'tracks',
+				type: 'collection',
+				name: 'Liked Songs',
+
+				images: [{
+					width: 64,
+					height: 64,
+					url: 'https://misc.scdn.co/liked-songs/liked-songs-64.jpg'
+				}]
+			} : null]
+				.concat((customItems || []).filter(item => item && item.id && item.type === 'playlist').map(item => ({
+					id: item.id,
+					type: 'playlist',
+					name: item.name,
+					images: item.images || []
+				})))
+				.filter(Boolean)
+
+			const start = (page - 1) * perPage
+			const end = start + perPage
+			const staticPageItems = staticItems.slice(start, end)
+			const remainingSlots = perPage - staticPageItems.length
+
+			let fetchedPlaylists = []
+			let playlistsTotal = 0
+			let playlistsOffset = Math.max(0, start - staticItems.length)
+			let hasFetched = false
+
+			while (remainingSlots > fetchedPlaylists.length) {
+				const playlists = await connector.callSpotifyApi(`me/playlists?limit=${perPage}&offset=${playlistsOffset}`)
+
+				if (!hasFetched) {
+					playlistsTotal = playlists.total
+					hasFetched = true
+				}
+
+				if (!playlists.items.length)
+					break
+
+				for (const playlist of playlists.items) {
+					fetchedPlaylists.push({
+						id: playlist.id,
+						type: 'playlist',
+						name: playlist.name,
+						images: playlist.images
+					})
+
+					if (remainingSlots <= fetchedPlaylists.length)
+						break
+				}
+
+				playlistsOffset += playlists.items.length
+
+				if (playlistsOffset >= playlistsTotal)
+					break
+			}
 
 			return {
 				status: constants.WRAPPER_RESPONSE_SUCCESS,
 
-				items: [tracks.total > 0 ? {
-					id: 'tracks',
-					type: 'collection',
-					name: 'Liked Songs',
-
-					images: [{
-						width: 64,
-						height: 64,
-						url: 'https://misc.scdn.co/liked-songs/liked-songs-64.jpg'
-					}]
-				} : null].concat(playlists.items.map(playlist => ({
-					id: playlist.id,
-					type: 'playlist',
-					name: playlist.name,
-					images: playlist.images
-				}))),
-
-				total: playlists.total
+				items: staticPageItems.concat(fetchedPlaylists).slice(0, perPage),
+				total: staticItems.length + playlistsTotal
 			}
 		}, true)
 	}
@@ -970,8 +1011,10 @@ class Wrapper extends EventEmitter {
 
 			realUrl.search = ''
 
-			const type = realUrl.pathname.split('/')[1]
-			const id = realUrl.pathname.split('/')[2]
+			const pathParts = realUrl.pathname.split('/').filter(Boolean)
+			const typeIndex = pathParts[0]?.startsWith('intl-') ? 1 : 0
+			const type = pathParts[typeIndex]
+			const id = pathParts[typeIndex + 1]
 			const uri = `spotify:${type}:${id}`
 
 			if (!['artist', 'album', 'playlist', 'show', 'collection', 'local', 'track'].includes(type))
