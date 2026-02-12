@@ -188,7 +188,7 @@ class Wrapper extends EventEmitter {
 
 			this.#setSong(response?.item ? {
 				item: response.item,
-				liked: response.item.id ? (await connector.callSpotifyApi(`me/tracks/contains?ids=${response.item.id}`))[0] : false,
+				liked: response.item.id ? (await connector.callSpotifyApi(`me/library/contains?uris=${encodeURIComponent(response.item.uri)}`))[0] : false,
 				progress: response.progress_ms
 			} : null)
 
@@ -799,7 +799,7 @@ class Wrapper extends EventEmitter {
 
 	async likeSong(song) {
 		return this.#wrapCall(async () => {
-			await connector.callSpotifyApi(`me/tracks?ids=${song.item.id}`, {
+			await connector.callSpotifyApi(`me/library?uris=${encodeURIComponent(song.item.uri)}`, {
 				method: 'PUT'
 			})
 
@@ -840,7 +840,7 @@ class Wrapper extends EventEmitter {
 
 	async unlikeSong(song) {
 		return this.#wrapCall(async () => {
-			await connector.callSpotifyApi(`me/tracks?ids=${song.item.id}`, {
+			await connector.callSpotifyApi(`me/library?uris=${encodeURIComponent(song.item.uri)}`, {
 				method: 'DELETE'
 			})
 
@@ -865,13 +865,11 @@ class Wrapper extends EventEmitter {
 
 	async addSongToPlaylist(playlistId, trackUri) {
 		return this.#wrapCall(async () => {
-			if (playlistId === 'tracks') {
-				const trackId = trackUri.split(':')[2]
-
-				await connector.callSpotifyApi(`me/tracks?ids=${trackId}`, {
+			if (playlistId === 'tracks')
+				await connector.callSpotifyApi(`me/library?uris=${encodeURIComponent(trackUri)}`, {
 					method: 'PUT'
 				})
-			} else {
+			else {
 				await connector.callSpotifyApi(`playlists/${playlistId}/tracks`, {
 					method: 'POST',
 
@@ -916,7 +914,7 @@ class Wrapper extends EventEmitter {
 
 	async getPlaylists(page = 1) {
 		return this.#wrapCall(async () => {
-			const tracks = await connector.callSpotifyApi(`me/tracks?limit=1&offset=0`)
+			const tracks = await connector.callSpotifyApi('me/tracks?limit=1&offset=0')
 			const playlists = await connector.callSpotifyApi(`me/playlists?limit=${constants.WRAPPER_ITEMS_PER_PAGE}&offset=${(page - 1) * constants.WRAPPER_ITEMS_PER_PAGE}`)
 
 			return {
@@ -939,14 +937,14 @@ class Wrapper extends EventEmitter {
 					images: playlist.images
 				}))),
 
-				total: playlists.total
+				total: playlists.total + (tracks.total > 0 ? 1 : 0)
 			}
 		}, true)
 	}
 
 	async getUserPlaylists(page = 1) {
 		return this.#wrapCall(async () => {
-			const tracks = await connector.callSpotifyApi(`me/tracks?limit=1&offset=0`)
+			const tracks = await connector.callSpotifyApi('me/tracks?limit=1&offset=0')
 			const playlists = await connector.callSpotifyApi(`me/playlists?limit=${constants.WRAPPER_ITEMS_PER_PAGE}&offset=${(page - 1) * constants.WRAPPER_ITEMS_PER_PAGE}`)
 
 			return {
@@ -971,37 +969,22 @@ class Wrapper extends EventEmitter {
 					collaborative: playlist.collaborative
 				}))),
 
-				total: playlists.total
+				total: playlists.total + (tracks.total > 0 ? 1 : 0)
 			}
 		}, true)
 	}
 
-	async getCurrentTrack() {
+	async getUserLikedSongs(page = 1) {
 		return this.#wrapCall(async () => {
-			const response = await connector.callSpotifyApi('me/player/currently-playing', undefined, [constants.API_EMPTY_RESPONSE])
-
-			if (response === constants.API_EMPTY_RESPONSE || !response?.item)
-				return null
-
-			return {
-				id: response.item.id,
-				uri: response.item.uri,
-				name: response.item.name
-			}
-		}, true)
-	}
-
-	async getNewReleases(page = 1) {
-		return this.#wrapCall(async () => {
-			const response = await connector.callSpotifyApi(`browse/new-releases?limit=${constants.WRAPPER_ITEMS_PER_PAGE}&offset=${(page - 1) * constants.WRAPPER_ITEMS_PER_PAGE}`)
+			const tracks = await connector.callSpotifyApi(`me/tracks?limit=${constants.WRAPPER_ITEMS_PER_PAGE}&offset=${(page - 1) * constants.WRAPPER_ITEMS_PER_PAGE}`)
 
 			return {
 				status: constants.WRAPPER_RESPONSE_SUCCESS,
 
-				items: response.albums.items.map(item => {
+				items: tracks.items.map(item => {
 					let extra = ''
 
-					switch (item.album_type) {
+					switch (item.track.album.album_type) {
 						case 'album':
 							extra = '💿'
 							break
@@ -1020,15 +1003,30 @@ class Wrapper extends EventEmitter {
 					}
 
 					return {
-						id: item.id,
-						type: 'album',
+						id: item.track.id,
+						type: 'track',
 						extra,
-						name: `${item.name} - ${item.artists.map(artist => artist.name).join(', ')}`,
-						images: item.images
+						name: `${item.track.name} - ${item.track.artists.map(artist => artist.name).join(', ')}`,
+						images: item.track.album.images
 					}
 				}),
 
-				total: response.albums.total
+				total: tracks.total
+			}
+		}, true)
+	}
+
+	async getCurrentTrack() {
+		return this.#wrapCall(async () => {
+			const response = await connector.callSpotifyApi('me/player/currently-playing', undefined, [constants.API_EMPTY_RESPONSE])
+
+			if (response === constants.API_EMPTY_RESPONSE || !response?.item)
+				return null
+
+			return {
+				id: response.item.id,
+				uri: response.item.uri,
+				name: response.item.name
 			}
 		}, true)
 	}

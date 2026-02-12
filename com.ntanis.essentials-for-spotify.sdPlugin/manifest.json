@@ -502,10 +502,10 @@
 			}
 		},
 		{
-			"Name": "New Releases",
-			"UUID": "com.ntanis.essentials-for-spotify.new-releases-dial",
+			"Name": "My Liked Songs",
+			"UUID": "com.ntanis.essentials-for-spotify.my-liked-songs-dial",
 			"Icon": "images/actions/items",
-			"Tooltip": "Navigate and play through your personalized new releases.",
+			"Tooltip": "Navigate and play through your liked songs.",
 			"Controllers": [
 				"Encoder"
 			],

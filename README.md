@@ -123,8 +123,8 @@ You are able to configure the behavior of some of them via their settings.
   - Push: Play
   - Touch: Play
   - Long Touch: Refresh  
-- **New Releases**\
-  Navigate and play through your personalized new releases.
+- **My Liked Songs**\
+  Navigate and play through your liked songs.
   
   - Rotate: Navigate  
   - Push: Play
