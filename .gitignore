@@ -5,4 +5,5 @@ com.ntanis.essentials-for-spotify.sdPlugin/com.ntanis.essentials-for-spotify.str
 node_modules/
 package-lock.json
 TODO
+.vscode/
 .DS_Store
