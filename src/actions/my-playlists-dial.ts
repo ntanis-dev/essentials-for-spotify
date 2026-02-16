@@ -13,6 +13,6 @@ export default class MyPlaylistsDial extends ItemsDial {
 	}
 
 	async fetchItems(page: number) {
-		return await wrapper.getPlaylists(page)
+		return await wrapper.getUserPlaylists(page)
 	}
 }

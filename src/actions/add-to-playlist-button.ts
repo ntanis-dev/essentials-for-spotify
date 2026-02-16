@@ -1,7 +1,5 @@
-import StreamDeck, {
-	action,
-	SendToPluginEvent,
-	WillAppearEvent
+import {
+	action
 } from '@elgato/streamdeck'
 
 import {
@@ -9,12 +7,16 @@ import {
 } from './button.js'
 
 import constants from '../library/constants.js'
+import images from '../library/images.js'
 import wrapper from './../library/wrapper.js'
-import connector from '../library/connector.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.add-to-playlist-button' })
 export default class AddToPlaylistButton extends Button {
 	static readonly STATABLE = true
+
+	#cachedPlaylist: {
+		[context: string]: any
+	} = {}
 
 	constructor() {
 		super()
@@ -30,12 +32,11 @@ export default class AddToPlaylistButton extends Button {
 				if (!song || pending) {
 					this.clearMarquee(context)
 					await this.setTitle(context, '')
-					await this.setImage(context, 'images/states/add-to-playlist-unknown')
+					await this.#updateImage(context)
 					this.setUnpressable(context, true)
 				} else {
-					await this.setImage(context, 'images/states/add-to-playlist')
 					this.setUnpressable(context, false)
-					await this.#updateDisplay(context, song)
+					await this.#updateDisplay(context)
 				}
 
 				resolve(true)
@@ -44,94 +45,90 @@ export default class AddToPlaylistButton extends Button {
 		await Promise.allSettled(promises)
 	}
 
-	async #updateDisplay(context: string, song: any = wrapper.song) {
-		const show = this.settings[context].show || ['playlist']
+	#processImagePlus(iconDataUrl: string): string {
+		const iconSize = 120
+		const badgeSize = 36
+		const badgeX = iconSize - badgeSize - 6
+		const badgeY = iconSize - badgeSize - 6
+
+		const svg = `
+			<svg width="${iconSize}" height="${iconSize}" viewBox="0 0 ${iconSize} ${iconSize}" xmlns="http://www.w3.org/2000/svg">
+			
+				<defs>
+					<pattern id="iconPattern" patternUnits="userSpaceOnUse" width="${iconSize}" height="${iconSize}">
+						<image href="${iconDataUrl}" x="0" y="0" width="${iconSize}" height="${iconSize}"/>
+					</pattern>
+				</defs>
+				
+				<rect width="${iconSize}" height="${iconSize}" fill="url(#iconPattern)"/>
+				<circle cx="${badgeX + badgeSize / 2}" cy="${badgeY + badgeSize / 2}" r="${badgeSize / 2}" fill="#1db954" stroke="#191414" stroke-width="2"/>
+				<line x1="${badgeX + badgeSize / 2}" y1="${badgeY + 9}" x2="${badgeX + badgeSize / 2}" y2="${badgeY + badgeSize - 9}" stroke="#191414" stroke-width="3" stroke-linecap="round"/>
+				<line x1="${badgeX + 9}" y1="${badgeY + badgeSize / 2}" x2="${badgeX + badgeSize - 9}" y2="${badgeY + badgeSize / 2}" stroke="#191414" stroke-width="3" stroke-linecap="round"/>
+				
+			</svg>
+		`
+
+		return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`
+	}
+
+	async #updateImage(context: string) {
+		if (!this.#cachedPlaylist[context]) {
+			await this.setImage(context, 'images/states/add-to-playlist-unknown')
+			return
+		}
+
+		if (!images.isItemCached(this.#cachedPlaylist[context]))
+			await this.setImage(context, 'images/states/pending')
+
+		const image = await images.getForItem(this.#cachedPlaylist[context])
+
+		if (image)
+			await this.setImage(context, this.#processImagePlus(`data:image/jpeg;base64,${image}`))
+		else
+			await this.setImage(context, 'images/states/add-to-playlist')
+	}
+
+	async #updateDisplay(context: string) {
+		const show = this.settings[context].show || ['title']
 		const data: any = []
 
 		let needsRestart = !this.marquees[context]
 
-		for (const item of show)
-			if (item === 'playlist' && this.settings[context].playlist_name)
-				data.push({
-					key: 'playlist',
-					value: this.settings[context].playlist_name
-				})
-			else if (item === 'name' && song?.item?.name) {
-				data.push({
-					key: 'name',
-					value: song.item.name
-				})
-
-				if (this.marquees[context]?.entries?.name && this.marquees[context].entries.name.original !== song.item.name)
-					this.updateMarqueeEntry(context, 'name', song.item.name)
-			}
+		if (show.includes('title') && this.#cachedPlaylist[context]?.title)
+			data.push({
+				key: 'title',
+				value: this.#cachedPlaylist[context].title
+			})
 
 		if (data.length === 0) {
 			this.clearMarquee(context)
 			await this.setTitle(context, '')
 		} else if (needsRestart || (!this.marquees[context]))
 			await this.marqueeTitle('add-to-playlist', data, context)
+
+		await this.#updateImage(context)
 	}
 
-	async #updatePlaylists(contexts = this.contexts) {
-		const items: any = []
+	async #resolvePlaylist(context: string) {
+		const spotify_url = this.settings[context].spotify_url
+		const badUrl = !/^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?playlist\/[A-Za-z0-9]{22}(?:\/)?(?:\?.*)?$/.test(spotify_url)
 
-		if (connector.set)
-			try {
-				let page = 1
-
-				while (true) {
-					const playlistsResponse = await wrapper.getUserPlaylists(page)
-
-					if (playlistsResponse && playlistsResponse.status === constants.WRAPPER_RESPONSE_SUCCESS) {
-						for (const playlist of playlistsResponse.items)
-							if (playlist) {
-								const canAddTracks = playlist.type === 'collection' || playlist.owner?.id === wrapper.user?.id || playlist.collaborative === true
-
-								if (canAddTracks)
-									items.push({
-										value: playlist.id,
-										label: playlist.name
-									})
-							}
-
-						if ((page * constants.WRAPPER_ITEMS_PER_PAGE) >= playlistsResponse.total)
-							break
-
-						page++
-					} else
-						break
-				}
-			} catch (e) { }
-
-		for (const context of contexts) {
-			await StreamDeck.ui.sendToPropertyInspector({
-				event: 'getPlaylists',
-				items
-			}).catch(() => {})
-
-			if (connector.set && this.settings[context].playlist_id && items.length > 0) {
-				const playlist = items.find((p: any) => p?.value === this.settings[context].playlist_id)
-
-				if (playlist) {
-					const oldPlaylistName = this.settings[context].playlist_name
-
-					await this.setSettings(context, {
-						playlist_name: playlist.label
-					})
-
-					if (oldPlaylistName !== playlist.label)
-						this.updateMarqueeEntry(context, 'playlist', playlist.label)
-				}
-			}
+		if ((!spotify_url) || badUrl) {
+			this.#cachedPlaylist[context] = null
+			return
 		}
+
+		if (this.#cachedPlaylist[context]?.url === spotify_url)
+			return
+
+		this.#cachedPlaylist[context] = await wrapper.getInformationOnUrl(spotify_url)
 	}
 
 	async invokeWrapperAction(context: string, type: symbol) {
 		if (type === Button.TYPES.RELEASED)
 			return
 
-		if (!this.settings[context].playlist_id)
+		if (!this.#cachedPlaylist[context]?.id)
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		const currentTrack = await wrapper.getCurrentTrack()
@@ -140,7 +137,7 @@ export default class AddToPlaylistButton extends Button {
 			if (!wrapper.song?.item?.id)
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
-			const response = await wrapper.addSongToPlaylist(this.settings[context].playlist_id, wrapper.song.item.uri)
+			const response = await wrapper.addSongToPlaylist(this.#cachedPlaylist[context].id, wrapper.song.item.uri)
 
 			if (response === constants.WRAPPER_RESPONSE_SUCCESS)
 				return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
@@ -148,7 +145,7 @@ export default class AddToPlaylistButton extends Button {
 				return response
 		}
 
-		const response = await wrapper.addSongToPlaylist(this.settings[context].playlist_id, currentTrack.uri)
+		const response = await wrapper.addSongToPlaylist(this.#cachedPlaylist[context].id, currentTrack.uri)
 
 		if (response === constants.WRAPPER_RESPONSE_SUCCESS)
 			return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
@@ -156,46 +153,37 @@ export default class AddToPlaylistButton extends Button {
 			return response
 	}
 
-	async onSendToPlugin(ev: SendToPluginEvent<any, any>): Promise<void> {
-		if (ev.payload?.event === 'getPlaylists')
-			await this.#updatePlaylists([ev.action.id])
-	}
-
 	async onSettingsUpdated(context: string, oldSettings: any) {
 		await super.onSettingsUpdated(context, oldSettings)
 
 		if (!this.settings[context].show)
 			await this.setSettings(context, {
-				show: ['playlist']
+				show: ['title']
 			})
 
-		if (oldSettings.playlist_id !== this.settings[context].playlist_id)
-			await this.#updatePlaylists([context])
-
+		const urlChanged = oldSettings.spotify_url !== this.settings[context].spotify_url
 		const showChanged = oldSettings.show?.length !== this.settings[context].show?.length || (oldSettings.show && this.settings[context].show && (!oldSettings.show.every((value: any, index: number) => value === this.settings[context].show[index])))
 
-		if (showChanged) {
+		if (urlChanged) {
 			this.clearMarquee(context)
+			await this.#resolvePlaylist(context)
+		}
 
-			if (wrapper.song)
-				await this.#updateDisplay(context, wrapper.song)
-			else
-				await this.#updateDisplay(context, null)
-		} else if (oldSettings.playlist_id !== this.settings[context].playlist_id)
-			if (wrapper.song)
-				await this.#onSongChanged(wrapper.song, false)
-			else
-				await this.#onSongChanged(null, false)
+		if (urlChanged || showChanged) {
+			if (showChanged)
+				this.clearMarquee(context)
+
+			await this.#updateDisplay(context)
+		}
 	}
 
 	async onStateSettled(context: string) {
 		await super.onStateSettled(context, true)
-		await this.#updatePlaylists([context])
+		await this.#resolvePlaylist(context)
 
 		if (wrapper.song) {
-			await this.setImage(context, 'images/states/add-to-playlist')
 			this.setUnpressable(context, false)
-			await this.#updateDisplay(context, wrapper.song)
+			await this.#updateDisplay(context)
 		} else
 			await this.#onSongChanged(null, false)
 	}

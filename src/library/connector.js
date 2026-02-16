@@ -4,21 +4,18 @@ import express from 'express'
 import constants from './constants'
 import logger from './logger'
 
+import fetch from 'node-fetch'
+
 import {
-	fetch,
-	ProxyAgent
-} from 'undici'
+	HttpsProxyAgent
+} from 'https-proxy-agent'
 
 import {
 	v4
 } from 'uuid'
 
-const proxyAgent = true ? new ProxyAgent({
-	uri: 'http://127.0.0.1:8000',
-
-	requestTls: {
-		rejectUnauthorized: false
-	}
+const proxyAgent = false ? new HttpsProxyAgent('http://127.0.0.1:8000', {
+	rejectUnauthorized: false
 }) : undefined
 
 class Connector extends EventEmitter {
@@ -42,7 +39,7 @@ class Connector extends EventEmitter {
 	async #refreshAccessToken() {
 		const response = await fetch('https://accounts.spotify.com/api/token', {
 			method: 'POST',
-			dispatcher: proxyAgent,
+			agent: proxyAgent,
 
 			body: new URLSearchParams({
 				refresh_token: this.#refreshToken,
@@ -69,7 +66,7 @@ class Connector extends EventEmitter {
 
 		let response = await fetch(`https://api.spotify.com/v1/${path}`, {
 			...options,
-			dispatcher: proxyAgent,
+			agent: proxyAgent,
 
 			headers: {
 				...options.headers,
@@ -82,7 +79,7 @@ class Connector extends EventEmitter {
 
 			response = await fetch(`https://api.spotify.com/v1/${path}`, {
 				...options,
-				dispatcher: proxyAgent,
+				agent: proxyAgent,
 
 				headers: {
 					...options.headers,
@@ -96,7 +93,7 @@ class Connector extends EventEmitter {
 		else if (response.status === 404 && allowResponses.includes(constants.API_NOT_FOUND_RESPONSE))
 			return constants.API_NOT_FOUND_RESPONSE
 
-		if (response.status !== 200)
+		if (response.status !== 200 && (response.status !== 201 || options.method !== 'POST'))
 			throw new constants.ApiError(response.status, `The Spotify API call "${path}" with body ${JSON.stringify(options.body ?? {})} failed with status "${response.status}" and body "${await response.text()}".`)
 
 		if (response.headers.get('content-type')?.includes('application/json'))
@@ -147,7 +144,7 @@ class Connector extends EventEmitter {
 				try {
 					const response = await fetch('https://accounts.spotify.com/api/token', {
 						method: 'POST',
-						dispatcher: proxyAgent,
+						agent: proxyAgent,
 
 						body: new URLSearchParams({
 							code: req.query.code,

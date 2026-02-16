@@ -5,19 +5,17 @@
     <script src="sdpi-components.js"></script>
 </head>
 <body>
-    <sdpi-item label="Playlist">
-        <sdpi-select
-            setting="playlist_id"
-            placeholder="Choose a Playlist"
-            datasource="getPlaylists"
-            loading="⏳"
-            hot-reload>
-        </sdpi-select>
+    <sdpi-item label="Playlist URL">
+        <sdpi-textfield
+            setting="spotify_url"
+            pattern="/^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?playlist\/[A-Za-z0-9]{22}(?:\/)?(?:\?.*)?$/i"
+            placeholder="https://open.spotify.com/playlist/..."
+            required>
+        </sdpi-textfield>
     </sdpi-item>
     <sdpi-item label="Show">
         <sdpi-checkbox-list setting="show">
-            <option value="playlist">Playlist</option>
-            <option value="name">Name</option>
+            <option value="title">Name</option>
         </sdpi-checkbox-list>
     </sdpi-item>
 </body>

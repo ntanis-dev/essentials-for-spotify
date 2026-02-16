@@ -253,7 +253,7 @@ export default class ItemsDial extends Dial {
 
 			if (this.#currentItems[context] !== undefined)
 				if (this.#items.items[this.#currentItems[context]]) {
-					const apiCall = await wrapper.playItem(this.#items.items[this.#currentItems[context]])
+					const apiCall = await this.playSelectedItem(this.#items.items[this.#currentItems[context]])
 
 					if (apiCall !== constants.WRAPPER_RESPONSE_SUCCESS && apiCall !== constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)
 						await this.#refreshLayout(true, context)
@@ -271,6 +271,10 @@ export default class ItemsDial extends Dial {
 		await super.resetFeedbackLayout(context, Object.assign({
 			icon: this.originalIcon
 		}, feedback))
+	}
+
+	async playSelectedItem(item: any): Promise<any> {
+		return wrapper.playItem(item)
 	}
 
 	async fetchItems(page: number): Promise<any> {

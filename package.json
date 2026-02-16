@@ -1,6 +1,6 @@
 {
 	"name": "essentials-for-spotify",
-	"version": "1.1.0.4",
+	"version": "1.1.0.5",
 	"description": "Effortlessly control your Spotify through your Elgato Stream Deck.",
 	"author": "https://github.com/ntanis-dev",
 	"license": "ISC",
@@ -21,14 +21,18 @@
 		"tslib": "^2.6.2",
 		"typescript": "^5.9.3"
 	},
+	"overrides": {
+		"brace-expansion": "^2.0.1"
+	},
 	"dependencies": {
 		"@elgato/streamdeck": "^2.0.1",
 		"@rollup/plugin-json": "^6.1.0",
 		"@tsconfig/node20": "^20.1.9",
 		"cacheable-lookup": "^7.0.0",
 		"express": "^5.2.1",
+		"https-proxy-agent": "^7.0.6",
+		"node-fetch": "^3.3.2",
 		"rollup-plugin-copy": "^3.5.0",
-		"undici": "^7.21.0",
 		"uuid": "^13.0.0"
 	}
 }

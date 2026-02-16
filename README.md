@@ -3,7 +3,8 @@
 # Essentials for Spotify
 
 Effortlessly control your [Spotify](https://www.spotify.com/) through your [Elgato Stream Deck](https://www.elgato.com/us/en/s/welcome-to-stream-deck).\
-A **[Spotify Premium](https://www.spotify.com/premium/)** account is required to use the full functionality of this plugin.
+A **[Spotify Premium](https://www.spotify.com/premium/)** account is required to use this plugin.\
+This is due to Spotify Web API limitations.
 
 ## Features
 
@@ -100,7 +101,7 @@ You are able to configure the behavior of some of them via their settings.
   Map this button to any supported Spotify URL and press it to start playing.
 
 - **Add to Playlist**\
-  Adds the currently playing song to a selected playlist of yours.
+  Adds the currently playing song to a selected playlist of yours non-exclusively.
 
 ### Dials
 - **Playback Control**\

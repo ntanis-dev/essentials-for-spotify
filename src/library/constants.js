@@ -146,6 +146,12 @@ const CHARACTER_WIDTH_MAP = {
 	'0': 0.7
 }
 
+const SENSITIVE_ENDPOINTS = [
+	'me',
+	'me/library',
+	'me/tracks'
+]
+
 class ApiError extends Error {
 	constructor(status, message) {
 		super(message)
@@ -199,6 +205,7 @@ export default {
 	BUTTON_MULTI_PRESS_INTERVAL,
 	DEFAULT_VOLUME_STEP,
 	DEFAULT_VOLUME_STACK_STEP,
+	SENSITIVE_ENDPOINTS,
 	ApiError,
 	NoDeviceError
 }

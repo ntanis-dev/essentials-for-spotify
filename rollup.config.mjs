@@ -14,6 +14,7 @@ const config = {
 
 	output: {
 		file: 'com.ntanis.essentials-for-spotify.sdPlugin/bin/plugin.js',
+		inlineDynamicImports: true,
 		sourcemap: isWatching,
 
 		sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => {

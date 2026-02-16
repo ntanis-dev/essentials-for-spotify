@@ -2,9 +2,7 @@ import {
 	EventEmitter
 } from 'events'
 
-import {
-	fetch
-} from 'undici'
+import fetch from 'node-fetch'
 
 import connector from './connector'
 import constants from './constants'
@@ -188,7 +186,7 @@ class Wrapper extends EventEmitter {
 
 			this.#setSong(response?.item ? {
 				item: response.item,
-				liked: response.item.id ? (await connector.callSpotifyApi(`me/library/contains?uris=${encodeURIComponent(response.item.uri)}`))[0] : false,
+				liked: response.item.id && (this.#lastSong?.liked === undefined || response.item.id !== this.#lastSong?.item?.id) ? (await connector.callSpotifyApi(`me/library/contains?uris=${encodeURIComponent(response.item.uri)}`))[0] : this.#lastSong?.liked,
 				progress: response.progress_ms
 			} : null)
 
@@ -312,6 +310,8 @@ class Wrapper extends EventEmitter {
 	}
 
 	async #updatePlaybackContext(context, pending = false) {
+		const wasPending = this.#lastPendingContext
+
 		this.#lastPendingContext = pending
 
 		if ((!context) && this.#lastSong?.item.uri.includes('local:'))
@@ -320,8 +320,12 @@ class Wrapper extends EventEmitter {
 				uri: 'local'
 			}
 
-		if (this.#lastPlaybackContext?.uri === context?.uri)
+		if (this.#lastPlaybackContext?.uri === context?.uri) {
+			if (wasPending && !pending)
+				this.emit('playbackContextChanged', this.#lastPlaybackContext, pending)
+
 			return
+		}
 
 		if (context) {
 			const typeData = await this.#getTypeData(context.type, context.uri)
@@ -865,19 +869,13 @@ class Wrapper extends EventEmitter {
 
 	async addSongToPlaylist(playlistId, trackUri) {
 		return this.#wrapCall(async () => {
-			if (playlistId === 'tracks')
-				await connector.callSpotifyApi(`me/library?uris=${encodeURIComponent(trackUri)}`, {
-					method: 'PUT'
-				})
-			else {
-				await connector.callSpotifyApi(`playlists/${playlistId}/tracks`, {
-					method: 'POST',
+			await connector.callSpotifyApi(`playlists/${playlistId}/items`, {
+				method: 'POST',
 
-					body: JSON.stringify({
-						uris: [trackUri]
-					})
+				body: JSON.stringify({
+					uris: [trackUri]
 				})
-			}
+			})
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
 		})
@@ -892,84 +890,54 @@ class Wrapper extends EventEmitter {
 			return this.muteVolume()
 	}
 
-	async playItem(item, deviceId = this.#lastDeviceId) {
+	async playItem(item, offset = undefined, deviceId = this.#lastDeviceId) {
 		if (this.#lastUser?.product !== 'premium')
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		return this.#wrapCall(async () => {
+			const contextUri = `spotify:${item.type}:${item.id}`
+			const songUri = offset?.uri
+
 			await this.#deviceCall('me/player/play', {
 				method: 'PUT',
 
 				body: JSON.stringify({
-					context_uri: `spotify:${item.type}:${item.id}`
+					context_uri: contextUri,
+					offset
 				})
 			}, deviceId)
 
-			this.#onSongChangeExpected()
-			this.#onContextChangeExpected()
+			if (songUri && this.#lastSong?.item?.uri === songUri)
+				this.#setSong({
+					item: this.#lastSong.item,
+					liked: this.#lastSong.liked,
+					progress: 0
+				})
+			else
+				this.#onSongChangeExpected()
+
+			if (this.#lastPlaybackContext?.uri !== contextUri)
+				this.#onContextChangeExpected()
 
 			return constants.WRAPPER_RESPONSE_SUCCESS
 		})
 	}
 
-	async getPlaylists(page = 1) {
+	async getUserPlaylists(page = 1) {
 		return this.#wrapCall(async () => {
-			const tracks = await connector.callSpotifyApi('me/tracks?limit=1&offset=0')
 			const playlists = await connector.callSpotifyApi(`me/playlists?limit=${constants.WRAPPER_ITEMS_PER_PAGE}&offset=${(page - 1) * constants.WRAPPER_ITEMS_PER_PAGE}`)
 
 			return {
 				status: constants.WRAPPER_RESPONSE_SUCCESS,
 
-				items: [tracks.total > 0 ? {
-					id: 'tracks',
-					type: 'collection',
-					name: 'Liked Songs',
-
-					images: [{
-						width: 64,
-						height: 64,
-						url: 'https://misc.scdn.co/liked-songs/liked-songs-64.jpg'
-					}]
-				} : null].concat(playlists.items.map(playlist => ({
+				items: playlists.items.map(playlist => ({
 					id: playlist.id,
 					type: 'playlist',
 					name: playlist.name,
 					images: playlist.images
-				}))),
+				})),
 
-				total: playlists.total + (tracks.total > 0 ? 1 : 0)
-			}
-		}, true)
-	}
-
-	async getUserPlaylists(page = 1) {
-		return this.#wrapCall(async () => {
-			const tracks = await connector.callSpotifyApi('me/tracks?limit=1&offset=0')
-			const playlists = await connector.callSpotifyApi(`me/playlists?limit=${constants.WRAPPER_ITEMS_PER_PAGE}&offset=${(page - 1) * constants.WRAPPER_ITEMS_PER_PAGE}`)
-
-			return {
-				status: constants.WRAPPER_RESPONSE_SUCCESS,
-
-				items: [tracks.total > 0 ? {
-					id: 'tracks',
-					type: 'collection',
-					name: 'Liked Songs',
-
-					images: [{
-						width: 64,
-						height: 64,
-						url: 'https://misc.scdn.co/liked-songs/liked-songs-64.jpg'
-					}]
-				} : null].concat(playlists.items.map(playlist => ({
-					id: playlist.id,
-					type: 'playlist',
-					name: playlist.name,
-					images: playlist.images,
-					owner: playlist.owner,
-					collaborative: playlist.collaborative
-				}))),
-
-				total: playlists.total + (tracks.total > 0 ? 1 : 0)
+				total: playlists.total
 			}
 		}, true)
 	}

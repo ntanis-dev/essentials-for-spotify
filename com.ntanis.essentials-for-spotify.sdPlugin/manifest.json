@@ -1,6 +1,6 @@
 {
 	"Name": "Essentials for Spotify",
-	"Version": "1.1.0.4",
+	"Version": "1.1.0.5",
 	"Author": "Ntanis",
 	"Actions": [
 		{
@@ -232,10 +232,9 @@
 			"Name": "Add to Playlist",
 			"UUID": "com.ntanis.essentials-for-spotify.add-to-playlist-button",
 			"Icon": "images/actions/add-to-playlist",
-			"Tooltip": "Adds the currently playing song to a selected playlist of yours.",
+			"Tooltip": "Adds the currently playing song to a selected playlist of yours non-exclusively.",
 			"PropertyInspectorPath": "pi/add-to-playlist-button.html",
 			"DisableAutomaticStates": true,
-			"UserTitleEnabled": false,
 			"Controllers": [
 				"Keypad"
 			],

@@ -3,11 +3,8 @@ import logger from './library/logger'
 import connector from './library/connector'
 import actions from './library/actions'
 import CacheableLookup from 'cacheable-lookup'
-
-import {
-	setGlobalDispatcher,
-	Agent
-} from 'undici'
+import http from 'node:http'
+import https from 'node:https'
 
 const cacheable = new CacheableLookup({
 	maxTtl: 60,
@@ -16,16 +13,14 @@ const cacheable = new CacheableLookup({
 	order: 'ipv4first'
 })
 
-const dispatcher = new Agent({
-	connect: {
-		lookup: cacheable.lookup
-	},
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
-	keepAliveTimeout: 60000,
-	keepAliveMaxTimeout: 120000
-})
+http.globalAgent.keepAlive = true
+https.globalAgent.keepAlive = true
+https.globalAgent.keepAliveMsecs = 60000
 
-setGlobalDispatcher(dispatcher)
+cacheable.install(http.globalAgent)
+cacheable.install(https.globalAgent)
 
 StreamDeck.connect().then(() => {
 	logger.info('Connected to Stream Deck.')

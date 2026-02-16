@@ -12,6 +12,15 @@ export default class MyLikedSongs extends ItemsDial {
 		super('layouts/items-layout.json', 'images/icons/items.png')
 	}
 
+	async playSelectedItem(item: any) {
+		return wrapper.playItem({
+			type: 'user',
+			id: `${wrapper.user?.id}:collection`
+		}, {
+			uri: `spotify:track:${item.id}`
+		})
+	}
+
 	async fetchItems(page: number) {
 		return await wrapper.getUserLikedSongs(page)
 	}
