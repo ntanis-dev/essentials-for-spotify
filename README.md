@@ -27,7 +27,7 @@ This is due to Spotify Web API limitations.
   ![Stream Deck MK.2 Layout](https://github.com/user-attachments/assets/e35e98c3-9f26-4e7e-ae5e-574dc08980de)
 
   **Stream Deck +**\
-  ![Stream Deck + Layout](https://github.com/user-attachments/assets/9dae1e9f-34f6-4e7d-921c-a5bba3277832)
+  ![Stream Deck + Layout](https://github.com/user-attachments/assets/d727d0ab-d91a-44e3-ad0d-63b38afbdbe8)
 
 ### Buttons
 
