@@ -23,6 +23,7 @@ class Wrapper extends EventEmitter {
 	#lastSongTimeUpdateAt = null
 	#lastPlaybackContext = null
 	#lastPlaybackStateUpdate = null
+	#lastPausedAt = null
 	#lastExpectedCdnKeepAlive = null
 	#lastRepeatState = null
 	#lastCurrentlyPlayingType = null
@@ -144,6 +145,17 @@ class Wrapper extends EventEmitter {
 		return response
 	}
 
+	#getPlaybackStateInterval() {
+		if (!this.#lastSong)
+			return constants.INTERVAL_UPDATE_PLAYBACK_STATE_IDLE
+		else if (this.#lastPlaying)
+			return constants.INTERVAL_UPDATE_PLAYBACK_STATE_PLAYING
+		else if (this.#lastPausedAt && ((Date.now() - this.#lastPausedAt) >= constants.PLAYBACK_PAUSED_THRESHOLD))
+			return constants.INTERVAL_UPDATE_PLAYBACK_STATE_PAUSED
+		else
+			return constants.INTERVAL_UPDATE_PLAYBACK_STATE_PLAYING
+	}
+
 	async #updatePlaybackState(force = false) {
 		if (this.#updatePlaybackStateStatus === 'skip' && (!force)) {
 			this.#updatePlaybackStateStatus = 'idle'
@@ -151,7 +163,7 @@ class Wrapper extends EventEmitter {
 		} else if (this.#updatePlaybackStateStatus === 'updating' || this.#updatePlaybackStateStatus === 'pause')
 			return
 
-		if (this.#lastPlaybackStateUpdate && (Date.now() - this.#lastPlaybackStateUpdate < constants.INTERVAL_UPDATE_PLAYBACK_STATE) && (!force))
+		if (this.#lastPlaybackStateUpdate && (Date.now() - this.#lastPlaybackStateUpdate < this.#getPlaybackStateInterval()) && (!force))
 			return
 
 		const shouldKeepAliveExpectedCdn = this.#lastExpectedCdnKeepAlive && (Date.now() - this.#lastExpectedCdnKeepAlive < constants.INTERVAL_KEEP_ALIVE_EXPECTED_CDN_IN_PLAYBACK_STATE)
@@ -448,8 +460,11 @@ class Wrapper extends EventEmitter {
 		if (this.#lastPlaying === playing)
 			return
 
-		if (playing)
+		if (playing) {
 			this.#lastSongTimeUpdateAt = Date.now()
+			this.#lastPausedAt = null
+		} else
+			this.#lastPausedAt = Date.now()
 
 		this.#updatePlaybackStateStatus = 'skip'
 		this.#lastPlaying = playing
