@@ -116,7 +116,7 @@ class Wrapper extends EventEmitter {
 		}
 	}
 
-	async #deviceCall(path, options, deviceId) {
+	async #deviceCall(path, options, deviceId, retried = false) {
 		if (!deviceId) {
 			if (this.#lastDeviceId)
 				throw new constants.NoDeviceError('No device specified.')
@@ -139,6 +139,14 @@ class Wrapper extends EventEmitter {
 
 				if (response === constants.API_NOT_FOUND_RESPONSE)
 					throw new constants.NoDeviceError('No device available.')
+			} else if (!retried) {
+				await new Promise(resolve => setTimeout(resolve, 2000))
+
+				const freshDevices = (await connector.callSpotifyApi('me/player/devices')).devices ?? []
+
+				this.#setDevices(this.#lastDeviceId, freshDevices)
+
+				return this.#deviceCall(path.slice(0, -1), options, freshDevices.find(device => device.is_active)?.id ?? deviceId, true)
 			} else
 				throw new constants.NoDeviceError('No device available.')
 		}
