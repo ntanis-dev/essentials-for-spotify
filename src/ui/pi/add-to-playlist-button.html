@@ -3,9 +3,15 @@
 <head lang="en">
     <meta charset="utf-8" />
     <script src="sdpi-components.js"></script>
+    <style>
+        body {
+            -webkit-user-select: none;
+            user-select: none;
+        }
+    </style>
 </head>
 <body>
-    <sdpi-item label="Playlist URL">
+    <sdpi-item label="Spotify URL">
         <sdpi-textfield
             setting="spotify_url"
             pattern="/^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?playlist\/[A-Za-z0-9]{22}(?:\/)?(?:\?.*)?$/i"

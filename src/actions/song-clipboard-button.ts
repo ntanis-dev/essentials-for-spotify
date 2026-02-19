@@ -1,6 +1,5 @@
 import {
-	action,
-	WillAppearEvent
+	action
 } from '@elgato/streamdeck'
 
 import {
@@ -48,13 +47,73 @@ export default class SongClipboardButton extends Button {
 		return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
 	}
 
+	#getElements(context: string) {
+		const settings = this.settings[context]
+
+		if (settings.elements && Array.isArray(settings.elements))
+			return settings.elements
+
+		return [
+			{
+				key: 'title',
+				enabled: true
+			},
+
+			{
+				key: 'artists',
+				enabled: true
+			},
+
+			{
+				key: 'link',
+				enabled: true
+			}
+		]
+	}
+
+	async onSettingsUpdated(context: string, oldSettings: any) {
+		if (this.settings[context].separator === undefined)
+			await this.setSettings(context, {
+				separator: ' - '
+			})
+	}
+
 	async invokeWrapperAction(context: string, type: symbol) {
 		if (type === Button.TYPES.RELEASED)
 			return
 
-		if (wrapper.song)
-			return this.#copyToClipboard(`${wrapper.song.item.name} - ${wrapper.song.item.artists.map((artist: any) => artist.name).join(', ')} \n${wrapper.song.item.external_urls.spotify}`)
+		if (!wrapper.song)
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
-		return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+		const elements = this.#getElements(context)
+		const separator = this.settings[context].separator ?? ' - '
+		const segments: string[] = []
+		let currentParts: string[] = []
+
+		for (const element of elements) {
+			if (!element.enabled)
+				continue
+
+			if (element.key === 'title')
+				currentParts.push(wrapper.song.item.name)
+			else if (element.key === 'artists')
+				currentParts.push(wrapper.song.item.artists.map((a: any) => a.name).join(', '))
+			else if (element.key === 'link') {
+				if (currentParts.length > 0) {
+					segments.push(currentParts.join(separator))
+					currentParts = []
+				}
+
+				segments.push(wrapper.song.item.external_urls.spotify)
+			}
+		}
+
+		if (currentParts.length > 0)
+			segments.push(currentParts.join(separator))
+
+		if (segments.length === 0)
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
+
+		return this.#copyToClipboard(segments.join('\n'))
 	}
 }

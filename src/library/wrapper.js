@@ -277,7 +277,7 @@ class Wrapper extends EventEmitter {
 					break
 				}
 
-				const playlist = await this.#wrapCall(() => connector.callSpotifyApi(`playlists/${id}`), true)
+				const playlist = await this.#wrapCall(() => connector.callSpotifyApi(`playlists/${id}`, {}, [constants.API_NOT_FOUND_RESPONSE]), true)
 
 				if ((!playlist) && nullOnFailure)
 					return null

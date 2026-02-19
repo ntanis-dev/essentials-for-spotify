@@ -359,6 +359,7 @@
 			"UUID": "com.ntanis.essentials-for-spotify.song-clipboard-button",
 			"Icon": "images/actions/song-clipboard",
 			"Tooltip": "Copies the information of the current song to the clipboard.",
+			"PropertyInspectorPath": "pi/song-clipboard-button.html",
 			"DisableAutomaticStates": true,
 			"Controllers": [
 				"Keypad"

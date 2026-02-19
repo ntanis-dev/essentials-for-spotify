@@ -47,7 +47,8 @@ export default class UserInformationButton extends Button {
 					return
 				}
 
-				const image = await images.getRaw(user.images.sort((a: any, b: any) => a.width - b.width)[0]?.url, 'userProfilePicture')
+				const imageUrl = user.images?.length > 0 ? user.images.sort((a: any, b: any) => a.width - b.width)[0]?.url : undefined
+				const image = imageUrl ? await images.getRaw(imageUrl, 'userProfilePicture') : null
 
 				if (!image)
 					await this.setImage(context, 'images/states/user-information')
