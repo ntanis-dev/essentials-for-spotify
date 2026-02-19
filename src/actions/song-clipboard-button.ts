@@ -82,7 +82,7 @@ export default class SongClipboardButton extends Button {
 		if (type === Button.TYPES.RELEASED)
 			return
 
-		if (!wrapper.song)
+		if ((!wrapper.song) || wrapper.song.item.uri.includes('local:'))
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		const elements = this.#getElements(context)

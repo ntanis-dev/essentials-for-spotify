@@ -95,26 +95,27 @@ export default class SongStackButton extends Button {
 	}
 
 	async #openSpotify() {
-		if (wrapper.song) {
-			switch (os.platform()) {
-				case 'darwin':
-					spawn('open', [wrapper.song.item.uri])
-					break
+		if ((!wrapper.song) || wrapper.song.item.uri.includes('local:'))
+			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
-				case 'win32':
-					spawn('cmd', ['/c', 'start', '', wrapper.song.item.uri])
-					break
+		switch (os.platform()) {
+			case 'darwin':
+				spawn('open', [wrapper.song.item.uri])
+				break
 
-				case 'linux':
-					spawn('xdg-open', [wrapper.song.item.uri])
-					break
+			case 'win32':
+				spawn('cmd', ['/c', 'start', '', wrapper.song.item.uri])
+				break
 
-				default:
-					return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-			}
+			case 'linux':
+				spawn('xdg-open', [wrapper.song.item.uri])
+				break
 
-			return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
+			default:
+				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 		}
+
+		return constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE
 	}
 
 	async #invokePress(context: string, action: string) {

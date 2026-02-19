@@ -128,7 +128,7 @@ export default class AddToPlaylistButton extends Button {
 		if (type === Button.TYPES.RELEASED)
 			return
 
-		if (!this.#cachedPlaylist[context]?.id)
+		if ((!this.#cachedPlaylist[context]?.id) || wrapper.song?.item.uri.includes('local:'))
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
 		const currentTrack = await wrapper.getCurrentTrack()

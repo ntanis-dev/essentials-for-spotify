@@ -122,7 +122,7 @@ export default class ContextInformationButton extends Button {
 		if (this.settings[context].action === 'play_pause')
 			return wrapper.togglePlayback()
 		else if (this.settings[context].action === 'open_spotify')
-			if (wrapper.playbackContext) {
+			if (wrapper.playbackContext && wrapper.playbackContext.type !== 'local') {
 				switch (os.platform()) {
 					case 'darwin':
 						spawn('open', [wrapper.playbackContext.uri])
