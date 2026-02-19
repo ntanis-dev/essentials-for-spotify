@@ -256,18 +256,22 @@ export default class ItemsDial extends Dial {
 			if (this.#lastTotal === 0)
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 
-			if (this.#currentItems[context] !== undefined)
+			if (this.#currentItems[context] !== undefined) {
 				if (this.#items.items[this.#currentItems[context]]) {
 					const apiCall = await this.playSelectedItem(this.#items.items[this.#currentItems[context]])
 
-					if (apiCall !== constants.WRAPPER_RESPONSE_SUCCESS && apiCall !== constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE)
+					if (apiCall !== constants.WRAPPER_RESPONSE_SUCCESS && apiCall !== constants.WRAPPER_RESPONSE_SUCCESS_INDICATIVE) {
 						await this.#refreshLayout(true, context)
-					else
-						return constants.WRAPPER_RESPONSE_SUCCESS
-				} else
-					await this.#refreshLayout(true, context)
+						return apiCall
+					}
 
-				return constants.WRAPPER_RESPONSE_API_ERROR
+					return constants.WRAPPER_RESPONSE_SUCCESS
+				}
+
+				await this.#refreshLayout(true, context)
+			}
+
+			return constants.WRAPPER_RESPONSE_API_ERROR
 		} else
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
