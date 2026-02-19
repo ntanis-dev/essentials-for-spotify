@@ -338,6 +338,23 @@
 			]
 		},
 		{
+			"Name": "Set Volume",
+			"UUID": "com.ntanis.essentials-for-spotify.set-volume-button",
+			"Icon": "images/actions/set-volume",
+			"Tooltip": "Sets the playback volume to a specific level.",
+			"PropertyInspectorPath": "pi/set-volume-button.html",
+			"DisableAutomaticStates": true,
+			"Controllers": [
+				"Keypad"
+			],
+			"States": [
+				{
+					"Image": "images/states/set-volume",
+					"TitleAlignment": "middle"
+				}
+			]
+		},
+		{
 			"Name": "Play Context",
 			"UUID": "com.ntanis.essentials-for-spotify.play-context-button",
 			"Icon": "images/actions/play-context",

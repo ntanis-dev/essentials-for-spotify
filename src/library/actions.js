@@ -25,6 +25,7 @@ import VolumeControlDial from './../actions/volume-control-dial'
 import PlaybackControlDial from './../actions/playback-control-dial'
 import MyPlaylistsDial from './../actions/my-playlists-dial'
 import MyLikedSongsDial from '../actions/my-liked-songs-dial'
+import SetVolumeButton from './../actions/set-volume-button'
 import AddToPlaylistButton from './../actions/add-to-playlist-button'
 
 export default {
@@ -55,6 +56,7 @@ export default {
 		StreamDeck.actions.registerAction(new PlaybackControlDial())
 		StreamDeck.actions.registerAction(new MyPlaylistsDial())
 		StreamDeck.actions.registerAction(new MyLikedSongsDial())
+		StreamDeck.actions.registerAction(new SetVolumeButton())
 		StreamDeck.actions.registerAction(new AddToPlaylistButton())
 	}
 }

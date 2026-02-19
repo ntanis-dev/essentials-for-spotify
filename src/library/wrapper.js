@@ -140,7 +140,7 @@ class Wrapper extends EventEmitter {
 				if (response === constants.API_NOT_FOUND_RESPONSE)
 					throw new constants.NoDeviceError('No device available.')
 			} else if (!retried) {
-				await new Promise(resolve => setTimeout(resolve, 2000))
+				await new Promise(resolve => setTimeout(resolve, 3000))
 
 				const freshDevices = (await connector.callSpotifyApi('me/player/devices')).devices ?? []
 
@@ -748,6 +748,10 @@ class Wrapper extends EventEmitter {
 
 	async volumeUp(step = constants.DEFAULT_VOLUME_STEP) {
 		return this.#setPlaybackVolume((this.#lastMuted !== false ? (this.#lastMuted || 0) : this.#lastVolumePercent) + (this.#lastMuted !== false ? 0 : step))
+	}
+
+	async setVolume(volumePercent) {
+		return this.#setPlaybackVolume(volumePercent)
 	}
 
 	async nextSong(deviceId = this.#lastDeviceId) {
