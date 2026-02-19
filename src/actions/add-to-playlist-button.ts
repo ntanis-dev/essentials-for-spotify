@@ -29,10 +29,10 @@ export default class AddToPlaylistButton extends Button {
 
 		for (const context of this.contexts)
 			promises.push(new Promise(async resolve => {
-				if (!song || pending) {
+				if ((!song) || pending) {
 					this.clearMarquee(context)
 					await this.setTitle(context, '')
-					await this.#updateImage(context)
+					await this.setImage(context, pending ? 'images/states/pending' : 'images/states/add-to-playlist-unknown')
 					this.setUnpressable(context, true)
 				} else {
 					this.setUnpressable(context, false)
@@ -190,7 +190,9 @@ export default class AddToPlaylistButton extends Button {
 
 	async onStateLoss(context: string) {
 		await super.onStateLoss(context)
+
 		this.clearMarquee(context)
+
 		await this.setTitle(context, '')
 	}
 }
