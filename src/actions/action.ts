@@ -182,16 +182,17 @@ export class Action extends SingletonAction {
 		return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`
 	}
 
-	beautifyTime(progressMs: number, durationMs: number, showProgress: boolean = true, showDuration: boolean = true): string {
+	beautifyTime(progressMs: number, durationMs: number, showProgress: boolean = true, showDuration: boolean = true, remaining: boolean = false): string {
 		const progress = Math.floor(progressMs / 1000)
 		const duration = Math.floor(durationMs / 1000)
 
 		const progressMinutes = Math.floor(progress / 60)
 		const progressSeconds = progress - (progressMinutes * 60)
 
-		const durationMinutes = Math.floor(duration / 60)
-		const durationSeconds = duration - (durationMinutes * 60)
+		const secondValue = remaining ? Math.max(0, duration - progress) : duration
+		const secondMinutes = Math.floor(secondValue / 60)
+		const secondSeconds = secondValue - (secondMinutes * 60)
 
-		return `${showProgress ? `${progressMinutes}:${progressSeconds.toString().padStart(2, '0')}` : ''}${showProgress && showDuration ? ' / ' : ''}${showDuration ? `${durationMinutes}:${durationSeconds.toString().padStart(2, '0')}` : ''}`
+		return `${showProgress ? `${progressMinutes}:${progressSeconds.toString().padStart(2, '0')}` : ''}${showProgress && showDuration ? ' / ' : ''}${showDuration ? `${remaining ? '-' : ''}${secondMinutes}:${secondSeconds.toString().padStart(2, '0')}` : ''}`
 	}
 }
