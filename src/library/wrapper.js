@@ -572,7 +572,7 @@ class Wrapper extends EventEmitter {
 			this.#lastSong = song
 			this.#previousSong = JSON.parse(JSON.stringify(song))
 
-			if ((this.#lastPlaybackContext?.type === 'local' && (!song.item.uri.includes('local:'))) || this.#lastPlaybackContext?.type !== 'local' && song.item.uri.includes('local:'))
+			if (this.#lastPlaybackContext?.type === 'local' && (!song.item.uri.includes('local:')))
 				this.#onContextChangeExpected()
 
 			if (songChanged || timeChanged)
@@ -1035,20 +1035,37 @@ class Wrapper extends EventEmitter {
 
 			realUrl.search = ''
 
-			const type = realUrl.pathname.split('/')[1]
-			const id = realUrl.pathname.split('/')[2]
-			const uri = `spotify:${type}:${id}`
+			const parts = realUrl.pathname.split('/').filter(p => p)
+			const startIndex = parts[0]?.match(/^intl-[a-z]{2}$/) ? 1 : 0
+
+			const type = parts[startIndex]
+			const id = parts[startIndex + 1]
 
 			if (!['artist', 'album', 'playlist', 'show', 'collection', 'local', 'track'].includes(type))
 				return null
+
+			let itemType = type
+			let itemId = id
+			let uri = `spotify:${type}:${id}`
+
+			if (type === 'collection')
+				if (id === 'tracks') {
+					if (!this.#lastUser?.id)
+						return null
+
+					itemType = 'user'
+					itemId = `${this.#lastUser.id}:collection`
+					uri = `spotify:user:${this.#lastUser.id}:collection`
+				} else
+					return null
 
 			const typeData = await this.#getTypeData(type, uri, true)
 
 			return typeData ? {
 				url,
 				uri,
-				id,
-				type,
+				id: itemId,
+				type: itemType,
 				title: typeData.title,
 				subtitle: typeData.subtitle,
 				extra: typeData.extra,
