@@ -28,7 +28,7 @@ export default class PlayContextButton extends Button {
 		this.setStatelessImage('images/states/play-context-unknown')
 
 		wrapper.on('playbackContextChanged', () => {
-			for (const context of this.contexts)
+			for (const context of Object.keys(this.#forcedActiveContexts))
 				if (wrapper.playbackContext?.uri === this.#cachedPlayContexts[context]?.uri)
 					delete this.#forcedActiveContexts[context]
 
@@ -40,7 +40,7 @@ export default class PlayContextButton extends Button {
 	async #updatePlayContext(context: string, oldSettings: any = undefined) {
 		this.setUnpressable(context, true)
 
-		const badUrl = !/^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?(?:album|artist|playlist)\/[A-Za-z0-9]{22}(?:\/)?(?:\?.*)?$/.test(this.settings[context].spotify_url)
+		const badUrl = !/^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?(?:(?:album|artist|playlist)\/[A-Za-z0-9]{22}|collection\/tracks)(?:\/)?(?:\?.*)?$/.test(this.settings[context].spotify_url)
 
 		if ((!oldSettings) || badUrl || this.settings[context].spotify_url !== this.#cachedPlayContexts[context]?.url || (!(oldSettings.show || []).every((entry: string) => entry === 'active_border' || entry === 'inactive_border' || (this.settings[context].show || []).includes(entry))) || (!(this.settings[context].show || []).every((entry: string) => entry === 'active_border' || entry === 'inactive_border' || (oldSettings.show || []).includes(entry))))
 			this.clearMarquee(context)
