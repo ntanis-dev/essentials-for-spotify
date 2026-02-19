@@ -121,10 +121,10 @@ class Wrapper extends EventEmitter {
 			if (this.#lastDeviceId)
 				throw new constants.NoDeviceError('No device specified.')
 
-			const activeDevices = this.#lastDevices.filter(device => device.type !== 'Speaker')
+			const devices = this.#lastDevices.filter(device => device.type !== 'Speaker')
 
-			if (activeDevices.length > 0)
-				this.#setDevices(activeDevices[0].id, activeDevices)
+			if (devices.length > 0)
+				this.#setDevices(devices.find(device => device.is_active)?.id, devices)
 		}
 
 		path = `${path}${path.includes('?') ? '&' : '?'}`
@@ -140,11 +140,12 @@ class Wrapper extends EventEmitter {
 				if (response === constants.API_NOT_FOUND_RESPONSE)
 					throw new constants.NoDeviceError('No device available.')
 			} else if (!retried) {
-				await new Promise(resolve => setTimeout(resolve, 3000))
+				await new Promise(resolve => setTimeout(resolve, 5000))
 
-				const freshDevices = (await connector.callSpotifyApi('me/player/devices')).devices ?? []
+				const freshDevices = ((await connector.callSpotifyApi('me/player/devices')).devices ?? []).filter(device => device.type !== 'Speaker')
 
-				this.#setDevices(this.#lastDeviceId, freshDevices)
+				if (freshDevices.length > 0)
+					this.#setDevices(freshDevices.find(device => device.id === this.#lastDeviceId)?.id ?? freshDevices.find(device => device.is_active)?.id, freshDevices)
 
 				return this.#deviceCall(path.slice(0, -1), options, freshDevices.find(device => device.is_active)?.id ?? deviceId, true)
 			} else
