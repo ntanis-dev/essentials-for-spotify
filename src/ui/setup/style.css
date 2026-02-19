@@ -16,6 +16,13 @@ body {
 	color: #1db954;
 }
 
+#note {
+    text-align: center;
+    width: 100%;
+    display: block;
+    color: lightgoldenrodyellow;
+}
+
 small {
 	text-align: left;
 }
