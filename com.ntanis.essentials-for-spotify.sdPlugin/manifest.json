@@ -479,6 +479,7 @@
 			"Name": "My Playlists",
 			"UUID": "com.ntanis.essentials-for-spotify.my-playlists-dial",
 			"Icon": "images/actions/playlists",
+			"PropertyInspectorPath": "pi/my-playlists-dial.html",
 			"Tooltip": "Navigate and play through your playlists.",
 			"Controllers": [
 				"Encoder"

@@ -32,6 +32,7 @@ class Wrapper extends EventEmitter {
 	#lastDevices = []
 	#lastDisallowFlags = []
 	#updatePlaybackStateStatus = 'idle'
+	#knownPlaylists = new Map()
 
 	constructor() {
 		super()
@@ -270,6 +271,12 @@ class Wrapper extends EventEmitter {
 				break
 
 			case 'playlist':
+				if (this.#knownPlaylists.has(id)) {
+					title = this.#knownPlaylists.get(id)
+					extra = 'Playlist 📃'
+					break
+				}
+
 				const playlist = await this.#wrapCall(() => connector.callSpotifyApi(`playlists/${id}`), true)
 
 				if ((!playlist) && nullOnFailure)
@@ -1094,6 +1101,13 @@ class Wrapper extends EventEmitter {
 
 	get devices() {
 		return this.#lastDevices
+	}
+
+	setKnownPlaylists(playlists) {
+		this.#knownPlaylists.clear()
+
+		for (const playlist of playlists)
+			this.#knownPlaylists.set(playlist.id, playlist.name)
 	}
 }
 

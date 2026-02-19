@@ -108,7 +108,12 @@ export default class ItemsDial extends Dial {
 			this.#currentItems = {}
 			this.#items = {}
 
-			await this.#refreshItems(context)
+			const refreshResult = await this.#refreshItems(context)
+
+			if (refreshResult === undefined) {
+				await this.setIcon(context, this.originalIcon)
+				return
+			}
 
 			if (this.#lastTotal === 0) {
 				await this.setIcon(context, this.originalIcon)

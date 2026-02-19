@@ -50,7 +50,8 @@ const CONNECTOR_DEFAULT_SCOPES = [
 	'user-library-modify',
 	'playlist-read-private',
 	'playlist-modify-public',
-	'playlist-modify-private'
+	'playlist-modify-private',
+	'playlist-read-collaborative'
 ]
 
 const CHARACTER_WIDTH_MAP = {

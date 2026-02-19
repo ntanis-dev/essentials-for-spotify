@@ -1,0 +1,334 @@
+<!doctype html>
+<html>
+<head lang="en">
+    <meta charset="utf-8" />
+    <style>
+        :root {
+            --window-bg-color: #2d2d2d;
+            --input-bg-color: #3d3d3d;
+            --input-font-color: #d8d8d8;
+            --label-color: #969696;
+            --hover-bg-color: #4d4d4d;
+            --border-radius: 3px;
+            --font-family: 'Segoe UI', 'Roboto', 'Open Sans', 'DejaVu Sans', 'Trebuchet MS', sans-serif;
+            --font-size: 9pt;
+            --input-height: 26px;
+            --row-gap: 4px;
+            --invalid-color: #e74c3c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--window-bg-color);
+            color: var(--input-font-color);
+            font-family: var(--font-family);
+            font-size: var(--font-size);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .sdpi-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 4px 16px;
+            min-height: 32px;
+        }
+
+        .sdpi-item-label {
+            flex: 0 0 90px;
+            color: var(--label-color);
+            font-size: var(--font-size);
+            padding-top: 7px;
+            text-align: right;
+            padding-right: 8px;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .sdpi-item-value {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .playlist-row {
+            display: flex;
+            gap: var(--row-gap);
+            margin-bottom: var(--row-gap);
+        }
+
+        .playlist-row .fields {
+            flex: 1;
+            display: flex;
+            gap: var(--row-gap);
+            min-width: 0;
+        }
+
+        .playlist-row .playlist-name {
+            flex: 0 0 30%;
+        }
+
+        .playlist-row input[type="text"] {
+            background-color: var(--input-bg-color);
+            color: var(--input-font-color);
+            border: 1px solid transparent;
+            border-radius: var(--border-radius);
+            padding: 0 8px;
+            height: var(--input-height);
+            font-family: var(--font-family);
+            font-size: var(--font-size);
+            outline: none;
+            min-width: 0;
+            width: 100%;
+            transition: border-color 0.15s;
+        }
+
+        .playlist-row input[type="text"].invalid {
+            border-color: var(--invalid-color);
+        }
+
+        .playlist-row input[type="text"]::placeholder {
+            color: #666;
+        }
+
+        button {
+            background-color: var(--input-bg-color);
+            color: var(--input-font-color);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            height: var(--input-height);
+            width: var(--input-height);
+            min-width: var(--input-height);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.15s;
+        }
+
+        .playlist-row button {
+            align-self: center;
+        }
+
+        button:hover {
+            background-color: var(--hover-bg-color);
+        }
+
+        button:active {
+            background-color: #555;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .counter {
+            color: var(--label-color);
+            font-size: 8pt;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="sdpi-item">
+        <div class="sdpi-item-label">Extra Playlists</div>
+        <div class="sdpi-item-value">
+            <div id="playlist-list"></div>
+            <div class="controls">
+                <span class="counter" id="counter"></span>
+                <button id="add-btn" type="button" title="Add playlist">+</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MAX_PLAYLISTS = 25
+        const URL_REGEX = /^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?playlist\/[A-Za-z0-9]{22}(?:\/)?(?:\?.*)?$/i
+        const DEBOUNCE_MS = 250
+
+        let ws = null
+        let piUUID = null
+        let currentSettings = {}
+        let saveTimeout = null
+
+        function connectElgatoStreamDeckSocket(port, uuid, event, info, actionInfo) {
+            piUUID = uuid
+            currentSettings = JSON.parse(actionInfo).payload.settings || {}
+
+            ws = new WebSocket(`ws://127.0.0.1:${port}`)
+
+            ws.onopen = () => {
+                ws.send(JSON.stringify({
+                    event: event,
+                    uuid: uuid
+                }))
+
+                renderList(currentSettings.extra_playlists || [])
+            }
+
+            ws.onmessage = evt => {
+                const data = JSON.parse(evt.data)
+
+                if (data.event === 'didReceiveSettings') {
+                    currentSettings = data.payload.settings || {}
+                    renderList(currentSettings.extra_playlists || [])
+                }
+            }
+        }
+
+        const saveSettings = () => {
+            if ((!ws) || ws.readyState !== 1)
+                return
+
+            const rows = document.querySelectorAll('#playlist-list .playlist-row')
+            const playlists = []
+
+            rows.forEach(row => {
+                const name = row.querySelector('.playlist-name').value.trim()
+                const url = row.querySelector('.playlist-url').value.trim()
+
+                if (name && url && URL_REGEX.test(url))
+                    playlists.push({
+                        name: name,
+                        url: url
+                    })
+            })
+
+            currentSettings = Object.assign({}, currentSettings, {
+                extra_playlists: playlists
+            })
+
+            ws.send(JSON.stringify({
+                event: 'setSettings',
+                context: piUUID,
+                payload: currentSettings
+            }))
+        }
+
+        const debouncedSave = () => {
+            clearTimeout(saveTimeout)
+            saveTimeout = setTimeout(saveSettings, DEBOUNCE_MS)
+        }
+
+        const validateUrl = input => {
+            const value = input.value.trim()
+
+            if (value === '')
+                input.classList.remove('invalid')
+            else if (URL_REGEX.test(value))
+                input.classList.remove('invalid')
+            else
+                input.classList.add('invalid')
+        }
+
+        const updateCounter = () => {
+            const count = document.querySelectorAll('#playlist-list .playlist-row').length
+
+            document.getElementById('counter').textContent = count + ' / ' + MAX_PLAYLISTS
+            document.getElementById('add-btn').style.display = count >= MAX_PLAYLISTS ? 'none' : ''
+        }
+
+        const createRow = entry => {
+            let name = ''
+            let url = ''
+
+            if (entry && typeof entry === 'object') {
+                name = entry.name || ''
+                url = entry.url || ''
+            }
+
+            const row = document.createElement('div')
+            const fields = document.createElement('div')
+            const nameInput = document.createElement('input')
+
+            row.className = 'playlist-row'
+            fields.className = 'fields'
+
+            nameInput.type = 'text'
+            nameInput.className = 'playlist-name'
+            nameInput.placeholder = 'Name'
+            nameInput.value = name
+            nameInput.spellcheck = false
+            nameInput.addEventListener('input', debouncedSave)
+
+            const urlInput = document.createElement('input')
+
+            urlInput.type = 'text'
+            urlInput.className = 'playlist-url'
+            urlInput.placeholder = 'https://open.spotify.com/playlist/...'
+            urlInput.value = url
+            urlInput.spellcheck = false
+
+            urlInput.addEventListener('input', () => {
+                validateUrl(urlInput)
+                debouncedSave()
+            })
+
+            urlInput.addEventListener('paste', () => setTimeout(() => {
+                validateUrl(urlInput)
+                debouncedSave()
+            }, 0))
+
+            const removeBtn = document.createElement('button')
+
+            removeBtn.type = 'button'
+            removeBtn.textContent = '\u2212'
+
+            removeBtn.addEventListener('click', () => {
+                row.remove()
+                updateCounter()
+                updateRemoveButtons()
+                saveSettings()
+            })
+
+            fields.appendChild(nameInput)
+            fields.appendChild(urlInput)
+            row.appendChild(fields)
+            row.appendChild(removeBtn)
+
+            if (url)
+                validateUrl(urlInput)
+
+            return row
+        }
+
+        const updateRemoveButtons = () => document.querySelectorAll('#playlist-list .playlist-row').forEach(row => row.querySelector('button').style.visibility = rows.length <= 1 ? 'hidden' : '')
+
+        const renderList = playlists => {
+            const list = document.getElementById('playlist-list')
+
+            list.innerHTML = ''
+
+            if (playlists.length === 0)
+                list.appendChild(createRow(null))
+            else
+                playlists.forEach(entry => list.appendChild(createRow(entry)))
+
+            updateCounter()
+            updateRemoveButtons()
+        }
+
+        document.getElementById('add-btn').addEventListener('click', () => {
+            const count = document.querySelectorAll('#playlist-list .playlist-row').length
+
+            if (count >= MAX_PLAYLISTS)
+                return
+
+            const row = createRow(null)
+
+            document.getElementById('playlist-list').appendChild(row)
+            row.querySelector('.playlist-name').focus()
+
+            updateCounter()
+            updateRemoveButtons()
+        })
+    </script>
+</body>
+</html>
