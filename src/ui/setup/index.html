@@ -10,17 +10,10 @@
 </head>
 <body>
 	<div class="form-container">
-		<h2>
-			Essentials for Spotify
-
-			<br />
-
-			<small>
-				<small>Installation</small>
-			</small>
-
+		<div class="header">
 			<img alt="Essentials for Spotify" src="logo.png" />
-		</h2>
+			<h1>Essentials for Spotify <span>Installation</span></h1>
+		</div>
 
 		<div class="instructions">
 			<span id="success">
@@ -30,15 +23,15 @@
 			</span>
 
 			<span id="note" class="main">
-				<small>If you are using a <b>VPN</b>, you may need to temporarily disable it during setup.<br />You can re-enable it afterwards.</small>
+				If you are using a <b>VPN</b>, you may need to temporarily disable it.<br />You can re-enable it afterwards.
 			</span>
 
 			<ol class="main">
 				<li>Login to <a href="https://developer.spotify.com" target="_blank" rel="noopener">Spotify for Developers</a> with your Spotify account.</li>
-				<li>Go to <a href="https://developer.spotify.com/dashboard/create" target="_blank" rel="noopener">Create app - Spotify for Developers</a>.</li>
-				<li>Set <code id="url">http://127.0.0.1:<span class="port"></span></code> as <b>"Redirect URI"</b> and click <b>Add</b>.</li>
+				<li>Go to <a href="https://developer.spotify.com/dashboard/create" target="_blank" rel="noopener">Create app</a>.</li>
+				<li>Set <code id="url">http://127.0.0.1:<span class="port"></span></code> as <b>"Redirect URI"</b>.</li>
 				<li>Check <b>"Web API"</b> in <b>"Which API/SDKs are you planning to use?"</b>.</li>
-				<li>Fill the rest of the form to your liking, <b>"Website"</b> field can be left empty.</li>
+				<li>Fill the rest of the form to your liking, <b>"Website"</b> can be left empty.</li>
 				<li>Create the app and navigate to the app's dashboard.</li>
 				<li>Click <b>"Basic Information"</b> in the app's dashboard.</li>
 				<li>Copy the <b>"Client ID"</b> to the form below.</li>
@@ -47,23 +40,16 @@
 			</ol>
 		</div>
 
-		<br />
-
 		<form action="/" method="POST" class="main">
 			<div id="error">
 				<span>Something went wrong!</span>
 				<br />
-				<small><b>Please double-check the app information and try again.</b></small>
-				<br /><br><br>
+				<small>Please double-check the app information and try again.</small>
 			</div>
 
 			<input type="text" id="clientId" name="clientId" placeholder="Client ID" required />
 			<input type="text" id="clientSecret" name="clientSecret" placeholder="Client Secret" required />
 			<input type="submit" value="Submit" />
-
-			<br />
-
-			<small>If you get "<b>INVALID_CLIENT: Invalid redirect URI</b>":<br />Make sure you have copied the <b>Redirect URL</b> exactly as is, without a trailing slash (/).</small>
 		</form>
 	</div>
 
