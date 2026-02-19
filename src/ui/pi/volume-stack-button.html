@@ -1,45 +1,48 @@
 <!doctype html>
 <html>
-<head lang="en">
-    <meta charset="utf-8" />
-    <script src="sdpi-components.js"></script>
-    <style>
-        body {
-            -webkit-user-select: none;
-            user-select: none;
-        }
-    </style>
-</head>
-<body>
-    <sdpi-item label="Step %">
-        <sdpi-range
-            setting="step"
-            min="1"
-            max="20"
-            step="1"
-            showlabels>
-        </sdpi-range>
-    </sdpi-item>
-    <sdpi-item label="Single Press">
-        <sdpi-select setting="single_press">
-            <option value="volume_up">Volume Up</option>
-            <option value="volume_down">Volume Down</option>
-            <option value="volume_mute_unmute">Volume Mute / Unmute</option>
-        </sdpi-select>
-    </sdpi-item>
-    <sdpi-item label="Double Press">
-        <sdpi-select setting="double_press">
-            <option value="volume_up">Volume Up</option>
-            <option value="volume_down">Volume Down</option>
-            <option value="volume_mute_unmute">Volume Mute / Unmute</option>
-        </sdpi-select>
-    </sdpi-item>
-    <sdpi-item label="Long Press">
-        <sdpi-select setting="long_press">
-            <option value="volume_up">Volume Up</option>
-            <option value="volume_down">Volume Down</option>
-            <option value="volume_mute_unmute">Volume Mute / Unmute</option>
-        </sdpi-select>
-    </sdpi-item>
-</body>
+    <head lang="en">
+        <meta charset="utf-8" />
+        <script src="sdpi-components.js"></script>
+        <style>
+            body {
+                -webkit-user-select: none;
+                user-select: none;
+            }
+        </style>
+    </head>
+    <body>
+        <sdpi-item label="Step %">
+            <sdpi-range
+                setting="step"
+                min="1"
+                max="20"
+                step="1"
+                showlabels>
+            </sdpi-range>
+        </sdpi-item>
+        
+        <sdpi-item label="Single Press">
+            <sdpi-select setting="single_press">
+                <option value="volume_up">Volume Up</option>
+                <option value="volume_down">Volume Down</option>
+                <option value="volume_mute_unmute">Volume Mute / Unmute</option>
+            </sdpi-select>
+        </sdpi-item>
+
+        <sdpi-item label="Double Press">
+            <sdpi-select setting="double_press">
+                <option value="volume_up">Volume Up</option>
+                <option value="volume_down">Volume Down</option>
+                <option value="volume_mute_unmute">Volume Mute / Unmute</option>
+            </sdpi-select>
+        </sdpi-item>
+
+        <sdpi-item label="Long Press">
+            <sdpi-select setting="long_press">
+                <option value="volume_up">Volume Up</option>
+                <option value="volume_down">Volume Down</option>
+                <option value="volume_mute_unmute">Volume Mute / Unmute</option>
+            </sdpi-select>
+        </sdpi-item>
+    </body>
 </html>

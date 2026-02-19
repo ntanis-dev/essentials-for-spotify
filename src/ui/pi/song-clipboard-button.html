@@ -1,462 +1,462 @@
 <!doctype html>
 <html>
-<head lang="en">
-    <meta charset="utf-8" />
-    <style>
-        ::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        ::-webkit-scrollbar-track {
-            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-            box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: #666;
-            border-radius: 5px;
-            outline: 1px solid #708090;
-        }
-
-        :root {
-            --window-bg-color: #2d2d2d;
-            --input-bg-color: #3d3d3d;
-            --input-font-color: #d8d8d8;
-            --label-color: #969696;
-            --hover-bg-color: #4d4d4d;
-            --border-radius: 3px;
-            --font-family: 'Segoe UI', 'Roboto', 'Open Sans', 'DejaVu Sans', 'Trebuchet MS', sans-serif;
-            --font-size: 9pt;
-            --input-height: 26px;
-            --row-gap: 2px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: var(--window-bg-color);
-            color: var(--input-font-color);
-            font-family: var(--font-family);
-            font-size: var(--font-size);
-            -webkit-font-smoothing: antialiased;
-            width: 100vw;
-            overflow-x: hidden;
-            -webkit-user-select: none;
-            user-select: none;
-        }
-
-        .sdpi-item {
-            display: flex;
-            align-items: center;
-            padding: 4px 0;
-            max-width: 336px;
-            min-height: 32px;
-        }
-
-        .sdpi-item:first-child {
-            align-items: flex-start;
-            max-width: none;
-        }
-
-        .sdpi-item-label {
-            flex: 0 0 95px;
-            color: var(--label-color);
-            font-size: var(--font-size);
-            min-height: var(--input-height);
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 2px;
-        }
-
-        .sdpi-item-value.elements {
-            margin-top: 1px;
-        }
-
-        .sdpi-item-value {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .element-row {
-            display: flex;
-            align-items: center;
-            gap: var(--row-gap);
-            margin-bottom: var(--row-gap);
-            height: var(--input-height);
-            padding-left: 9px;
-            width: 249px;
-        }
-
-        .element-row input[type="checkbox"] {
-            margin: 0;
-            cursor: pointer;
-            -webkit-appearance: none;
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            min-width: 18px;
-            background-color: var(--input-bg-color);
-            border: none;
-            border-radius: 3px;
-        }
-
-        .element-row input[type="checkbox"]:checked {
-            background-color: rgb(119, 119, 255);
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='10' viewBox='0 0 12 10'%3E%3Cpolygon fill='%23FFF' points='7.2 7.5 7.2 -1.3 8.7 -1.3 8.6 9.1 2.7 8.7 2.7 7.2' transform='rotate(37 5.718 3.896)'/%3E%3C/svg%3E%0A");
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-
-        .element-row .element-label {
-            flex: 1;
-            font-size: var(--font-size);
-            color: var(--label-color);
-            padding: 0 4px;
-        }
-
-        .element-row .element-label.disabled {
-            opacity: 0.5;
-        }
-
-        .arrows {
-            display: flex;
-            gap: 2px;
-            margin-left: auto;
-        }
-
-        .arrows button {
-            background-color: var(--input-bg-color);
-            color: var(--input-font-color);
-            border: none;
-            border-radius: 0;
-            cursor: pointer;
-            width: 20px;
-            height: 20px;
-            font-size: 9px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.15s;
-            padding: 0;
-        }
-
-        .arrows button:hover {
-            background-color: var(--hover-bg-color);
-        }
-
-        .arrows button:active {
-            background-color: #555;
-        }
-
-        .arrows button:disabled {
-            opacity: 0.25;
-            cursor: default;
-        }
-
-        .arrows button:disabled:hover {
-            background-color: var(--input-bg-color);
-        }
-
-        select {
-            background-color: var(--input-bg-color);
-            color: var(--input-font-color);
-            border: 1px solid transparent;
-            border-radius: 0;
-            padding: 0 4px;
-            height: var(--input-height);
-            font-family: var(--font-family);
-            font-size: var(--font-size);
-            outline: none;
-            width: 100%;
-            cursor: pointer;
-            -webkit-appearance: none;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M0 0l4 6 4-6z' fill='%23969696'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-            padding-right: 22px;
-            margin-left: 8px;
-        }
-
-        select:hover {
-            background-color: var(--hover-bg-color);
-        }
-
-        .preview {
-            margin-top: 6px;
-            padding: 6px 8px;
-            background-color: var(--input-bg-color);
-            border-radius: 0;
-            font-size: 8pt;
-            color: var(--label-color);
-            white-space: pre-line;
-            word-break: break-all;
-            min-height: 20px;
-            cursor: default;
-            opacity: 0.75;
-            margin-left: 8px;
-            width: 100%;
-        }
-    </style>
-</head>
-<body>
-    <div class="sdpi-item">
-        <div class="sdpi-item-label">Format:</div>
-        <div class="sdpi-item-value elements">
-            <div id="element-list"></div>
-        </div>
-    </div>
-
-    <div class="sdpi-item">
-        <div class="sdpi-item-label">Separator:</div>
-        <div class="sdpi-item-value">
-            <select id="separator" title="Separator">
-                <option value=" - ">-</option>
-                <option value=" · ">·</option>
-                <option value=" • ">•</option>
-                <option value=" – ">–</option>
-                <option value=" — ">—</option>
-                <option value=" → ">→</option>
-                <option value=" ➜ ">➜</option>
-                <option value=" ● ">●</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="sdpi-item">
-        <div class="sdpi-item-label">Preview:</div>
-        <div class="sdpi-item-value">
-            <div class="preview" id="preview"></div>
-        </div>
-    </div>
-
-    <script>
-        const ALL_ELEMENTS = [
-            { key: 'title', label: 'Song Title', preview: 'Song Title' },
-            { key: 'artists', label: 'Song Artist(s)', preview: 'Artist 1, Artist 2' },
-            { key: 'link', label: 'Song Spotify Link', preview: 'https://open.spotify.com/track/...' }
-        ]
-
-        const DEBOUNCE_MS = 250
-
-        let ws = null
-        let piUUID = null
-        let currentSettings = {}
-        let saveTimeout = null
-
-        const connectElgatoStreamDeckSocket = (port, uuid, event, info, actionInfo) => {
-            piUUID = uuid
-            currentSettings = JSON.parse(actionInfo).payload.settings || {}
-
-            ws = new WebSocket(`ws://127.0.0.1:${port}`)
-
-            ws.onopen = () => {
-                ws.send(JSON.stringify({
-                    event,
-                    uuid
-                }))
-
-                render()
+    <head lang="en">
+        <meta charset="utf-8" />
+        <style>
+            ::-webkit-scrollbar {
+                width: 5px;
             }
 
-            ws.onmessage = evt => {
-                const data = JSON.parse(evt.data)
+            ::-webkit-scrollbar-track {
+                -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+                box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+            }
 
-                if (data.event === 'didReceiveSettings') {
-                    currentSettings = data.payload.settings || {}
+            ::-webkit-scrollbar-thumb {
+                background-color: #666;
+                border-radius: 5px;
+                outline: 1px solid #708090;
+            }
+
+            :root {
+                --window-bg-color: #2d2d2d;
+                --input-bg-color: #3d3d3d;
+                --input-font-color: #d8d8d8;
+                --label-color: #969696;
+                --hover-bg-color: #4d4d4d;
+                --border-radius: 3px;
+                --font-family: 'Segoe UI', 'Roboto', 'Open Sans', 'DejaVu Sans', 'Trebuchet MS', sans-serif;
+                --font-size: 9pt;
+                --input-height: 26px;
+                --row-gap: 2px;
+            }
+
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                background-color: var(--window-bg-color);
+                color: var(--input-font-color);
+                font-family: var(--font-family);
+                font-size: var(--font-size);
+                -webkit-font-smoothing: antialiased;
+                width: 100vw;
+                overflow-x: hidden;
+                -webkit-user-select: none;
+                user-select: none;
+            }
+
+            .sdpi-item {
+                display: flex;
+                align-items: center;
+                padding: 4px 0;
+                max-width: 336px;
+                min-height: 32px;
+            }
+
+            .sdpi-item:first-child {
+                align-items: flex-start;
+                max-width: none;
+            }
+
+            .sdpi-item-label {
+                flex: 0 0 95px;
+                color: var(--label-color);
+                font-size: var(--font-size);
+                min-height: var(--input-height);
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                padding-right: 2px;
+            }
+
+            .sdpi-item-value.elements {
+                margin-top: 1px;
+            }
+
+            .sdpi-item-value {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .element-row {
+                display: flex;
+                align-items: center;
+                gap: var(--row-gap);
+                margin-bottom: var(--row-gap);
+                height: var(--input-height);
+                padding-left: 9px;
+                width: 249px;
+            }
+
+            .element-row input[type="checkbox"] {
+                margin: 0;
+                cursor: pointer;
+                -webkit-appearance: none;
+                appearance: none;
+                width: 18px;
+                height: 18px;
+                min-width: 18px;
+                background-color: var(--input-bg-color);
+                border: none;
+                border-radius: 3px;
+            }
+
+            .element-row input[type="checkbox"]:checked {
+                background-color: rgb(119, 119, 255);
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='10' viewBox='0 0 12 10'%3E%3Cpolygon fill='%23FFF' points='7.2 7.5 7.2 -1.3 8.7 -1.3 8.6 9.1 2.7 8.7 2.7 7.2' transform='rotate(37 5.718 3.896)'/%3E%3C/svg%3E%0A");
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+
+            .element-row .element-label {
+                flex: 1;
+                font-size: var(--font-size);
+                color: var(--label-color);
+                padding: 0 4px;
+            }
+
+            .element-row .element-label.disabled {
+                opacity: 0.5;
+            }
+
+            .arrows {
+                display: flex;
+                gap: 2px;
+                margin-left: auto;
+            }
+
+            .arrows button {
+                background-color: var(--input-bg-color);
+                color: var(--input-font-color);
+                border: none;
+                border-radius: 0;
+                cursor: pointer;
+                width: 20px;
+                height: 20px;
+                font-size: 9px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background-color 0.15s;
+                padding: 0;
+            }
+
+            .arrows button:hover {
+                background-color: var(--hover-bg-color);
+            }
+
+            .arrows button:active {
+                background-color: #555;
+            }
+
+            .arrows button:disabled {
+                opacity: 0.25;
+                cursor: default;
+            }
+
+            .arrows button:disabled:hover {
+                background-color: var(--input-bg-color);
+            }
+
+            select {
+                background-color: var(--input-bg-color);
+                color: var(--input-font-color);
+                border: 1px solid transparent;
+                border-radius: 0;
+                padding: 0 4px;
+                height: var(--input-height);
+                font-family: var(--font-family);
+                font-size: var(--font-size);
+                outline: none;
+                width: 100%;
+                cursor: pointer;
+                -webkit-appearance: none;
+                appearance: none;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='6'%3E%3Cpath d='M0 0l4 6 4-6z' fill='%23969696'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right 8px center;
+                padding-right: 22px;
+                margin-left: 8px;
+            }
+
+            select:hover {
+                background-color: var(--hover-bg-color);
+            }
+
+            .preview {
+                margin-top: 6px;
+                padding: 6px 8px;
+                background-color: var(--input-bg-color);
+                border-radius: 0;
+                font-size: 8pt;
+                color: var(--label-color);
+                white-space: pre-line;
+                word-break: break-all;
+                min-height: 20px;
+                cursor: default;
+                opacity: 0.75;
+                margin-left: 8px;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sdpi-item">
+            <div class="sdpi-item-label">Format:</div>
+            <div class="sdpi-item-value elements">
+                <div id="element-list"></div>
+            </div>
+        </div>
+
+        <div class="sdpi-item">
+            <div class="sdpi-item-label">Separator:</div>
+            <div class="sdpi-item-value">
+                <select id="separator" title="Separator">
+                    <option value=" - ">-</option>
+                    <option value=" · ">·</option>
+                    <option value=" • ">•</option>
+                    <option value=" – ">–</option>
+                    <option value=" — ">—</option>
+                    <option value=" → ">→</option>
+                    <option value=" ➜ ">➜</option>
+                    <option value=" ● ">●</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="sdpi-item">
+            <div class="sdpi-item-label">Preview:</div>
+            <div class="sdpi-item-value">
+                <div class="preview" id="preview"></div>
+            </div>
+        </div>
+
+        <script>
+            const ALL_ELEMENTS = [
+                { key: 'title', label: 'Song Title', preview: 'Song Title' },
+                { key: 'artists', label: 'Song Artist(s)', preview: 'Artist 1, Artist 2' },
+                { key: 'link', label: 'Song Spotify Link', preview: 'https://open.spotify.com/track/...' }
+            ]
+
+            const DEBOUNCE_MS = 250
+
+            let ws = null
+            let piUUID = null
+            let currentSettings = {}
+            let saveTimeout = null
+
+            const connectElgatoStreamDeckSocket = (port, uuid, event, info, actionInfo) => {
+                piUUID = uuid
+                currentSettings = JSON.parse(actionInfo).payload.settings || {}
+
+                ws = new WebSocket(`ws://127.0.0.1:${port}`)
+
+                ws.onopen = () => {
+                    ws.send(JSON.stringify({
+                        event,
+                        uuid
+                    }))
+
                     render()
                 }
+
+                ws.onmessage = evt => {
+                    const data = JSON.parse(evt.data)
+
+                    if (data.event === 'didReceiveSettings') {
+                        currentSettings = data.payload.settings || {}
+                        render()
+                    }
+                }
             }
-        }
 
-        const getElements = () => {
-            if (currentSettings.elements && Array.isArray(currentSettings.elements))
-                return currentSettings.elements
+            const getElements = () => {
+                if (currentSettings.elements && Array.isArray(currentSettings.elements))
+                    return currentSettings.elements
 
-            if (currentSettings.include && Array.isArray(currentSettings.include))
+                if (currentSettings.include && Array.isArray(currentSettings.include))
+                    return ALL_ELEMENTS.map(e => ({
+                        key: e.key,
+                        enabled: currentSettings.include.includes(e.key)
+                    }))
+
                 return ALL_ELEMENTS.map(e => ({
                     key: e.key,
-                    enabled: currentSettings.include.includes(e.key)
+                    enabled: true
                 }))
+            }
 
-            return ALL_ELEMENTS.map(e => ({
-                key: e.key,
-                enabled: true
-            }))
-        }
-
-        const saveSettings = () => {
-            if ((!ws) || ws.readyState !== 1)
-                return
-
-            const rows = document.querySelectorAll('#element-list .element-row')
-            const elements = []
-
-            rows.forEach(row => elements.push({
-                key: row.dataset.key,
-                enabled: row.querySelector('input[type="checkbox"]').checked
-            }))
-
-            const separator = document.getElementById('separator').value
-
-            currentSettings = Object.assign({}, currentSettings, {
-                elements,
-                separator
-            })
-
-            ws.send(JSON.stringify({
-                event: 'setSettings',
-                context: piUUID,
-                payload: currentSettings
-            }))
-
-            updatePreview()
-        }
-
-        const debouncedSave = () => {
-            clearTimeout(saveTimeout)
-            saveTimeout = setTimeout(saveSettings, DEBOUNCE_MS)
-        }
-
-        const updateArrows = () => {
-            const rows = document.querySelectorAll('#element-list .element-row')
-
-            rows.forEach((row, i) => {
-                row.querySelector('.arrow-up').disabled = i === 0
-                row.querySelector('.arrow-down').disabled = i === rows.length - 1
-            })
-        }
-
-        const updatePreview = () => {
-            const rows = document.querySelectorAll('#element-list .element-row')
-            const separator = document.getElementById('separator').value || ' - '
-            const segments = []
-
-            let currentParts = []
-
-            rows.forEach(row => {
-                if (!row.querySelector('input[type="checkbox"]').checked)
+            const saveSettings = () => {
+                if ((!ws) || ws.readyState !== 1)
                     return
 
-                const key = row.dataset.key
-                const meta = ALL_ELEMENTS.find(e => e.key === key)
+                const rows = document.querySelectorAll('#element-list .element-row')
+                const elements = []
 
-                if (key === 'link') {
-                    if (currentParts.length > 0) {
-                        segments.push(currentParts.join(separator))
-                        currentParts = []
-                    }
+                rows.forEach(row => elements.push({
+                    key: row.dataset.key,
+                    enabled: row.querySelector('input[type="checkbox"]').checked
+                }))
 
-                    segments.push(meta.preview)
-                } else if (meta)
-                    currentParts.push(meta.preview)
-            })
+                const separator = document.getElementById('separator').value
 
-            if (currentParts.length > 0)
-                segments.push(currentParts.join(separator))
+                currentSettings = Object.assign({}, currentSettings, {
+                    elements,
+                    separator
+                })
 
-            const preview = document.getElementById('preview')
-            const empty = segments.length === 0
+                ws.send(JSON.stringify({
+                    event: 'setSettings',
+                    context: piUUID,
+                    payload: currentSettings
+                }))
 
-            preview.textContent = empty ? '(nothing selected)' : segments.join('\n')
-            preview.style.color = empty ? '#ff7777' : ''
-        }
+                updatePreview()
+            }
 
-        const swap = (row, direction) => {
-            const list = document.getElementById('element-list')
-            const sibling = direction === 'up' ? row.previousElementSibling : row.nextElementSibling
+            const debouncedSave = () => {
+                clearTimeout(saveTimeout)
+                saveTimeout = setTimeout(saveSettings, DEBOUNCE_MS)
+            }
 
-            if (!sibling)
-                return
+            const updateArrows = () => {
+                const rows = document.querySelectorAll('#element-list .element-row')
 
-            if (direction === 'up')
-                list.insertBefore(row, sibling)
-            else
-                list.insertBefore(sibling, row)
+                rows.forEach((row, i) => {
+                    row.querySelector('.arrow-up').disabled = i === 0
+                    row.querySelector('.arrow-down').disabled = i === rows.length - 1
+                })
+            }
 
-            updateArrows()
-            saveSettings()
-        }
+            const updatePreview = () => {
+                const rows = document.querySelectorAll('#element-list .element-row')
+                const separator = document.getElementById('separator').value || ' - '
+                const segments = []
 
-        const createRow = element => {
-            const meta = ALL_ELEMENTS.find(e => e.key === element.key)
+                let currentParts = []
 
-            if (!meta)
-                return null
+                rows.forEach(row => {
+                    if (!row.querySelector('input[type="checkbox"]').checked)
+                        return
 
-            const row = document.createElement('div')
+                    const key = row.dataset.key
+                    const meta = ALL_ELEMENTS.find(e => e.key === key)
 
-            row.className = 'element-row'
-            row.dataset.key = element.key
+                    if (key === 'link') {
+                        if (currentParts.length > 0) {
+                            segments.push(currentParts.join(separator))
+                            currentParts = []
+                        }
 
-            const checkbox = document.createElement('input')
+                        segments.push(meta.preview)
+                    } else if (meta)
+                        currentParts.push(meta.preview)
+                })
 
-            checkbox.type = 'checkbox'
-            checkbox.checked = element.enabled
+                if (currentParts.length > 0)
+                    segments.push(currentParts.join(separator))
 
-            const label = document.createElement('span')
+                const preview = document.getElementById('preview')
+                const empty = segments.length === 0
 
-            label.className = `element-label${element.enabled ? '' : ' disabled'}`
-            label.textContent = meta.label
+                preview.textContent = empty ? '(nothing selected)' : segments.join('\n')
+                preview.style.color = empty ? '#ff7777' : ''
+            }
 
-            checkbox.addEventListener('change', () => {
-                label.className = `element-label${checkbox.checked ? '' : ' disabled'}`
+            const swap = (row, direction) => {
+                const list = document.getElementById('element-list')
+                const sibling = direction === 'up' ? row.previousElementSibling : row.nextElementSibling
+
+                if (!sibling)
+                    return
+
+                if (direction === 'up')
+                    list.insertBefore(row, sibling)
+                else
+                    list.insertBefore(sibling, row)
+
+                updateArrows()
                 saveSettings()
-            })
+            }
 
-            const arrows = document.createElement('div')
+            const createRow = element => {
+                const meta = ALL_ELEMENTS.find(e => e.key === element.key)
 
-            arrows.className = 'arrows'
+                if (!meta)
+                    return null
 
-            const upBtn = document.createElement('button')
+                const row = document.createElement('div')
 
-            upBtn.className = 'arrow-up'
-            upBtn.type = 'button'
-            upBtn.textContent = '\u25B2'
-            upBtn.addEventListener('click', () => swap(row, 'up'))
+                row.className = 'element-row'
+                row.dataset.key = element.key
 
-            const downBtn = document.createElement('button')
+                const checkbox = document.createElement('input')
 
-            downBtn.className = 'arrow-down'
-            downBtn.type = 'button'
-            downBtn.textContent = '\u25BC'
-            downBtn.addEventListener('click', () => swap(row, 'down'))
+                checkbox.type = 'checkbox'
+                checkbox.checked = element.enabled
 
-            arrows.appendChild(upBtn)
-            arrows.appendChild(downBtn)
+                const label = document.createElement('span')
 
-            row.appendChild(checkbox)
-            row.appendChild(label)
-            row.appendChild(arrows)
+                label.className = `element-label${element.enabled ? '' : ' disabled'}`
+                label.textContent = meta.label
 
-            return row
-        }
+                checkbox.addEventListener('change', () => {
+                    label.className = `element-label${checkbox.checked ? '' : ' disabled'}`
+                    saveSettings()
+                })
 
-        const render = () => {
-            const elements = getElements()
-            const list = document.getElementById('element-list')
+                const arrows = document.createElement('div')
 
-            list.innerHTML = ''
+                arrows.className = 'arrows'
 
-            elements.forEach(element => {
-                const row = createRow(element)
+                const upBtn = document.createElement('button')
 
-                if (row)
-                    list.appendChild(row)
-            })
+                upBtn.className = 'arrow-up'
+                upBtn.type = 'button'
+                upBtn.textContent = '\u25B2'
+                upBtn.addEventListener('click', () => swap(row, 'up'))
 
-            document.getElementById('separator').value = currentSettings.separator ?? ' - '
+                const downBtn = document.createElement('button')
 
-            updateArrows()
-            updatePreview()
-        }
+                downBtn.className = 'arrow-down'
+                downBtn.type = 'button'
+                downBtn.textContent = '\u25BC'
+                downBtn.addEventListener('click', () => swap(row, 'down'))
 
-        document.getElementById('separator').addEventListener('change', saveSettings)
-    </script>
-</body>
+                arrows.appendChild(upBtn)
+                arrows.appendChild(downBtn)
+
+                row.appendChild(checkbox)
+                row.appendChild(label)
+                row.appendChild(arrows)
+
+                return row
+            }
+
+            const render = () => {
+                const elements = getElements()
+                const list = document.getElementById('element-list')
+
+                list.innerHTML = ''
+
+                elements.forEach(element => {
+                    const row = createRow(element)
+
+                    if (row)
+                        list.appendChild(row)
+                })
+
+                document.getElementById('separator').value = currentSettings.separator ?? ' - '
+
+                updateArrows()
+                updatePreview()
+            }
+
+            document.getElementById('separator').addEventListener('change', saveSettings)
+        </script>
+    </body>
 </html>

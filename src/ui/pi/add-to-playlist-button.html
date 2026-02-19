@@ -1,28 +1,29 @@
 <!doctype html>
 <html>
-<head lang="en">
-    <meta charset="utf-8" />
-    <script src="sdpi-components.js"></script>
-    <style>
-        body {
-            -webkit-user-select: none;
-            user-select: none;
-        }
-    </style>
-</head>
-<body>
-    <sdpi-item label="Spotify URL">
-        <sdpi-textfield
-            setting="spotify_url"
-            pattern="/^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?playlist\/[A-Za-z0-9]{22}(?:\/)?(?:\?.*)?$/i"
-            placeholder="https://open.spotify.com/playlist/..."
-            required>
-        </sdpi-textfield>
-    </sdpi-item>
-    <sdpi-item label="Show">
-        <sdpi-checkbox-list setting="show">
-            <option value="title">Name</option>
-        </sdpi-checkbox-list>
-    </sdpi-item>
-</body>
+    <head lang="en">
+        <meta charset="utf-8" />
+        <script src="sdpi-components.js"></script>
+        <style>
+            body {
+                -webkit-user-select: none;
+                user-select: none;
+            }
+        </style>
+    </head>
+    <body>
+        <sdpi-item label="Spotify URL">
+            <sdpi-textfield
+                setting="spotify_url"
+                pattern="/^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?playlist\/[A-Za-z0-9]{22}(?:\/)?(?:\?.*)?$/i"
+                placeholder="https://open.spotify.com/playlist/..."
+                required>
+            </sdpi-textfield>
+        </sdpi-item>
+        
+        <sdpi-item label="Show">
+            <sdpi-checkbox-list setting="show">
+                <option value="title">Name</option>
+            </sdpi-checkbox-list>
+        </sdpi-item>
+    </body>
 </html>

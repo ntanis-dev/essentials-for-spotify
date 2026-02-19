@@ -1,41 +1,41 @@
 <!doctype html>
 <html>
-<head lang="en">
-    <meta charset="utf-8" />
-    <script src="sdpi-components.js"></script>
-    <style>
-        body {
-            -webkit-user-select: none;
-            user-select: none;
-        }
-    </style>
-</head>
-<body>
-    <sdpi-item label="Seek Step (Seconds)">
-        <sdpi-range
-            setting="step"
-            min="1"
-            max="30"
-            step="1"
-            showlabels>
-        </sdpi-range>
-    </sdpi-item>
+    <head lang="en">
+        <meta charset="utf-8" />
+        <script src="sdpi-components.js"></script>
+        <style>
+            body {
+                -webkit-user-select: none;
+                user-select: none;
+            }
+        </style>
+    </head>
+    <body>
+        <sdpi-item label="Seek Step (Seconds)">
+            <sdpi-range
+                setting="step"
+                min="1"
+                max="30"
+                step="1"
+                showlabels>
+            </sdpi-range>
+        </sdpi-item>
 
-    <sdpi-item label="Time Display">
-        <sdpi-select setting="time_display">
-            <option value="duration">Duration</option>
-            <option value="remaining">Remaining</option>
-        </sdpi-select>
-    </sdpi-item>
+        <sdpi-item label="Time Display">
+            <sdpi-select setting="time_display">
+                <option value="duration">Duration</option>
+                <option value="remaining">Remaining</option>
+            </sdpi-select>
+        </sdpi-item>
 
-    <sdpi-item label="Show">
-        <sdpi-checkbox-list setting="show">
-            <option value="name">Title</option>
-            <option value="artists">Artist(s)</option>
-            <option value="progress">Progress</option>
-            <option value="duration">Time Display</option>
-            <option value="liked">Liked</option>
-        </sdpi-checkbox-list>
-    </sdpi-item>
-</body>
+        <sdpi-item label="Show">
+            <sdpi-checkbox-list setting="show">
+                <option value="name">Title</option>
+                <option value="artists">Artist(s)</option>
+                <option value="progress">Progress</option>
+                <option value="duration">Time Display</option>
+                <option value="liked">Liked</option>
+            </sdpi-checkbox-list>
+        </sdpi-item>
+    </body>
 </html>

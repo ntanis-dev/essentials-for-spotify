@@ -1,354 +1,354 @@
 <!doctype html>
 <html>
-<head lang="en">
-    <meta charset="utf-8" />
-    <style>
-        ::-webkit-scrollbar {
-            width:5px
-        }
+    <head lang="en">
+        <meta charset="utf-8" />
+        <style>
+            ::-webkit-scrollbar {
+                width:5px
+            }
 
-        ::-webkit-scrollbar-track {
-            -webkit-box-shadow:inset 0 0 6px rgba(0,0,0,.3);
-            box-shadow:inset 0 0 6px rgba(0,0,0,.3);
-        }
+            ::-webkit-scrollbar-track {
+                -webkit-box-shadow:inset 0 0 6px rgba(0,0,0,.3);
+                box-shadow:inset 0 0 6px rgba(0,0,0,.3);
+            }
 
-        ::-webkit-scrollbar-thumb {
-            background-color:#666;
-            border-radius:5px;
-            outline:1px solid #708090;
-        }
+            ::-webkit-scrollbar-thumb {
+                background-color:#666;
+                border-radius:5px;
+                outline:1px solid #708090;
+            }
 
-        :root {
-            --window-bg-color: #2d2d2d;
-            --input-bg-color: #3d3d3d;
-            --input-font-color: #d8d8d8;
-            --label-color: #969696;
-            --hover-bg-color: #4d4d4d;
-            --border-radius: 3px;
-            --font-family: 'Segoe UI', 'Roboto', 'Open Sans', 'DejaVu Sans', 'Trebuchet MS', sans-serif;
-            --font-size: 9pt;
-            --input-height: 26px;
-            --row-gap: 4px;
-        }
+            :root {
+                --window-bg-color: #2d2d2d;
+                --input-bg-color: #3d3d3d;
+                --input-font-color: #d8d8d8;
+                --label-color: #969696;
+                --hover-bg-color: #4d4d4d;
+                --border-radius: 3px;
+                --font-family: 'Segoe UI', 'Roboto', 'Open Sans', 'DejaVu Sans', 'Trebuchet MS', sans-serif;
+                --font-size: 9pt;
+                --input-height: 26px;
+                --row-gap: 4px;
+            }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
 
-        body {
-            background-color: var(--window-bg-color);
-            color: var(--input-font-color);
-            font-family: var(--font-family);
-            font-size: var(--font-size);
-            -webkit-font-smoothing: antialiased;
-            width: 100vw;
-            overflow-x: hidden;
-            -webkit-user-select: none;
-            user-select: none;
-        }
+            body {
+                background-color: var(--window-bg-color);
+                color: var(--input-font-color);
+                font-family: var(--font-family);
+                font-size: var(--font-size);
+                -webkit-font-smoothing: antialiased;
+                width: 100vw;
+                overflow-x: hidden;
+                -webkit-user-select: none;
+                user-select: none;
+            }
 
-        .sdpi-item {
-            display: flex;
-            align-items: flex-start;
-            padding: 4px 0;
-            min-height: 32px;
-        }
+            .sdpi-item {
+                display: flex;
+                align-items: flex-start;
+                padding: 4px 0;
+                min-height: 32px;
+            }
 
-        .sdpi-item-label {
-            flex: 0 0 95px;
-            color: var(--label-color);
-            font-size: var(--font-size);
-            min-height: var(--input-height);
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 2px;
-        }
+            .sdpi-item-label {
+                flex: 0 0 95px;
+                color: var(--label-color);
+                font-size: var(--font-size);
+                min-height: var(--input-height);
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                padding-right: 2px;
+            }
 
-        .sdpi-item-value {
-            flex: 1;
-            min-width: 0;
-        }
+            .sdpi-item-value {
+                flex: 1;
+                min-width: 0;
+            }
 
-        .playlist-row {
-            display: flex;
-            gap: var(--row-gap);
-            margin-bottom: var(--row-gap);
-        }
+            .playlist-row {
+                display: flex;
+                gap: var(--row-gap);
+                margin-bottom: var(--row-gap);
+            }
 
-        .playlist-row .fields {
-            flex: 1;
-            display: flex;
-            gap: var(--row-gap);
-            min-width: 0;
-        }
+            .playlist-row .fields {
+                flex: 1;
+                display: flex;
+                gap: var(--row-gap);
+                min-width: 0;
+            }
 
-        .playlist-row .playlist-name {
-            flex: 0 0 30%;
-        }
+            .playlist-row .playlist-name {
+                flex: 0 0 30%;
+            }
 
-        .playlist-row input[type="text"].playlist-name {
-            margin-left: 8px;
-        }
+            .playlist-row input[type="text"].playlist-name {
+                margin-left: 8px;
+            }
 
-        .playlist-row input[type="text"].playlist-url {
-            width: 167px;
-        }
+            .playlist-row input[type="text"].playlist-url {
+                width: 167px;
+            }
 
-        .playlist-row input[type="text"] {
-            background-color: var(--input-bg-color);
-            color: var(--input-font-color);
-            border: 1px solid transparent;
-            border-radius: 0;
-            padding: 0 8px;
-            height: var(--input-height);
-            font-family: var(--font-family);
-            font-size: var(--font-size);
-            outline: none;
-            min-width: 0;
-            width: 100%;
-            transition: border-color 0.15s;
-            -webkit-user-select: text;
-            user-select: text;
-        }
+            .playlist-row input[type="text"] {
+                background-color: var(--input-bg-color);
+                color: var(--input-font-color);
+                border: 1px solid transparent;
+                border-radius: 0;
+                padding: 0 8px;
+                height: var(--input-height);
+                font-family: var(--font-family);
+                font-size: var(--font-size);
+                outline: none;
+                min-width: 0;
+                width: 100%;
+                transition: border-color 0.15s;
+                -webkit-user-select: text;
+                user-select: text;
+            }
 
-        .playlist-row input[type="text"]::placeholder {
-            color: #666;
-        }
+            .playlist-row input[type="text"]::placeholder {
+                color: #666;
+            }
 
-        .playlist-row input[type="text"]:required {
-            background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5IiBoZWlnaHQ9IjkiIHZpZXdCb3g9IjAgMCA5IDkiPgogICAgPHBhdGggZmlsbD0iI0Q4RDhEOCIgZD0iTTQuNSwwIEM2Ljk4NTI4MTM3LC00LjU2NTM4NzgyZS0xNiA5LDIuMDE0NzE4NjMgOSw0LjUgQzksNi45ODUyODEzNyA2Ljk4NTI4MTM3LDkgNC41LDkgQzIuMDE0NzE4NjMsOSAzLjA0MzU5MTg4ZS0xNiw2Ljk4NTI4MTM3IDAsNC41IEMtMy4wNDM1OTE4OGUtMTYsMi4wMTQ3MTg2MyAyLjAxNDcxODYzLDQuNTY1Mzg3ODJlLTE2IDQuNSwwIFogTTQsMSBMNCw2IEw1LDYgTDUsMSBMNCwxIFogTTQuNSw4IEM0Ljc3NjE0MjM3LDggNSw3Ljc3NjE0MjM3IDUsNy41IEM1LDcuMjIzODU3NjMgNC43NzYxNDIzNyw3IDQuNSw3IEM0LjIyMzg1NzYzLDcgNCw3LjIyMzg1NzYzIDQsNy41IEM0LDcuNzc2MTQyMzcgNC4yMjM4NTc2Myw4IDQuNSw4IFoiLz4KICA8L3N2Zz4);
-            background-position: 98% center;
-            background-repeat: no-repeat;
-        }
+            .playlist-row input[type="text"]:required {
+                background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5IiBoZWlnaHQ9IjkiIHZpZXdCb3g9IjAgMCA5IDkiPgogICAgPHBhdGggZmlsbD0iI0Q4RDhEOCIgZD0iTTQuNSwwIEM2Ljk4NTI4MTM3LC00LjU2NTM4NzgyZS0xNiA5LDIuMDE0NzE4NjMgOSw0LjUgQzksNi45ODUyODEzNyA2Ljk4NTI4MTM3LDkgNC41LDkgQzIuMDE0NzE4NjMsOSAzLjA0MzU5MTg4ZS0xNiw2Ljk4NTI4MTM3IDAsNC41IEMtMy4wNDM1OTE4OGUtMTYsMi4wMTQ3MTg2MyAyLjAxNDcxODYzLDQuNTY1Mzg3ODJlLTE2IDQuNSwwIFogTTQsMSBMNCw2IEw1LDYgTDUsMSBMNCwxIFogTTQuNSw4IEM0Ljc3NjE0MjM3LDggNSw3Ljc3NjE0MjM3IDUsNy41IEM1LDcuMjIzODU3NjMgNC43NzYxNDIzNyw3IDQuNSw3IEM0LjIyMzg1NzYzLDcgNCw3LjIyMzg1NzYzIDQsNy41IEM0LDcuNzc2MTQyMzcgNC4yMjM4NTc2Myw4IDQuNSw4IFoiLz4KICA8L3N2Zz4);
+                background-position: 98% center;
+                background-repeat: no-repeat;
+            }
 
-        button {
-            background-color: var(--input-bg-color);
-            color: var(--input-font-color);
-            border: none;
-            border-radius: 0;
-            cursor: pointer;
-            height: var(--input-height);
-            width: 20px;
-            min-width: 20px;
-            font-size: 11px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.15s;
-        }
+            button {
+                background-color: var(--input-bg-color);
+                color: var(--input-font-color);
+                border: none;
+                border-radius: 0;
+                cursor: pointer;
+                height: var(--input-height);
+                width: 20px;
+                min-width: 20px;
+                font-size: 11px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background-color 0.15s;
+            }
 
-        .playlist-row button, #add-btn {
-            margin-right: 10px;
-            align-self: center;
-        }
+            .playlist-row button, #add-btn {
+                margin-right: 10px;
+                align-self: center;
+            }
 
-        button:hover {
-            background-color: var(--hover-bg-color);
-        }
+            button:hover {
+                background-color: var(--hover-bg-color);
+            }
 
-        button:active {
-            background-color: #555;
-        }
+            button:active {
+                background-color: #555;
+            }
 
-        button:disabled {
-            opacity: 0.35;
-            cursor: default;
-        }
+            button:disabled {
+                opacity: 0.35;
+                cursor: default;
+            }
 
-        button:disabled:hover {
-            background-color: var(--input-bg-color);
-        }
+            button:disabled:hover {
+                background-color: var(--input-bg-color);
+            }
 
-        .controls {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="sdpi-item">
-        <div class="sdpi-item-label">Extra Playlists:</div>
-        <div class="sdpi-item-value">
-            <div id="playlist-list"></div>
-            <div class="controls">
-                <button id="add-btn" type="button">+</button>
+            .controls {
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sdpi-item">
+            <div class="sdpi-item-label">Extra Playlists:</div>
+            <div class="sdpi-item-value">
+                <div id="playlist-list"></div>
+                <div class="controls">
+                    <button id="add-btn" type="button">+</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <script>
-        const MAX_PLAYLISTS = 25
-        const DEBOUNCE_MS = 250
+        <script>
+            const MAX_PLAYLISTS = 25
+            const DEBOUNCE_MS = 250
 
-        let ws = null
-        let piUUID = null
-        let currentSettings = {}
-        let saveTimeout = null
+            let ws = null
+            let piUUID = null
+            let currentSettings = {}
+            let saveTimeout = null
 
-        function connectElgatoStreamDeckSocket(port, uuid, event, info, actionInfo) {
-            piUUID = uuid
-            currentSettings = JSON.parse(actionInfo).payload.settings || {}
+            function connectElgatoStreamDeckSocket(port, uuid, event, info, actionInfo) {
+                piUUID = uuid
+                currentSettings = JSON.parse(actionInfo).payload.settings || {}
 
-            ws = new WebSocket(`ws://127.0.0.1:${port}`)
+                ws = new WebSocket(`ws://127.0.0.1:${port}`)
 
-            ws.onopen = () => {
-                ws.send(JSON.stringify({
-                    event: event,
-                    uuid: uuid
-                }))
+                ws.onopen = () => {
+                    ws.send(JSON.stringify({
+                        event: event,
+                        uuid: uuid
+                    }))
 
-                renderList(currentSettings.extra_playlists || [])
-            }
-
-            ws.onmessage = evt => {
-                const data = JSON.parse(evt.data)
-
-                if (data.event === 'didReceiveSettings') {
-                    currentSettings = data.payload.settings || {}
                     renderList(currentSettings.extra_playlists || [])
                 }
-            }
-        }
 
-        const saveSettings = () => {
-            if ((!ws) || ws.readyState !== 1)
-                return
+                ws.onmessage = evt => {
+                    const data = JSON.parse(evt.data)
 
-            const rows = document.querySelectorAll('#playlist-list .playlist-row')
-            const playlists = []
-
-            rows.forEach(row => {
-                const name = row.querySelector('.playlist-name').value.trim()
-                const url = row.querySelector('.playlist-url').value.trim()
-
-                if (name && url)
-                    playlists.push({
-                        name: name,
-                        url: url
-                    })
-            })
-
-            currentSettings = Object.assign({}, currentSettings, {
-                extra_playlists: playlists
-            })
-
-            ws.send(JSON.stringify({
-                event: 'setSettings',
-                context: piUUID,
-                payload: currentSettings
-            }))
-        }
-
-        const debouncedSave = () => {
-            clearTimeout(saveTimeout)
-            saveTimeout = setTimeout(saveSettings, DEBOUNCE_MS)
-        }
-
-        const updateAddButton = () => {
-            const count = document.querySelectorAll('#playlist-list .playlist-row').length
-
-            document.getElementById('add-btn').style.display = count >= MAX_PLAYLISTS ? 'none' : ''
-        }
-
-        const createRow = entry => {
-            let name = ''
-            let url = ''
-
-            if (entry && typeof entry === 'object') {
-                name = entry.name || ''
-                url = entry.url || ''
+                    if (data.event === 'didReceiveSettings') {
+                        currentSettings = data.payload.settings || {}
+                        renderList(currentSettings.extra_playlists || [])
+                    }
+                }
             }
 
-            const row = document.createElement('div')
-            const fields = document.createElement('div')
-            const nameInput = document.createElement('input')
-
-            row.className = 'playlist-row'
-            fields.className = 'fields'
-
-            nameInput.type = 'text'
-            nameInput.className = 'playlist-name'
-            nameInput.placeholder = 'Name'
-            nameInput.value = name
-            nameInput.spellcheck = false
-            nameInput.required = true
-            nameInput.title = 'Please fill in this field.'
-            nameInput.addEventListener('input', debouncedSave)
-
-            const urlInput = document.createElement('input')
-
-            urlInput.type = 'text'
-            urlInput.className = 'playlist-url'
-            urlInput.placeholder = 'Spotify URL'
-            urlInput.value = url
-            urlInput.spellcheck = false
-            urlInput.required = true
-            urlInput.title = 'Please fill in this field.'
-
-            urlInput.addEventListener('input', debouncedSave)
-            urlInput.addEventListener('paste', () => setTimeout(debouncedSave, 0))
-
-            const removeBtn = document.createElement('button')
-
-            removeBtn.type = 'button'
-            removeBtn.textContent = '\u2212'
-
-            removeBtn.addEventListener('click', () => {
-                if (removeBtn.disabled)
+            const saveSettings = () => {
+                if ((!ws) || ws.readyState !== 1)
                     return
 
-                row.remove()
+                const rows = document.querySelectorAll('#playlist-list .playlist-row')
+                const playlists = []
+
+                rows.forEach(row => {
+                    const name = row.querySelector('.playlist-name').value.trim()
+                    const url = row.querySelector('.playlist-url').value.trim()
+
+                    if (name && url)
+                        playlists.push({
+                            name: name,
+                            url: url
+                        })
+                })
+
+                currentSettings = Object.assign({}, currentSettings, {
+                    extra_playlists: playlists
+                })
+
+                ws.send(JSON.stringify({
+                    event: 'setSettings',
+                    context: piUUID,
+                    payload: currentSettings
+                }))
+            }
+
+            const debouncedSave = () => {
+                clearTimeout(saveTimeout)
+                saveTimeout = setTimeout(saveSettings, DEBOUNCE_MS)
+            }
+
+            const updateAddButton = () => {
+                const count = document.querySelectorAll('#playlist-list .playlist-row').length
+
+                document.getElementById('add-btn').style.display = count >= MAX_PLAYLISTS ? 'none' : ''
+            }
+
+            const createRow = entry => {
+                let name = ''
+                let url = ''
+
+                if (entry && typeof entry === 'object') {
+                    name = entry.name || ''
+                    url = entry.url || ''
+                }
+
+                const row = document.createElement('div')
+                const fields = document.createElement('div')
+                const nameInput = document.createElement('input')
+
+                row.className = 'playlist-row'
+                fields.className = 'fields'
+
+                nameInput.type = 'text'
+                nameInput.className = 'playlist-name'
+                nameInput.placeholder = 'Name'
+                nameInput.value = name
+                nameInput.spellcheck = false
+                nameInput.required = true
+                nameInput.title = 'Please fill in this field.'
+                nameInput.addEventListener('input', debouncedSave)
+
+                const urlInput = document.createElement('input')
+
+                urlInput.type = 'text'
+                urlInput.className = 'playlist-url'
+                urlInput.placeholder = 'Spotify URL'
+                urlInput.value = url
+                urlInput.spellcheck = false
+                urlInput.required = true
+                urlInput.title = 'Please fill in this field.'
+
+                urlInput.addEventListener('input', debouncedSave)
+                urlInput.addEventListener('paste', () => setTimeout(debouncedSave, 0))
+
+                const removeBtn = document.createElement('button')
+
+                removeBtn.type = 'button'
+                removeBtn.textContent = '\u2212'
+
+                removeBtn.addEventListener('click', () => {
+                    if (removeBtn.disabled)
+                        return
+
+                    row.remove()
+                    updateAddButton()
+                    updateRemoveButtons()
+                    saveSettings()
+                })
+
+                fields.appendChild(nameInput)
+                fields.appendChild(urlInput)
+                row.appendChild(fields)
+                row.appendChild(removeBtn)
+
+                return row
+            }
+
+            const updateRemoveButtons = () => {
+                const rows = document.querySelectorAll('#playlist-list .playlist-row')
+
+                rows.forEach(row => row.querySelector('button').disabled = rows.length <= 1)
+            }
+
+            const renderList = playlists => {
+                const list = document.getElementById('playlist-list')
+
+                list.innerHTML = ''
+
+                if (playlists.length === 0)
+                    list.appendChild(createRow(null))
+                else
+                    playlists.forEach(entry => list.appendChild(createRow(entry)))
+
                 updateAddButton()
                 updateRemoveButtons()
-                saveSettings()
+            }
+
+            document.getElementById('add-btn').addEventListener('click', () => {
+                const count = document.querySelectorAll('#playlist-list .playlist-row').length
+
+                if (count >= MAX_PLAYLISTS)
+                    return
+
+                const row = createRow(null)
+
+                document.getElementById('playlist-list').appendChild(row)
+                row.querySelector('.playlist-name').focus()
+
+                updateAddButton()
+                updateRemoveButtons()
             })
-
-            fields.appendChild(nameInput)
-            fields.appendChild(urlInput)
-            row.appendChild(fields)
-            row.appendChild(removeBtn)
-
-            return row
-        }
-
-        const updateRemoveButtons = () => {
-            const rows = document.querySelectorAll('#playlist-list .playlist-row')
-
-            rows.forEach(row => row.querySelector('button').disabled = rows.length <= 1)
-        }
-
-        const renderList = playlists => {
-            const list = document.getElementById('playlist-list')
-
-            list.innerHTML = ''
-
-            if (playlists.length === 0)
-                list.appendChild(createRow(null))
-            else
-                playlists.forEach(entry => list.appendChild(createRow(entry)))
-
-            updateAddButton()
-            updateRemoveButtons()
-        }
-
-        document.getElementById('add-btn').addEventListener('click', () => {
-            const count = document.querySelectorAll('#playlist-list .playlist-row').length
-
-            if (count >= MAX_PLAYLISTS)
-                return
-
-            const row = createRow(null)
-
-            document.getElementById('playlist-list').appendChild(row)
-            row.querySelector('.playlist-name').focus()
-
-            updateAddButton()
-            updateRemoveButtons()
-        })
-    </script>
-</body>
+        </script>
+    </body>
 </html>

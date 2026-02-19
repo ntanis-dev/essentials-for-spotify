@@ -1,32 +1,33 @@
 <!doctype html>
 <html>
-<head lang="en">
-    <meta charset="utf-8" />
-    <script src="sdpi-components.js"></script>
-    <style>
-        body {
-            -webkit-user-select: none;
-            user-select: none;
-        }
-    </style>
-</head>
-<body>
-    <sdpi-item label="Spotify URL">
-        <sdpi-textfield
-            setting="spotify_url"
-            pattern="/^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?(?:(?:album|artist|track|playlist)\/[A-Za-z0-9]{22}|collection\/tracks)(?:\/)?(?:\?.*)?$/i"
-            placeholder="https://open.spotify.com/..."
-            required>
-        </sdpi-textfield>
-    </sdpi-item>
-    <sdpi-item label="Show">
-        <sdpi-checkbox-list setting="show">
-            <option value="title">Name</option>
-            <option value="subtitle">Artist(s) (Album / Track Context)</option>
-            <option value="extra">Type</option>
-            <option value="active_border">Active Border</option>
-            <option value="inactive_border">Inactive Border</option>
-        </sdpi-checkbox-list>
-    </sdpi-item>
-</body>
+    <head lang="en">
+        <meta charset="utf-8" />
+        <script src="sdpi-components.js"></script>
+        <style>
+            body {
+                -webkit-user-select: none;
+                user-select: none;
+            }
+        </style>
+    </head>
+    <body>
+        <sdpi-item label="Spotify URL">
+            <sdpi-textfield
+                setting="spotify_url"
+                pattern="/^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?(?:(?:album|artist|track|playlist)\/[A-Za-z0-9]{22}|collection\/tracks)(?:\/)?(?:\?.*)?$/i"
+                placeholder="https://open.spotify.com/..."
+                required>
+            </sdpi-textfield>
+        </sdpi-item>
+        
+        <sdpi-item label="Show">
+            <sdpi-checkbox-list setting="show">
+                <option value="title">Name</option>
+                <option value="subtitle">Artist(s) (Album / Track Context)</option>
+                <option value="extra">Type</option>
+                <option value="active_border">Active Border</option>
+                <option value="inactive_border">Inactive Border</option>
+            </sdpi-checkbox-list>
+        </sdpi-item>
+    </body>
 </html>
