@@ -21,12 +21,19 @@
         </sdpi-range>
     </sdpi-item>
 
+    <sdpi-item label="Time Display">
+        <sdpi-select setting="time_display">
+            <option value="duration">Duration</option>
+            <option value="remaining">Remaining</option>
+        </sdpi-select>
+    </sdpi-item>
+
     <sdpi-item label="Show">
         <sdpi-checkbox-list setting="show">
             <option value="name">Title</option>
             <option value="artists">Artist(s)</option>
             <option value="progress">Progress</option>
-            <option value="duration">Duration</option>
+            <option value="duration">Time Display</option>
             <option value="liked">Liked</option>
         </sdpi-checkbox-list>
     </sdpi-item>

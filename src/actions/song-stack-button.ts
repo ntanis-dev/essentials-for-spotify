@@ -33,7 +33,7 @@ export default class SongStackButton extends Button {
 	#onSongTimeChanged(progress: number, duration: number, pending: boolean = false, contexts = this.contexts) {
 		for (const context of contexts)
 			if (this.marquees[context])
-				this.updateMarqueeEntry(context, 'time', this.beautifyTime(progress, duration, this.settings[context].show.includes('progress'), this.settings[context].show.includes('duration')))
+				this.updateMarqueeEntry(context, 'time', this.beautifyTime(progress, duration, this.settings[context].show.includes('progress'), this.settings[context].show.includes('duration'), this.settings[context].time_display === 'remaining'))
 	}
 
 	async #onSongChanged(song: any, pending: boolean = false, contexts = this.contexts, force = false) {
@@ -68,7 +68,7 @@ export default class SongStackButton extends Button {
 
 							this.settings[context].show.includes('progress') || this.settings[context].show.includes('duration') ? {
 								key: 'time',
-								value: this.beautifyTime(song.progress, song.item.duration_ms, this.settings[context].show.includes('progress'), this.settings[context].show.includes('duration'))
+								value: this.beautifyTime(song.progress, song.item.duration_ms, this.settings[context].show.includes('progress'), this.settings[context].show.includes('duration'), this.settings[context].time_display === 'remaining')
 							} : undefined
 						], context)
 					else
@@ -181,7 +181,12 @@ export default class SongStackButton extends Button {
 				show: ['name', 'artists', 'progress', 'duration', 'liked']
 			})
 
-		if (oldSettings.show?.length !== this.settings[context].show?.length || (oldSettings.show && this.settings[context].show && (!oldSettings.show.every((value: any, index: number) => value === this.settings[context].show[index]))))
+		if (!this.settings[context].time_display)
+			await this.setSettings(context, {
+				time_display: 'duration'
+			})
+
+		if (oldSettings.show?.length !== this.settings[context].show?.length || (oldSettings.show && this.settings[context].show && (!oldSettings.show.every((value: any, index: number) => value === this.settings[context].show[index]))) || oldSettings.time_display !== this.settings[context].time_display)
 			await this.#onSongChanged(wrapper.song, wrapper.pendingSongChange, [context], true)
 	}
 

@@ -93,7 +93,7 @@ export default class PlaybackControlDial extends Dial {
 						await this.setIcon(context, 'images/icons/pending.png')
 
 					const image = await images.getForSong(song)
-					const time = this.beautifyTime(song.progress, song.item.duration_ms, this.settings[context].show.includes('progress'), this.settings[context].show.includes('duration'))
+					const time = this.beautifyTime(song.progress, song.item.duration_ms, this.settings[context].show.includes('progress'), this.settings[context].show.includes('duration'), this.settings[context].time_display === 'remaining')
 
 					await this.setFeedback(context, {
 						text: {
@@ -138,7 +138,7 @@ export default class PlaybackControlDial extends Dial {
 			const timeMarquee = this.getMarquee(context, 'time')
 
 			if (timeMarquee) {
-				const time = this.beautifyTime(progress, duration, this.settings[context].show.includes('progress'), this.settings[context].show.includes('duration'))
+				const time = this.beautifyTime(progress, duration, this.settings[context].show.includes('progress'), this.settings[context].show.includes('duration'), this.settings[context].time_display === 'remaining')
 				this.updateMarquee(context, 'time', time === '' ? ' ' : time, time === '' ? ' ' : `${'8'.repeat(time.length - (this.settings[context].show.includes('progress') && this.settings[context].show.includes('duration') ? 5 : 1))}${this.settings[context].show.includes('progress') && this.settings[context].show.includes('duration') ? ': : /' : ':'}`)
 			}
 
@@ -254,7 +254,12 @@ export default class PlaybackControlDial extends Dial {
 				step: constants.DEFAULT_SEEK_STEP_SIZE
 			})
 
-		if (oldSettings.show?.length !== this.settings[context].show?.length || (oldSettings.show && this.settings[context].show && (!oldSettings.show.every((value: any, index: number) => value === this.settings[context].show[index]))))
+		if (!this.settings[context].time_display)
+			await this.setSettings(context, {
+				time_display: 'duration'
+			})
+
+		if (oldSettings.show?.length !== this.settings[context].show?.length || (oldSettings.show && this.settings[context].show && (!oldSettings.show.every((value: any, index: number) => value === this.settings[context].show[index]))) || oldSettings.time_display !== this.settings[context].time_display)
 			await this.#onSongChanged(wrapper.song, wrapper.pendingSongChange, [context], true)
 	}
 
