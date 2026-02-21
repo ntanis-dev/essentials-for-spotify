@@ -2,8 +2,6 @@ import {
 	EventEmitter
 } from 'events'
 
-import fetch from 'node-fetch'
-
 import connector from './connector'
 import constants from './constants'
 import logger from './logger'

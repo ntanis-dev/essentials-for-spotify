@@ -1,8 +1,6 @@
 import constants from './constants'
 import logger from './logger'
 
-import fetch from 'node-fetch'
-
 const expectedCdnDomains = new Set()
 
 let lastSong = null

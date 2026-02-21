@@ -4,19 +4,9 @@ import express from 'express'
 import constants from './constants'
 import logger from './logger'
 
-import fetch from 'node-fetch'
-
-import {
-	HttpsProxyAgent
-} from 'https-proxy-agent'
-
 import {
 	v4
 } from 'uuid'
-
-const proxyAgent = false ? new HttpsProxyAgent('http://127.0.0.1:8000', {
-	rejectUnauthorized: false
-}) : undefined
 
 class Connector extends EventEmitter {
 	#accessToken = null
@@ -39,7 +29,6 @@ class Connector extends EventEmitter {
 	async #refreshAccessToken() {
 		const response = await fetch('https://accounts.spotify.com/api/token', {
 			method: 'POST',
-			agent: proxyAgent,
 
 			body: new URLSearchParams({
 				refresh_token: this.#refreshToken,
@@ -66,7 +55,6 @@ class Connector extends EventEmitter {
 
 		let response = await fetch(`https://api.spotify.com/v1/${path}`, {
 			...options,
-			agent: proxyAgent,
 
 			headers: {
 				...options.headers,
@@ -79,7 +67,6 @@ class Connector extends EventEmitter {
 
 			response = await fetch(`https://api.spotify.com/v1/${path}`, {
 				...options,
-				agent: proxyAgent,
 
 				headers: {
 					...options.headers,
@@ -144,7 +131,6 @@ class Connector extends EventEmitter {
 				try {
 					const response = await fetch('https://accounts.spotify.com/api/token', {
 						method: 'POST',
-						agent: proxyAgent,
 
 						body: new URLSearchParams({
 							code: req.query.code,
