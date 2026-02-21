@@ -23,22 +23,22 @@ export default class MyPlaylistsDial extends ItemsDial {
 		super('layouts/items-layout.json', 'images/icons/playlists.png')
 	}
 
-	#buildExtras(context: string, entries: any[]) {
-		this.#resolvedExtras[context] = entries.filter(entry => entry.name && entry.url).map(entry => {
+	async #buildExtras(context: string, entries: any[]) {
+		this.#resolvedExtras[context] = entries.filter(entry => entry.url).map(entry => {
 			const playlistMatch = entry.url.match(PLAYLIST_URL_REGEX)
 
 			if (playlistMatch)
 				return {
 					id: playlistMatch[1],
 					type: 'playlist',
-					name: entry.name,
+					name: entry.name || '',
 					images: []
 				}
 			else if (wrapper.user?.id && LIKED_SONGS_URL_REGEX.test(entry.url))
 				return {
 					id: `${wrapper.user.id}:collection`,
 					type: 'user',
-					name: entry.name,
+					name: entry.name || 'Liked Songs',
 
 					images: [{
 						width: 64,
@@ -49,26 +49,43 @@ export default class MyPlaylistsDial extends ItemsDial {
 
 			return null
 		}).filter(v => !!v)
+
+		for (const extra of this.#resolvedExtras[context])
+			if (extra.type === 'playlist') {
+				const oembed = await wrapper.getOembed(extra.id)
+
+				if (oembed) {
+					if (!extra.name && oembed.title)
+						extra.name = oembed.title
+
+					if (extra.images.length === 0 && oembed.thumbnailUrl)
+						extra.images = [{ url: oembed.thumbnailUrl }]
+				}
+			}
 	}
 
-	#refreshResolvedExtras(context: string) {
-		this.#buildExtras(context, this.#extraEntries[context] || [])
+	async #refreshResolvedExtras(context: string) {
+		await this.#buildExtras(context, this.#extraEntries[context] || [])
 		wrapper.setKnownPlaylists(Object.values(this.#resolvedExtras).flat().filter(entry => entry.type === 'playlist'))
 	}
 
 	async onSettingsUpdated(context: string, _oldSettings: any) {
 		this.#extraEntries[context] = this.settings[context].extra_playlists || []
 
-		const previousResolved = JSON.stringify(this.#resolvedExtras[context])
+		const previousIds = (this.#resolvedExtras[context] || []).map((e: any) => e.id).join(',')
 
-		this.#refreshResolvedExtras(context)
+		await this.#refreshResolvedExtras(context)
 
-		if (previousResolved !== JSON.stringify(this.#resolvedExtras[context]))
+		const currentIds = (this.#resolvedExtras[context] || []).map((e: any) => e.id).join(',')
+
+		if (previousIds !== currentIds)
 			await this.invokeWrapperAction(context, Dial.TYPES.LONG_TAP)
+		else if (previousIds.length > 0)
+			await this.softRefresh(context)
 	}
 
 	async fetchItems(page: number, context: string) {
-		this.#refreshResolvedExtras(context)
+		await this.#refreshResolvedExtras(context)
 
 		const extras = this.#resolvedExtras[context] || []
 		const pageStart = (page - 1) * constants.WRAPPER_ITEMS_PER_PAGE

@@ -183,6 +183,11 @@ export default class ItemsDial extends Dial {
 		})
 	}
 
+	protected async softRefresh(context: string) {
+		await this.#refreshItems(context)
+		await this.#refreshLayout(false, context)
+	}
+
 	async invokeWrapperAction(context: string, type: symbol) {
 		if (type === Dial.TYPES.ROTATE_CLOCKWISE) {
 			if (this.#lastTotal <= 1)

@@ -225,7 +225,7 @@
                     const name = row.querySelector('.playlist-name').value.trim()
                     const url = row.querySelector('.playlist-url').value.trim()
 
-                    if (name && url)
+                    if (url)
                         playlists.push({
                             name: name,
                             url: url
@@ -275,8 +275,6 @@
                 nameInput.placeholder = 'Name'
                 nameInput.value = name
                 nameInput.spellcheck = false
-                nameInput.required = true
-                nameInput.title = 'Please fill in this field.'
                 nameInput.addEventListener('input', debouncedSave)
 
                 const urlInput = document.createElement('input')

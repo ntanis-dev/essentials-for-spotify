@@ -31,6 +31,8 @@ class Wrapper extends EventEmitter {
 	#lastDisallowFlags = []
 	#updatePlaybackStateStatus = 'idle'
 	#knownPlaylists = new Map()
+	#oembedCache = new Map()
+	#oembedPending = {}
 
 	constructor() {
 		super()
@@ -1138,6 +1140,50 @@ class Wrapper extends EventEmitter {
 
 		for (const playlist of playlists)
 			this.#knownPlaylists.set(playlist.id, playlist.name)
+	}
+
+	async getOembed(id) {
+		if (this.#oembedCache.has(id)) {
+			const value = this.#oembedCache.get(id)
+
+			this.#oembedCache.delete(id)
+			this.#oembedCache.set(id, value)
+
+			return value
+		} else if (this.#oembedPending[id])
+			return this.#oembedPending[id]
+
+		this.#oembedPending[id] = new Promise(async (resolve) => {
+			try {
+				if (this.#oembedCache.has(id)) {
+					resolve(this.#oembedCache.get(id))
+					return
+				}
+
+				const response = await fetch(`https://open.spotify.com/oembed?url=https://open.spotify.com/playlist/${id}`)
+				const data = await response.json()
+
+				const result = {
+					thumbnailUrl: data.thumbnail_url || null,
+					title: data.title || null
+				}
+
+				if (this.#oembedCache.size >= constants.WRAPPER_ITEMS_PER_PAGE)
+					this.#oembedCache.delete(this.#oembedCache.keys().next().value)
+
+				this.#oembedCache.set(id, result)
+
+				resolve(result)
+			} catch (e) {
+				logger.error(`Failed to get oEmbed data for playlist "${id}": "${e.message}"`)
+				resolve(null)
+			}
+		}).finally(result => {
+			delete this.#oembedPending[id]
+			return result
+		})
+
+		return this.#oembedPending[id]
 	}
 }
 
