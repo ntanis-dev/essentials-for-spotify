@@ -29,18 +29,28 @@ export default class PlayContextButton extends Button {
 
 		wrapper.on('playbackContextChanged', () => {
 			for (const context of Object.keys(this.#forcedActiveContexts))
-				if (wrapper.playbackContext?.uri === this.#cachedPlayContexts[context]?.uri)
+				if (this.#cachedPlayContexts[context]?.type === 'track' ? wrapper.song?.item?.uri === this.#cachedPlayContexts[context]?.uri : wrapper.playbackContext?.uri === this.#cachedPlayContexts[context]?.uri)
 					delete this.#forcedActiveContexts[context]
 
 			for (const context of this.contexts)
 				this.#updatePlayContext(context, this.settings[context])
+		})
+
+		wrapper.on('songChanged', () => {
+			for (const context of Object.keys(this.#forcedActiveContexts))
+				if (this.#cachedPlayContexts[context]?.type === 'track' && wrapper.song?.item?.uri === this.#cachedPlayContexts[context]?.uri)
+					delete this.#forcedActiveContexts[context]
+
+			for (const context of this.contexts)
+				if (this.#cachedPlayContexts[context]?.type === 'track')
+					this.#updatePlayContext(context, this.settings[context])
 		})
 	}
 
 	async #updatePlayContext(context: string, oldSettings: any = undefined) {
 		this.setUnpressable(context, true)
 
-		const badUrl = !/^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?(?:(?:album|artist|playlist)\/[A-Za-z0-9]{22}|collection\/tracks)(?:\/)?(?:\?.*)?$/.test(this.settings[context].spotify_url)
+		const badUrl = !/^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?(?:(?:album|artist|track|playlist)\/[A-Za-z0-9]{22}|collection\/tracks)(?:\/)?(?:\?.*)?$/.test(this.settings[context].spotify_url)
 
 		if ((!oldSettings) || badUrl || this.settings[context].spotify_url !== this.#cachedPlayContexts[context]?.url || (!(oldSettings.show || []).every((entry: string) => entry === 'active_border' || entry === 'inactive_border' || (this.settings[context].show || []).includes(entry))) || (!(this.settings[context].show || []).every((entry: string) => entry === 'active_border' || entry === 'inactive_border' || (oldSettings.show || []).includes(entry))))
 			this.clearMarquee(context)
@@ -83,8 +93,10 @@ export default class PlayContextButton extends Button {
 			else
 				this.resumeMarquee(context)
 
+			const matchesActive = this.#cachedPlayContexts[context].type === 'track' ? wrapper.song?.item?.uri === this.#cachedPlayContexts[context].uri : wrapper.playbackContext?.uri === this.#cachedPlayContexts[context].uri
+
 			if (image)
-				await this.setImage(context, this.processImage(`data:image/jpeg;base64,${image}`, 'none', (this.settings[context].show.includes('active_border') && (wrapper.playbackContext?.uri === this.#cachedPlayContexts[context].uri || this.#forcedActiveContexts[context] === this.#cachedPlayContexts[context].uri)) ? (wrapper.playbackContext?.uri === this.#cachedPlayContexts[context].uri ? '#1db954' : '#dab824') : (this.settings[context].show.includes('inactive_border') ? '#888888' : null)))
+				await this.setImage(context, this.processImage(`data:image/jpeg;base64,${image}`, 'none', (this.settings[context].show.includes('active_border') && (matchesActive || this.#forcedActiveContexts[context] === this.#cachedPlayContexts[context].uri)) ? (matchesActive ? '#1db954' : '#dab824') : (this.settings[context].show.includes('inactive_border') ? '#888888' : null)))
 			else if (this.#cachedPlayContexts[context].type === 'local')
 				await this.setImage(context, 'images/states/local')
 			else

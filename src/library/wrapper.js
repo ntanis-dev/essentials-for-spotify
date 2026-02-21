@@ -934,7 +934,9 @@ class Wrapper extends EventEmitter {
 			await this.#deviceCall('me/player/play', {
 				method: 'PUT',
 
-				body: JSON.stringify({
+				body: JSON.stringify(item.type === 'track' ? {
+					uris: [contextUri]
+				} : {
 					context_uri: contextUri,
 					offset
 				})
