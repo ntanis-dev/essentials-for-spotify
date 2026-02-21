@@ -10,10 +10,12 @@ import {
 import constants from './../library/constants.js'
 import wrapper from './../library/wrapper.js'
 
-const URL_REGEX = /^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?playlist\/([A-Za-z0-9]{22})(?:\/)?(?:\?.*)?$/i
+const PLAYLIST_URL_REGEX = /^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?playlist\/([A-Za-z0-9]{22})(?:\/)?(?:\?.*)?$/i
+const LIKED_SONGS_URL_REGEX = /^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?collection\/tracks(?:\/)?(?:\?.*)?$/i
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.my-playlists-dial' })
 export default class MyPlaylistsDial extends ItemsDial {
+	#extraEntries: any[] = []
 	#resolvedExtras: any[] = []
 	#lastSpotifyTotal: number = 0
 
@@ -22,31 +24,49 @@ export default class MyPlaylistsDial extends ItemsDial {
 	}
 
 	#buildExtras(entries: any[]) {
-		this.#resolvedExtras = entries.filter(entry => entry.name && entry.url && URL_REGEX.test(entry.url)).map(entry => {
-			const match = entry.url.match(URL_REGEX)
+		this.#resolvedExtras = entries.filter(entry => entry.name && entry.url).map(entry => {
+			const playlistMatch = entry.url.match(PLAYLIST_URL_REGEX)
 
-			return {
-				id: match[1],
-				type: 'playlist',
-				name: entry.name,
-				images: []
-			}
-		})
+			if (playlistMatch)
+				return {
+					id: playlistMatch[1],
+					type: 'playlist',
+					name: entry.name,
+					images: []
+				}
+
+			if (LIKED_SONGS_URL_REGEX.test(entry.url) && wrapper.user?.id)
+				return {
+					id: `${wrapper.user.id}:collection`,
+					type: 'user',
+					name: entry.name,
+					images: []
+				}
+
+			return null
+		}).filter(v => !!v)
+	}
+
+	#refreshResolvedExtras() {
+		this.#buildExtras(this.#extraEntries)
+
+		wrapper.setKnownPlaylists(this.#resolvedExtras.filter(entry => entry.type === 'playlist'))
 	}
 
 	async onSettingsUpdated(context: string, _oldSettings: any) {
-		const newExtras = this.settings[context].extra_playlists || []
-		const previousResolved = this.#resolvedExtras
+		this.#extraEntries = this.settings[context].extra_playlists || []
 
-		this.#buildExtras(newExtras)
+		const previousResolved = JSON.stringify(this.#resolvedExtras)
 
-		wrapper.setKnownPlaylists(this.#resolvedExtras)
+		this.#refreshResolvedExtras()
 
-		if (JSON.stringify(previousResolved) !== JSON.stringify(this.#resolvedExtras))
+		if (previousResolved !== JSON.stringify(this.#resolvedExtras))
 			await this.invokeWrapperAction(context, Dial.TYPES.LONG_TAP)
 	}
 
 	async fetchItems(page: number) {
+		this.#refreshResolvedExtras()
+
 		const extras = this.#resolvedExtras
 		const pageStart = (page - 1) * constants.WRAPPER_ITEMS_PER_PAGE
 
