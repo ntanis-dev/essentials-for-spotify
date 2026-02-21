@@ -21,7 +21,7 @@ export default class MyLikedSongs extends ItemsDial {
 		})
 	}
 
-	async fetchItems(page: number) {
+	async fetchItems(page: number, _context: string) {
 		return await wrapper.getUserLikedSongs(page)
 	}
 }
