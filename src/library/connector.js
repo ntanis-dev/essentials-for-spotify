@@ -1,5 +1,5 @@
 import StreamDeck from '@elgato/streamdeck'
-import EventEmitter from 'events'
+import EventEmitter from 'node:events'
 import http from 'node:http'
 import crypto from 'node:crypto'
 import constants from './constants'

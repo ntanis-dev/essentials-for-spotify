@@ -1,6 +1,6 @@
 import {
 	EventEmitter
-} from 'events'
+} from 'node:events'
 
 import connector from './connector'
 import constants from './constants'
