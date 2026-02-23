@@ -11,10 +11,7 @@ import {
 	Action
 } from './action.js'
 
-import {
-	v4
-} from 'uuid'
-
+import crypto from 'node:crypto'
 import connector from './../library/connector.js'
 import constants from './../library/constants.js'
 import logger from './../library/logger.js'
@@ -151,7 +148,7 @@ export class Dial extends Action {
 		const marqueeIdentifier = `${context}-${key}`
 		const isInitial = !this.#marquees[marqueeIdentifier]
 
-		id = id ?? v4()
+		id = id ?? crypto.randomUUID()
 
 		const marqueeData = this.#marquees[marqueeIdentifier] || {
 			timeout: null,

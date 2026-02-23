@@ -3,9 +3,9 @@ import typescript from '@rollup/plugin-typescript'
 import nodeResolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
 import json from '@rollup/plugin-json'
-import copy from 'rollup-plugin-copy'
 import path from 'node:path'
 import url from 'node:url'
+import fs from 'node:fs'
 
 const isWatching = !!process.env.ROLLUP_WATCH
 
@@ -16,10 +16,7 @@ const config = {
 		file: 'com.ntanis.essentials-for-spotify.sdPlugin/bin/plugin.js',
 		inlineDynamicImports: true,
 		sourcemap: isWatching,
-
-		sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => {
-			return url.pathToFileURL(path.resolve(path.dirname(sourcemapPath), relativeSourcePath)).href
-		}
+		sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => url.pathToFileURL(path.resolve(path.dirname(sourcemapPath), relativeSourcePath)).href
 	},
 
 	plugins: [
@@ -53,35 +50,46 @@ const config = {
 		isWatching && {
 			name: 'watch-external',
 
-			buildStart(){
+			buildStart() {
 				this.addWatchFile('src/ui')
 				this.addWatchFile('com.ntanis.essentials-for-spotify.sdPlugin/manifest.json')
 			}
 		},
 
-		copy({
-			targets: [
-				{
-					src: 'src/ui/setup',
-					dest: 'com.ntanis.essentials-for-spotify.sdPlugin/bin'
-				},
+		{
+			name: 'copy-assets',
 
-				{
-					src: 'src/ui/overlay',
-					dest: 'com.ntanis.essentials-for-spotify.sdPlugin/bin'
-				},
+			generateBundle() {
+				const targets = [
+					{
+						src: 'src/ui/setup',
+						dest: 'com.ntanis.essentials-for-spotify.sdPlugin/bin/setup'
+					},
+					
+					{
+						src: 'src/ui/overlay',
+						dest: 'com.ntanis.essentials-for-spotify.sdPlugin/bin/overlay'
+					},
 
-				{
-					src: 'src/ui/pi',
-					dest: 'com.ntanis.essentials-for-spotify.sdPlugin'
-				},
+					{
+						src: 'src/ui/pi',
+						dest: 'com.ntanis.essentials-for-spotify.sdPlugin/pi'
+					}
+				]
 
-				{
-					src: 'src/localization/*',
-					dest: 'com.ntanis.essentials-for-spotify.sdPlugin'
-				}
-			]
-		})
+				for (const {
+					src,
+					dest
+				} of targets)
+					fs.cpSync(src, dest, {
+						recursive: true
+					})
+
+				if (fs.existsSync('src/localization'))
+					for (const file of fs.readdirSync('src/localization'))
+						fs.copyFileSync(path.join('src/localization', file), path.join('com.ntanis.essentials-for-spotify.sdPlugin', file))
+			}
+		}
 	]
 }
 

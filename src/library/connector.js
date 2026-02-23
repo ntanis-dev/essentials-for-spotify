@@ -1,16 +1,26 @@
 import StreamDeck from '@elgato/streamdeck'
 import EventEmitter from 'events'
-import express from 'express'
+import http from 'node:http'
 import crypto from 'node:crypto'
 import constants from './constants'
 import logger from './logger'
 
+import {
+	serveStatic,
+	sendFile,
+	redirect,
+	send,
+	parseQuery,
+	parsePath,
+	parseFormBody
+} from './http'
+
 class Connector extends EventEmitter {
+	#staticHandler = serveStatic('./bin/setup')
 	#accessToken = null
 	#refreshToken = null
 	#clientId = null
 	#clientSecret = null
-	#app = null
 	#port = null
 	#server = null
 	#setup = false
@@ -86,50 +96,42 @@ class Connector extends EventEmitter {
 			return response.text()
 	}
 
-	startSetup(clientId = null, clientSecret = null, refreshToken = null) {
-		logger.info('Starting connector setup.')
+	async #handleRequest(req, res) {
+		const pathname = parsePath(req.url)
+		const query = parseQuery(req.url)
 
-		this.#clientId = clientId
-		this.#clientSecret = clientSecret
-		this.#refreshToken = refreshToken
+		if (this.#staticHandler(pathname, res))
+			return
+		else if (req.method === 'GET' && pathname === '/port')
+			return send(res, 200, this.#port.toString())
+		else if (req.method === 'POST' && pathname === '/') {
+			const body = await parseFormBody(req)
 
-		this.#app = express()
-
-		this.#app.use((req, res, next) => {
-			if (req.path.endsWith('.html')) {
-				res.status(404).send()
-				return
+			if ((!body.clientId) || (!body.clientSecret)) {
+				this.#error = true
+				return redirect(res, '/?error=1')
 			}
 
-			next()
-		})
+			this.#clientId = body.clientId
+			this.#clientSecret = body.clientSecret
+			this.#state = crypto.randomUUID()
 
-		this.#app.use(express.static('./bin/setup', {
-			index: false
-		}))
-
-		this.#app.use(express.urlencoded({
-			extended: true
-		}))
-
-		this.#app.get('/', async (req, res) => {
-			if (req.query.error)
+			return redirect(res, `https://accounts.spotify.com/authorize?response_type=code&client_id=${this.#clientId}&scope=${encodeURIComponent(constants.CONNECTOR_DEFAULT_SCOPES.join(' '))}&redirect_uri=${encodeURIComponent(`http://127.0.0.1:${this.#port}`)}&state=${this.#state}`)
+		} else if (req.method === 'GET' && pathname === '/')
+			if (query.error)
 				if (!this.#error)
-					res.redirect('/')
+					return redirect(res, '/')
 				else {
 					this.#error = false
-					
-					res.sendFile('./index.html', {
-						root: './bin/setup'
-					})
+					return sendFile(res, './bin/setup/index.html')
 				}
-			else if (req.query.code && req.query.state === this.#state && (!this.#setup) && this.#clientId && this.#clientSecret)
+			else if (query.code && query.state === this.#state && (!this.#setup) && this.#clientId && this.#clientSecret)
 				try {
 					const response = await fetch('https://accounts.spotify.com/api/token', {
 						method: 'POST',
 
 						body: new URLSearchParams({
-							code: req.query.code,
+							code: query.code,
 							redirect_uri: `http://127.0.0.1:${this.#port}`,
 							grant_type: 'authorization_code'
 						}),
@@ -157,39 +159,35 @@ class Connector extends EventEmitter {
 					})
 
 					logger.info('The connector setup has been completed.')
-					res.redirect('/?success=1')
+					return redirect(res, '/?success=1')
 				} catch (e) {
 					logger.error(`An error occured while setting up the connector: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
 					this.#error = true
-					res.redirect('/?error=1')
+					return redirect(res, '/?error=1')
 				}
-			else if (req.query.success && (!this.#setup))
-				res.redirect('/')
+			else if (query.success && (!this.#setup))
+				return redirect(res, '/')
 			else {
-				res.sendFile('./index.html', {
-					root: './bin/setup'
-				})
+				sendFile(res, './bin/setup/index.html')
 
-				if (req.query.success && this.#setup) {
+				if (query.success && this.#setup) {
 					this.#server.close()
 					this.#server = null
 				}
-			}
-		})
 
-		this.#app.post('/', async (req, res) => {
-			if ((!req.body.clientId) || (!req.body.clientSecret)) {
-				this.#error = true
-				res.redirect('/?error=1')
-			} else {
-				this.#clientId = req.body.clientId
-				this.#clientSecret = req.body.clientSecret
-				this.#state = crypto.randomUUID()
-				res.redirect(`https://accounts.spotify.com/authorize?response_type=code&client_id=${this.#clientId}&scope=${encodeURIComponent(constants.CONNECTOR_DEFAULT_SCOPES.join(' '))}&redirect_uri=${encodeURIComponent(`http://127.0.0.1:${this.#port}`)}&state=${this.#state}`);
+				return
 			}
-		})
 
-		this.#app.get('/port', (req, res) => res.send(this.#port.toString()))
+		res.writeHead(404)
+		res.end()
+	}
+
+	startSetup(clientId = null, clientSecret = null, refreshToken = null) {
+		logger.info('Starting connector setup.')
+
+		this.#clientId = clientId
+		this.#clientSecret = clientSecret
+		this.#refreshToken = refreshToken
 
 		if (this.#refreshToken)
 			this.#refreshAccessToken().then(() => this.#setSetup(true)).catch(e => {
@@ -226,7 +224,7 @@ class Connector extends EventEmitter {
 	#listenWithRetry(attempt = 0) {
 		const port = constants.CONNECTOR_DEFAULT_PORT + attempt
 
-		this.#server = this.#app.listen(port)
+		this.#server = http.createServer((req, res) => this.#handleRequest(req, res))
 
 		this.#server.on('listening', () => {
 			this.#port = port
@@ -248,6 +246,8 @@ class Connector extends EventEmitter {
 			} else
 				logger.error(`Failed to start connector setup server: "${err.message || 'No message.'}"`)
 		})
+
+		this.#server.listen(port)
 	}
 
 	#saveGlobalSettings(credentials) {

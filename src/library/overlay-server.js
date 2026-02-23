@@ -1,45 +1,28 @@
 import StreamDeck from '@elgato/streamdeck'
-import express from 'express'
-import { WebSocketServer } from 'ws'
 import http from 'node:http'
 import wrapper from './wrapper'
 import connector from './connector'
 import constants from './constants'
 import logger from './logger'
 
+import {
+	WebSocketServer
+} from 'ws'
+
+import {
+	serveStatic,
+	sendFile,
+	sendJson
+} from './http'
+
 class OverlayServer {
+	#staticHandler = serveStatic('./bin/overlay')
 	#server = null
 	#wss = null
 	#port = null
 	#subscribed = false
-	#app = null
 
 	start() {
-		this.#app = express()
-
-		this.#app.use((req, res, next) => {
-			if (req.path.endsWith('.html')) {
-				res.status(404).send()
-				return
-			}
-
-			next()
-		})
-
-		this.#app.use(express.static('./bin/overlay', {
-			index: false
-		}))
-
-		this.#app.get('/', (req, res) => res.sendFile('./index.html', {
-			root: './bin/overlay'
-		}))
-
-		this.#app.get('/status', (req, res) => res.json({
-			connected: connector.set,
-			clients: this.#wss?.clients?.size ?? 0,
-			port: this.#port
-		}))
-
 		if (!this.#subscribed) {
 			this.#subscribeToEvents()
 			this.#subscribed = true
@@ -48,10 +31,28 @@ class OverlayServer {
 		this.#listenWithRetry()
 	}
 
+	#handleRequest(req, res) {
+		const url = new URL(req.url, 'http://localhost')
+
+		if (this.#staticHandler(url.pathname, res))
+			return
+		else if (req.method === 'GET' && url.pathname === '/')
+			return sendFile(res, './bin/overlay/index.html')
+		else if (req.method === 'GET' && url.pathname === '/status')
+			return sendJson(res, {
+				connected: connector.set,
+				clients: this.#wss?.clients?.size ?? 0,
+				port: this.#port
+			})
+
+		res.writeHead(404)
+		res.end()
+	}
+
 	#listenWithRetry(attempt = 0) {
 		const port = constants.OVERLAY_DEFAULT_PORT + attempt
 
-		this.#server = http.createServer(this.#app)
+		this.#server = http.createServer((req, res) => this.#handleRequest(req, res))
 
 		this.#wss = new WebSocketServer({
 			server: this.#server
