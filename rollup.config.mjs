@@ -67,6 +67,11 @@ const config = {
 				},
 
 				{
+					src: 'src/ui/overlay',
+					dest: 'com.ntanis.essentials-for-spotify.sdPlugin/bin'
+				},
+
+				{
 					src: 'src/ui/pi',
 					dest: 'com.ntanis.essentials-for-spotify.sdPlugin'
 				},

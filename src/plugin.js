@@ -1,6 +1,7 @@
 import StreamDeck from '@elgato/streamdeck'
 import logger from './library/logger'
 import connector from './library/connector'
+import overlayServer from './library/overlay-server'
 import actions from './library/actions'
 import CacheableLookup from 'cacheable-lookup'
 import http from 'node:http'
@@ -26,6 +27,8 @@ StreamDeck.connect().then(() => {
 	logger.info('Connected to Stream Deck.')
 
 	StreamDeck.settings.getGlobalSettings().then(settings => {
+		overlayServer.start()
+
 		if (settings.clientId && settings.clientSecret && settings.refreshToken) {
 			logger.info('Found global settings.')
 			connector.startSetup(settings.clientId, settings.clientSecret, settings.refreshToken)
@@ -35,6 +38,7 @@ StreamDeck.connect().then(() => {
 		}
 	}).catch(e => {
 		logger.error(`An error occurred while getting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`)
+		overlayServer.start()
 		connector.startSetup()
 	})
 

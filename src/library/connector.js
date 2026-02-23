@@ -1,12 +1,9 @@
 import StreamDeck from '@elgato/streamdeck'
 import EventEmitter from 'events'
 import express from 'express'
+import crypto from 'node:crypto'
 import constants from './constants'
 import logger from './logger'
-
-import {
-	v4
-} from 'uuid'
 
 class Connector extends EventEmitter {
 	#accessToken = null
@@ -95,7 +92,6 @@ class Connector extends EventEmitter {
 		this.#clientId = clientId
 		this.#clientSecret = clientSecret
 		this.#refreshToken = refreshToken
-		this.#port = constants.CONNECTOR_DEFAULT_PORT
 
 		this.#app = express()
 
@@ -153,12 +149,12 @@ class Connector extends EventEmitter {
 					this.#accessToken = data.access_token
 					this.#setSetup(true)
 
-					StreamDeck.settings.setGlobalSettings({
+					this.#saveGlobalSettings({
 						clientId: this.#clientId,
 						clientSecret: this.#clientSecret,
 						refreshToken: this.#refreshToken,
 						accessToken: this.#accessToken
-					}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+					})
 
 					logger.info('The connector setup has been completed.')
 					res.redirect('/?success=1')
@@ -188,7 +184,7 @@ class Connector extends EventEmitter {
 			} else {
 				this.#clientId = req.body.clientId
 				this.#clientSecret = req.body.clientSecret
-				this.#state = v4()
+				this.#state = crypto.randomUUID()
 				res.redirect(`https://accounts.spotify.com/authorize?response_type=code&client_id=${this.#clientId}&scope=${encodeURIComponent(constants.CONNECTOR_DEFAULT_SCOPES.join(' '))}&redirect_uri=${encodeURIComponent(`http://127.0.0.1:${this.#port}`)}&state=${this.#state}`);
 			}
 		})
@@ -201,10 +197,7 @@ class Connector extends EventEmitter {
 				this.invalidateSetup(true)
 			})
 		else
-			this.#server = this.#app.listen(this.#port, (err) => {
-				if (err) return logger.error(`Failed to start connector setup server on port "${this.#port}": "${err.message || 'No message.'}"`)
-				logger.info(`Connector setup server listening on port "${this.#port}".`)
-			})
+			this.#listenWithRetry()
 	}
 
 	invalidateSetup(force = false) {
@@ -218,19 +211,52 @@ class Connector extends EventEmitter {
 		this.#clientId = null
 		this.#clientSecret = null
 
-		this.#server = this.#app.listen(this.#port, (err) => {
-			if (err) return logger.error(`Failed to start connector setup server on port "${this.#port}": "${err.message || 'No message.'}"`)
-			logger.info(`Connector setup server listening on port "${this.#port}".`)
-		})
+		this.#listenWithRetry()
 
-		StreamDeck.settings.setGlobalSettings({
+		this.#saveGlobalSettings({
 			clientId: null,
 			clientSecret: null,
 			refreshToken: null,
 			accessToken: null
-		}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+		})
 
 		logger.warn('The connector setup has been invalidated.')
+	}
+
+	#listenWithRetry(attempt = 0) {
+		const port = constants.CONNECTOR_DEFAULT_PORT + attempt
+
+		this.#server = this.#app.listen(port)
+
+		this.#server.on('listening', () => {
+			this.#port = port
+
+			logger.info(`Connector setup server listening on port "${port}".`)
+
+			StreamDeck.settings.getGlobalSettings().then(settings => {
+				StreamDeck.settings.setGlobalSettings({
+					...settings,
+					connectorPort: port
+				})
+			}).catch(e => logger.error(`An error occured while updating connector port in global settings: "${e.message || 'No message.'}".`))
+		})
+
+		this.#server.on('error', err => {
+			if (err.code === 'EADDRINUSE' && attempt < constants.PORT_RETRY_RANGE) {
+				logger.warn(`Port "${port}" in use, trying "${port + 1}".`)
+				this.#listenWithRetry(attempt + 1)
+			} else
+				logger.error(`Failed to start connector setup server: "${err.message || 'No message.'}"`)
+		})
+	}
+
+	#saveGlobalSettings(credentials) {
+		StreamDeck.settings.getGlobalSettings().then(settings => {
+			StreamDeck.settings.setGlobalSettings({
+				...settings,
+				...credentials
+			})
+		}).catch(e => logger.error(`An error occured while setting the Stream Deck global settings: "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
 	fakeOff() {
@@ -250,6 +276,10 @@ class Connector extends EventEmitter {
 
 	get set() {
 		return this.#setup
+	}
+
+	get port() {
+		return this.#port
 	}
 }
 

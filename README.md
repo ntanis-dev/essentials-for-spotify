@@ -35,7 +35,7 @@ What's described here is the default and intended functionality of the buttons.\
 You are able to configure the behavior of some of them via their settings. 
 
 - **Setup**\
-  Start here to setup Essentials for Spotify or to reset the setup process.
+  Start here to setup Essentials for Spotify and optionally configure a stream overlay.
 
 - **Play / Pause**\
   Toggles between playing and pausing the current song.

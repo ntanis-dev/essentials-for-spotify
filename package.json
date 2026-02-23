@@ -13,11 +13,14 @@
 	"devDependencies": {
 		"@elgato/cli": "^1.7.1",
 		"@rollup/plugin-commonjs": "^29.0.0",
+		"@rollup/plugin-json": "^6.1.0",
 		"@rollup/plugin-node-resolve": "^16.0.3",
 		"@rollup/plugin-terser": "^0.4.4",
 		"@rollup/plugin-typescript": "^12.3.0",
+		"@tsconfig/node20": "^20.1.9",
 		"@types/node": "^22.0.0",
 		"rollup": "^4.57.1",
+		"rollup-plugin-copy": "^3.5.0",
 		"tslib": "^2.6.2",
 		"typescript": "^5.9.3"
 	},
@@ -26,12 +29,8 @@
 	},
 	"dependencies": {
 		"@elgato/streamdeck": "^2.0.1",
-		"@rollup/plugin-json": "^6.1.0",
-		"@tsconfig/node20": "^20.1.9",
 		"cacheable-lookup": "^7.0.0",
 		"express": "^5.2.1",
-		"https-proxy-agent": "^7.0.6",
-		"rollup-plugin-copy": "^3.5.0",
-		"uuid": "^13.0.0"
+		"ws": "^8.19.0"
 	}
 }

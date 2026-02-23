@@ -7,7 +7,8 @@
 			"Name": "Setup",
 			"UUID": "com.ntanis.essentials-for-spotify.setup-button",
 			"Icon": "images/actions/setup",
-			"Tooltip": "Start here to setup Essentials for Spotify.",
+			"Tooltip": "Start here to setup Essentials for Spotify and optionally configure a stream overlay.",
+			"PropertyInspectorPath": "pi/setup-button.html",
 			"DisableAutomaticStates": true,
 			"SupportedInMultiActions": false,
 			"Controllers": [

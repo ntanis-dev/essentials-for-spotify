@@ -1,0 +1,304 @@
+<!doctype html>
+<html>
+    <head lang="en">
+        <meta charset="utf-8" />
+        <script src="sdpi-components.js"></script>
+
+        <style>
+            body {
+                -webkit-user-select: none;
+                user-select: none;
+            }
+
+            .section-heading {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 16px 4px 12px;
+                font-family: var(--sdpi-fontfamily, 'Segoe UI', sans-serif);
+                font-size: 8pt;
+                font-weight: 600;
+                color: var(--sdpi-color, #969696);
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                opacity: 0.5;
+                margin-bottom: 6px;
+            }
+
+            .section-heading::after {
+                content: '';
+                flex: 1;
+                height: 1px;
+                background: currentColor;
+                opacity: 0.3;
+            }
+
+            .url-field {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                width: 100%;
+            }
+
+            .url-field input {
+                flex: 1;
+                min-width: 0;
+                padding: 0 6px;
+                height: 26px;
+                background: var(--sdpi-bgcolor, #3d3d3d);
+                border: none;
+                border-radius: 0;
+                color: var(--sdpi-color, #d8d8d8);
+                font-family: var(--sdpi-fontfamily, 'Segoe UI', sans-serif);
+                font-size: 9pt;
+                opacity: 0.7;
+                cursor: text;
+                outline: none;
+                -webkit-user-select: text;
+                user-select: text;
+            }
+
+            .url-field .copy-icon {
+                flex-shrink: 0;
+                width: 26px;
+                height: 26px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: var(--sdpi-bgcolor, #3d3d3d);
+                border: none;
+                border-radius: 0;
+                color: var(--sdpi-color, #d8d8d8);
+                cursor: pointer;
+                opacity: 0.7;
+                padding: 0;
+            }
+
+            .url-field .copy-icon:hover {
+                opacity: 1;
+            }
+
+            .url-field .copy-icon:active {
+                opacity: 0.5;
+            }
+
+            .url-field .copy-icon svg {
+                width: 14px;
+                height: 14px;
+            }
+
+            .url-field .copy-icon .hidden {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <sdpi-item label="Setup Port">
+            <sdpi-textfield id="connectorPort" placeholder="" disabled></sdpi-textfield>
+        </sdpi-item>
+
+        <div class="section-heading">Stream Overlay Generator</div>
+
+        <sdpi-item label="Layout">
+            <sdpi-select id="overlayLayout">
+                <option value="horizontal">Horizontal Card</option>
+                <option value="minimal">Minimal Bar</option>
+                <option value="vertical">Vertical Panel</option>
+            </sdpi-select>
+        </sdpi-item>
+
+        <sdpi-item label="Background Opacity">
+            <sdpi-range id="overlayOpacity" min="25" max="100" step="5" default="100" showlabels></sdpi-range>
+        </sdpi-item>
+
+        <sdpi-item label="Rounding">
+            <sdpi-range id="overlayRounding" min="0" max="100" step="1" default="0" showlabels></sdpi-range>
+        </sdpi-item>
+
+        <sdpi-item label="Time Display">
+            <sdpi-select id="overlayTimeDisplay">
+                <option value="progress">Progress</option>
+                <option value="duration">Duration</option>
+            </sdpi-select>
+        </sdpi-item>
+
+        <sdpi-item label="URL">
+            <div class="url-field">
+                <input type="text" id="overlayUrl" readonly />
+
+                <button id="copyBtn" class="copy-icon" type="button">
+                    <svg id="iconCopy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+
+                    <svg id="iconCheck" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </sdpi-item>
+
+        <sdpi-item label="Size">
+            <sdpi-textfield id="overlaySize" placeholder="" disabled></sdpi-textfield>
+        </sdpi-item>
+
+        <script>
+            let websocket = null
+            let uuid = null
+            let globalSettings = {}
+            let actionSettings = {}
+
+            const layoutDimensions = {
+                horizontal: '360 × 88',
+                minimal: '340 × 46',
+                vertical: '260 × 350'
+            }
+
+            function connectElgatoStreamDeckSocket(inPort, inPropertyInspectorUUID, inRegisterEvent, inInfo, inActionInfo) {
+                uuid = inPropertyInspectorUUID
+                actionSettings = JSON.parse(inActionInfo).payload.settings || {}
+
+                websocket = new WebSocket('ws://127.0.0.1:' + inPort)
+
+                websocket.onopen = () => {
+                    websocket.send(JSON.stringify({
+                        event: inRegisterEvent,
+                        uuid: uuid
+                    }))
+
+                    websocket.send(JSON.stringify({
+                        event: 'getGlobalSettings',
+                        context: uuid
+                    }))
+                }
+
+                websocket.onmessage = (event) => {
+                    const data = JSON.parse(event.data)
+
+                    if (data.event === 'didReceiveGlobalSettings') {
+                        globalSettings = data.payload.settings || {}
+                        loadSettings()
+                    }
+
+                    if (data.event === 'didReceiveSettings') {
+                        actionSettings = data.payload.settings || {}
+                        loadSettings()
+                    }
+                }
+            }
+
+            const getInput = id => {
+                const el = document.getElementById(id)
+                return el?.shadowRoot?.querySelector('input') ?? el?.shadowRoot?.querySelector('select') ?? el
+            }
+
+            const loadSettings = () => {
+                const connectorPortInput = getInput('connectorPort')
+                const layoutSelect = getInput('overlayLayout')
+                const opacityInput = getInput('overlayOpacity')
+                const roundingInput = getInput('overlayRounding')
+                const timeDisplaySelect = getInput('overlayTimeDisplay')
+
+                if (connectorPortInput)
+                    connectorPortInput.value = globalSettings.connectorPort || ''
+
+                if (layoutSelect)
+                    layoutSelect.value = actionSettings.overlayLayout || 'horizontal'
+
+                if (opacityInput)
+                    opacityInput.value = actionSettings.overlayOpacity ?? 100
+
+                if (roundingInput)
+                    roundingInput.value = actionSettings.overlayRounding ?? 0
+
+                if (timeDisplaySelect)
+                    timeDisplaySelect.value = actionSettings.overlayTimeDisplay || 'progress'
+
+                updateOverlayInfo()
+            }
+
+            const saveSettings = () => {
+                const layoutSelect = getInput('overlayLayout')
+                const opacityInput = getInput('overlayOpacity')
+                const roundingInput = getInput('overlayRounding')
+                const timeDisplaySelect = getInput('overlayTimeDisplay')
+
+                const overlayLayout = layoutSelect?.value || 'horizontal'
+                const overlayOpacity = parseInt(opacityInput?.value) ?? 100
+                const overlayRounding = parseInt(roundingInput?.value) ?? 0
+                const overlayTimeDisplay = timeDisplaySelect?.value || 'progress'
+
+                const updatedAction = {
+                    ...actionSettings,
+                    overlayLayout: overlayLayout,
+                    overlayOpacity: overlayOpacity,
+                    overlayRounding: overlayRounding,
+                    overlayTimeDisplay: overlayTimeDisplay
+                }
+
+                websocket.send(JSON.stringify({
+                    event: 'setSettings',
+                    context: uuid,
+                    payload: updatedAction
+                }))
+
+                actionSettings = updatedAction
+
+                updateOverlayInfo()
+            }
+
+            const updateOverlayInfo = () => {
+                const port = globalSettings.overlayPort || 6546
+                const layoutSelect = getInput('overlayLayout')
+                const opacityInput = getInput('overlayOpacity')
+                const roundingInput = getInput('overlayRounding')
+                const timeDisplaySelect = getInput('overlayTimeDisplay')
+                const layout = layoutSelect?.value || 'horizontal'
+                const opacity = opacityInput?.value ?? 100
+                const rounding = roundingInput?.value ?? 0
+                const timeDisplay = timeDisplaySelect?.value || 'progress'
+
+                document.getElementById('overlayUrl').value = `http://127.0.0.1:${port}?layout=${layout}&opacity=${opacity}&rounding=${rounding}&time=${timeDisplay}`
+
+                const sizeInput = getInput('overlaySize')
+
+                if (sizeInput)
+                    sizeInput.value = layoutDimensions[layout] || layoutDimensions.horizontal
+            }
+
+            setTimeout(() => {
+                const layoutSelect = getInput('overlayLayout')
+                const opacityInput = getInput('overlayOpacity')
+                const roundingInput = getInput('overlayRounding')
+                const timeDisplaySelect = getInput('overlayTimeDisplay')
+
+                if (layoutSelect)
+                    layoutSelect.addEventListener('change', saveSettings)
+
+                if (opacityInput)
+                    opacityInput.addEventListener('change', saveSettings)
+
+                if (roundingInput)
+                    roundingInput.addEventListener('change', saveSettings)
+
+                if (timeDisplaySelect)
+                    timeDisplaySelect.addEventListener('change', saveSettings)
+            }, 100)
+
+            document.getElementById('copyBtn').addEventListener('click', () => {
+                const url = document.getElementById('overlayUrl').value
+
+                navigator.clipboard.writeText(url).then(() => {
+                    document.getElementById('iconCopy').classList.add('hidden')
+                    document.getElementById('iconCheck').classList.remove('hidden')
+
+                    setTimeout(() => {
+                        document.getElementById('iconCopy').classList.remove('hidden')
+                        document.getElementById('iconCheck').classList.add('hidden')
+                    }, 1500)
+                })
+            })
+        </script>
+    </body>
+</html>

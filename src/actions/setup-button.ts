@@ -48,7 +48,7 @@ export default class SetupButton extends Button {
 			if (connector.set)
 				connector.invalidateSetup()
 
-			exec(`${process.platform == 'darwin' ? 'open' : (process.platform == 'win32' ? 'start' : 'xdg-open')} http://127.0.0.1:${constants.CONNECTOR_DEFAULT_PORT}`, (error, stdout, stderr) => {
+			exec(`${process.platform == 'darwin' ? 'open' : (process.platform == 'win32' ? 'start' : 'xdg-open')} http://127.0.0.1:${connector.port || constants.CONNECTOR_DEFAULT_PORT}`, (error, stdout, stderr) => {
 				if (error)
 					logger.error(`An error occurred while opening browser: "${error.message || 'No message.'}" @ "${error.stack || 'No stack trace.'}".`)
 			})
