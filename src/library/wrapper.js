@@ -356,7 +356,7 @@ class Wrapper extends EventEmitter {
 			}
 
 		if (this.#lastPlaybackContext?.uri === context?.uri) {
-			if (wasPending && !pending)
+			if (wasPending !== pending)
 				this.emit('playbackContextChanged', this.#lastPlaybackContext, pending)
 
 			return
