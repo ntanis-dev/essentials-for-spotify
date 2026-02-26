@@ -23,6 +23,7 @@ class Connector extends EventEmitter {
 	#clientSecret = null
 	#port = null
 	#server = null
+	#lastDeviceId = null
 	#setup = false
 	#faked = false
 	#error = false
@@ -184,12 +185,13 @@ class Connector extends EventEmitter {
 		res.end()
 	}
 
-	startSetup(clientId = null, clientSecret = null, refreshToken = null) {
+	startSetup(clientId = null, clientSecret = null, refreshToken = null, lastDeviceId = null) {
 		logger.info('Starting connector setup.')
 
 		this.#clientId = clientId
 		this.#clientSecret = clientSecret
 		this.#refreshToken = refreshToken
+		this.#lastDeviceId = lastDeviceId
 
 		if (this.#refreshToken)
 			this.#refreshAccessToken().then(() => this.#setSetup(true)).catch(e => {
@@ -213,14 +215,26 @@ class Connector extends EventEmitter {
 
 		this.#listenWithRetry()
 
+		this.#lastDeviceId = null
+
 		this.#saveGlobalSettings({
 			clientId: null,
 			clientSecret: null,
 			refreshToken: null,
-			accessToken: null
+			accessToken: null,
+			lastDeviceId: null
 		})
 
 		logger.warn('The connector setup has been invalidated.')
+	}
+
+	saveLastDeviceId(deviceId) {
+		this.#lastDeviceId = deviceId
+		this.#saveGlobalSettings({ lastDeviceId: deviceId })
+	}
+
+	get lastDeviceId() {
+		return this.#lastDeviceId
 	}
 
 	#listenWithRetry(attempt = 0) {

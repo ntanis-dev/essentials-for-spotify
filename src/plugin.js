@@ -16,7 +16,7 @@ StreamDeck.connect().then(() => {
 
 		if (settings.clientId && settings.clientSecret && settings.refreshToken) {
 			logger.info('Found global settings.')
-			connector.startSetup(settings.clientId, settings.clientSecret, settings.refreshToken)
+			connector.startSetup(settings.clientId, settings.clientSecret, settings.refreshToken, settings.lastDeviceId)
 		} else {
 			logger.info('No global settings found.')
 			connector.startSetup()

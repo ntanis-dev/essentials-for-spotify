@@ -38,9 +38,12 @@ class Wrapper extends EventEmitter {
 		super()
 
 		connector.on('setupStateChanged', state => {
-			if (state)
+			if (state) {
+				if (connector.lastDeviceId)
+					this.#lastDeviceId = connector.lastDeviceId
+
 				this.#updatePlaybackState(true)
-			else {
+			} else {
 				this.#updatePlaybackContext(null)
 				this.#setPlaying(false)
 				this.#setRepeatState('off')
@@ -54,8 +57,12 @@ class Wrapper extends EventEmitter {
 			}
 		})
 
-		if (connector.set)
+		if (connector.set) {
+			if (connector.lastDeviceId)
+				this.#lastDeviceId = connector.lastDeviceId
+
 			this.#updatePlaybackState()
+		}
 
 		setInterval(() => {
 			if (!connector.set)
@@ -600,6 +607,9 @@ class Wrapper extends EventEmitter {
 			this.#updatePlaybackStateStatus = 'skip'
 			this.#lastDeviceId = lastDeviceId
 			this.emit('deviceChanged', lastDeviceId)
+
+			if (lastDeviceId)
+				connector.saveLastDeviceId(lastDeviceId)
 		}
 
 		if (this.#lastDevices && this.#lastDevices.length === devices.length && this.#lastDevices.every((device, index) => device.id === devices[index].id))
