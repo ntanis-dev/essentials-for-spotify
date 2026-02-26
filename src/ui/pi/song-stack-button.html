@@ -3,6 +3,8 @@
     <head lang="en">
         <meta charset="utf-8" />
         <script src="sdpi-components.js"></script>
+        <script src="locales.js"></script>
+
         <style>
             body {
                 -webkit-user-select: none;
@@ -11,61 +13,62 @@
         </style>
     </head>
     <body>
-        <sdpi-item label="Single Press">
+        <sdpi-item label="__MSG_Single Press__">
             <sdpi-select setting="single_press">
-                <option value="open_spotify">Open in Spotify</option>
-                <option value="play_pause">Play / Pause</option>
-                <option value="next_song">Next Song</option>
-                <option value="previous_song">Previous Song</option>
-                <option value="like_unlike">Like / Unlike</option>
+                <option value="open_spotify">__MSG_Open in Spotify__</option>
+                <option value="play_pause">__MSG_Play / Pause__</option>
+                <option value="next_song">__MSG_Next Song__</option>
+                <option value="previous_song">__MSG_Previous Song__</option>
+                <option value="like_unlike">__MSG_Like / Unlike__</option>
             </sdpi-select>
         </sdpi-item>
 
-        <sdpi-item label="Double Press">
+        <sdpi-item label="__MSG_Double Press__">
             <sdpi-select setting="double_press">
-                <option value="open_spotify">Open in Spotify</option>
-                <option value="play_pause">Play / Pause</option>
-                <option value="next_song">Next Song</option>
-                <option value="previous_song">Previous Song</option>
-                <option value="like_unlike">Like / Unlike</option>
+                <option value="open_spotify">__MSG_Open in Spotify__</option>
+                <option value="play_pause">__MSG_Play / Pause__</option>
+                <option value="next_song">__MSG_Next Song__</option>
+                <option value="previous_song">__MSG_Previous Song__</option>
+                <option value="like_unlike">__MSG_Like / Unlike__</option>
             </sdpi-select>
         </sdpi-item>
 
-        <sdpi-item label="Triple Press">
+        <sdpi-item label="__MSG_Triple Press__">
             <sdpi-select setting="triple_press">
-                <option value="open_spotify">Open in Spotify</option>
-                <option value="play_pause">Play / Pause</option>
-                <option value="next_song">Next Song</option>
-                <option value="previous_song">Previous Song</option>
-                <option value="like_unlike">Like / Unlike</option>
+                <option value="open_spotify">__MSG_Open in Spotify__</option>
+                <option value="play_pause">__MSG_Play / Pause__</option>
+                <option value="next_song">__MSG_Next Song__</option>
+                <option value="previous_song">__MSG_Previous Song__</option>
+                <option value="like_unlike">__MSG_Like / Unlike__</option>
             </sdpi-select>
         </sdpi-item>
 
-        <sdpi-item label="Long Press">
+        <sdpi-item label="__MSG_Long Press__">
             <sdpi-select setting="long_press">
-                <option value="open_spotify">Open in Spotify</option>
-                <option value="play_pause">Play / Pause</option>
-                <option value="next_song">Next Song</option>
-                <option value="previous_song">Previous Song</option>
-                <option value="like_unlike">Like / Unlike</option>
+                <option value="open_spotify">__MSG_Open in Spotify__</option>
+                <option value="play_pause">__MSG_Play / Pause__</option>
+                <option value="next_song">__MSG_Next Song__</option>
+                <option value="previous_song">__MSG_Previous Song__</option>
+                <option value="like_unlike">__MSG_Like / Unlike__</option>
             </sdpi-select>
         </sdpi-item>
 
-        <sdpi-item label="Time Display">
+        <sdpi-item label="__MSG_Time Display__">
             <sdpi-select setting="time_display">
-                <option value="duration">Duration</option>
-                <option value="remaining">Remaining</option>
+                <option value="duration">__MSG_Duration__</option>
+                <option value="remaining">__MSG_Remaining__</option>
             </sdpi-select>
         </sdpi-item>
 
-        <sdpi-item label="Show">
+        <sdpi-item label="__MSG_Show__">
             <sdpi-checkbox-list setting="show">
-                <option value="name">Title</option>
-                <option value="artists">Artist(s)</option>
-                <option value="progress">Progress</option>
-                <option value="duration">Time Display</option>
-                <option value="liked">Liked</option>
+                <option value="name">__MSG_Title__</option>
+                <option value="artists">__MSG_Artist(s)__</option>
+                <option value="progress">__MSG_Progress__</option>
+                <option value="duration">__MSG_Time Display__</option>
+                <option value="liked">__MSG_Liked__</option>
             </sdpi-checkbox-list>
         </sdpi-item>
+        <script src="localize.js"></script>
     </body>
 </html>

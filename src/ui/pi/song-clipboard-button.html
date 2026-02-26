@@ -249,7 +249,7 @@
             let currentSettings = {}
             let saveTimeout = null
 
-            const connectElgatoStreamDeckSocket = (port, uuid, event, info, actionInfo) => {
+            function connectElgatoStreamDeckSocket(port, uuid, event, info, actionInfo) {
                 piUUID = uuid
                 currentSettings = JSON.parse(actionInfo).payload.settings || {}
 
@@ -352,9 +352,9 @@
                             currentParts = []
                         }
 
-                        segments.push(meta.preview)
+                        segments.push(t(meta.preview))
                     } else if (meta)
-                        currentParts.push(meta.preview)
+                        currentParts.push(t(meta.preview))
                 })
 
                 if (currentParts.length > 0)
@@ -363,7 +363,7 @@
                 const preview = document.getElementById('preview')
                 const empty = segments.length === 0
 
-                preview.textContent = empty ? '(nothing selected)' : segments.join('\n')
+                preview.textContent = empty ? t('(nothing selected)') : segments.join('\n')
                 preview.style.color = empty ? '#ff7777' : ''
             }
 
@@ -402,7 +402,7 @@
                 const label = document.createElement('span')
 
                 label.className = `element-label${element.enabled ? '' : ' disabled'}`
-                label.textContent = meta.label
+                label.textContent = t(meta.label)
 
                 checkbox.addEventListener('change', () => {
                     label.className = `element-label${checkbox.checked ? '' : ' disabled'}`
@@ -457,6 +457,9 @@
             }
 
             document.getElementById('separator').addEventListener('change', saveSettings)
+            document.addEventListener('localized', render)
         </script>
+
+        <script src="localize.js"></script>
     </body>
 </html>

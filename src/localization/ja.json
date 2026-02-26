@@ -1,0 +1,229 @@
+{
+	"Name": "Essentials for Spotify",
+	"Description": "Elgato Stream Deckから簡単にSpotifyを操作できます。このプラグインのすべての機能を使用するには、Spotify Premiumアカウントが必要です。",
+	"com.ntanis.essentials-for-spotify.setup-button": {
+		"Name": "セットアップ",
+		"Tooltip": "ここからEssentials for Spotifyのセットアップを行い、必要に応じて配信オーバーレイを設定できます。"
+	},
+	"com.ntanis.essentials-for-spotify.play-pause-button": {
+		"Name": "再生 / 一時停止",
+		"Tooltip": "現在の曲の再生と一時停止を切り替えます。"
+	},
+	"com.ntanis.essentials-for-spotify.previous-song-button": {
+		"Name": "前の曲",
+		"Tooltip": "前の曲にスキップします。長押しで巻き戻しします。"
+	},
+	"com.ntanis.essentials-for-spotify.next-song-button": {
+		"Name": "次の曲",
+		"Tooltip": "次の曲に進みます。長押しで早送りします。"
+	},
+	"com.ntanis.essentials-for-spotify.song-stack-button": {
+		"Name": "曲スタック",
+		"Tooltip": "現在の曲の情報を表示し、さまざまな操作を提供します。"
+	},
+	"com.ntanis.essentials-for-spotify.backward-seek-button": {
+		"Name": "巻き戻し",
+		"Tooltip": "現在の曲を巻き戻します。"
+	},
+	"com.ntanis.essentials-for-spotify.forward-seek-button": {
+		"Name": "早送り",
+		"Tooltip": "現在の曲を早送りします。"
+	},
+	"com.ntanis.essentials-for-spotify.shuffle-button": {
+		"Name": "シャッフル",
+		"Tooltip": "シャッフル再生を有効または無効にします。"
+	},
+	"com.ntanis.essentials-for-spotify.loop-context-button": {
+		"Name": "コンテキストループ",
+		"Tooltip": "現在のプレイリストまたはアルバムをリピートします。"
+	},
+	"com.ntanis.essentials-for-spotify.loop-song-button": {
+		"Name": "曲ループ",
+		"Tooltip": "現在の曲をリピートします。"
+	},
+	"com.ntanis.essentials-for-spotify.mode-stack-button": {
+		"Name": "モードスタック",
+		"Tooltip": "シャッフル、コンテキストループ、曲ループを1つにまとめたボタンです。"
+	},
+	"com.ntanis.essentials-for-spotify.like-unlike-button": {
+		"Name": "お気に入り / 解除",
+		"Tooltip": "現在の曲をお気に入りに追加します。すでにお気に入りの場合は解除します。"
+	},
+	"com.ntanis.essentials-for-spotify.add-to-playlist-button": {
+		"Name": "プレイリストに追加",
+		"Tooltip": "現在再生中の曲を選択したプレイリストに追加します。"
+	},
+	"com.ntanis.essentials-for-spotify.song-explicit-button": {
+		"Name": "露骨表現インジケーター",
+		"Tooltip": "現在の曲に露骨な表現が含まれているかどうかを表示します"
+	},
+	"com.ntanis.essentials-for-spotify.volume-up-button": {
+		"Name": "音量を上げる",
+		"Tooltip": "再生音量を上げます。"
+	},
+	"com.ntanis.essentials-for-spotify.volume-down-button": {
+		"Name": "音量を下げる",
+		"Tooltip": "再生音量を下げます。"
+	},
+	"com.ntanis.essentials-for-spotify.volume-mute-unmute-button": {
+		"Name": "ミュート / ミュート解除",
+		"Tooltip": "ミュートとミュート解除を切り替えます。"
+	},
+	"com.ntanis.essentials-for-spotify.volume-stack-button": {
+		"Name": "音量スタック",
+		"Tooltip": "音量を上げる、音量を下げる、ミュート / ミュート解除を1つにまとめたボタンです。"
+	},
+	"com.ntanis.essentials-for-spotify.set-volume-button": {
+		"Name": "音量設定",
+		"Tooltip": "再生音量を指定のレベルに設定します。"
+	},
+	"com.ntanis.essentials-for-spotify.play-context-button": {
+		"Name": "コンテキスト再生",
+		"Tooltip": "このボタンにサポートされているSpotify URLを設定し、押すと再生を開始します。"
+	},
+	"com.ntanis.essentials-for-spotify.song-clipboard-button": {
+		"Name": "曲クリップボード",
+		"Tooltip": "現在の曲の情報をクリップボードにコピーします。"
+	},
+	"com.ntanis.essentials-for-spotify.context-information-button": {
+		"Name": "コンテキスト情報",
+		"Tooltip": "現在のコンテキストの情報を表示します。"
+	},
+	"com.ntanis.essentials-for-spotify.transfer-playback-button": {
+		"Name": "再生デバイスの切替",
+		"Tooltip": "再生を別のデバイスに転送できます。"
+	},
+	"com.ntanis.essentials-for-spotify.user-information-button": {
+		"Name": "ユーザー情報",
+		"Tooltip": "接続されたユーザーの情報を表示します。"
+	},
+	"com.ntanis.essentials-for-spotify.playback-control-dial": {
+		"Name": "再生コントロール",
+		"Tooltip": "現在の曲の再生を操作します。",
+		"Encoder": {
+			"TriggerDescription": {
+				"LongTouch": "お気に入り / 解除",
+				"Rotate": "前へ / 次へ",
+				"Push": "再生 / 一時停止 / 回転シーク",
+				"Touch": "再生 / 一時停止"
+			}
+		}
+	},
+	"com.ntanis.essentials-for-spotify.volume-control-dial": {
+		"Name": "音量コントロール",
+		"Tooltip": "再生音量を操作します。",
+		"Encoder": {
+			"TriggerDescription": {
+				"Rotate": "音量調整",
+				"Push": "長押しミュート",
+				"Touch": "ミュート / ミュート解除"
+			}
+		}
+	},
+	"com.ntanis.essentials-for-spotify.my-playlists-dial": {
+		"Name": "マイプレイリスト",
+		"Tooltip": "プレイリストを閲覧して再生します。",
+		"Encoder": {
+			"TriggerDescription": {
+				"LongTouch": "更新",
+				"Rotate": "ナビゲート",
+				"Push": "再生",
+				"Touch": "再生"
+			}
+		}
+	},
+	"com.ntanis.essentials-for-spotify.my-liked-songs-dial": {
+		"Name": "お気に入りの曲",
+		"Tooltip": "お気に入りの曲を閲覧して再生します。",
+		"Encoder": {
+			"TriggerDescription": {
+				"LongTouch": "更新",
+				"Rotate": "ナビゲート",
+				"Push": "再生",
+				"Touch": "再生"
+			}
+		}
+	},
+	"PropertyInspector": {
+		"Play / Pause": "再生 / 一時停止",
+		"Previous Song": "前の曲",
+		"Next Song": "次の曲",
+		"Shuffle": "シャッフル",
+		"Loop Context": "コンテキストループ",
+		"Loop Song": "曲ループ",
+		"Like / Unlike": "お気に入り / 解除",
+		"Volume Up": "音量を上げる",
+		"Volume Down": "音量を下げる",
+		"Volume Mute / Unmute": "ミュート / ミュート解除",
+		"Play": "再生",
+		"Step %": "ステップ %",
+		"Single Press": "シングルプレス",
+		"Double Press": "ダブルプレス",
+		"Long Press": "長押し",
+		"Volume %": "音量 %",
+		"Show": "表示",
+		"Device": "デバイス",
+		"Triple Press": "トリプルプレス",
+		"Time Display": "時間表示",
+		"Seek Step (Seconds)": "シークステップ（秒）",
+		"Action": "アクション",
+		"Image Source": "画像ソース",
+		"Spotify URL": "Spotify URL",
+		"Format:": "形式:",
+		"Separator:": "区切り文字:",
+		"Preview:": "プレビュー:",
+		"Setup Port": "セットアップポート",
+		"Layout": "レイアウト",
+		"Background Opacity": "背景の不透明度",
+		"Rounding": "角丸",
+		"URL": "URL",
+		"Size": "サイズ",
+		"Extra Playlists:": "追加プレイリスト:",
+		"Open in Spotify": "Spotifyで開く",
+		"Duration": "再生時間",
+		"Remaining": "残り時間",
+		"Title": "タイトル",
+		"Artist(s)": "アーティスト",
+		"Progress": "進行状況",
+		"Liked": "お気に入り",
+		"Reset All": "すべてリセット",
+		"Pause": "一時停止",
+		"Name": "名前",
+		"Type": "タイプ",
+		"Active Border": "アクティブ枠線",
+		"Inactive Border": "非アクティブ枠線",
+		"Current Context (Playlist / Album)": "現在のコンテキスト（プレイリスト / アルバム）",
+		"Current Song's Album": "現在の曲のアルバム",
+		"Horizontal Card": "横型カード",
+		"Minimal Bar": "ミニマルバー",
+		"Vertical Panel": "縦型パネル",
+		"Display Name": "表示名",
+		"Artist(s) (Album / Track Context)": "アーティスト（アルバム / トラックコンテキスト）",
+		"Stream Overlay Generator": "配信オーバーレイジェネレーター",
+		"Choose a Device": "デバイスを選択",
+		"Song Title": "曲名",
+		"Song Artist(s)": "曲のアーティスト",
+		"Song Spotify Link": "曲のSpotifyリンク",
+		"(nothing selected)": "（未選択）",
+		"Please fill in this field.": "この項目を入力してください。"
+	},
+	"Setup": {
+		"installation": "インストール",
+		"success_message": "インストールが<b>正常に完了</b>しました！",
+		"close_message": "このページを閉じてください。",
+		"vpn_warning": "<b>VPN</b>を使用している場合は、一時的に無効にする必要があるかもしれません。<br />設定後に再度有効にできます。",
+		"step1": "Spotifyアカウントで<a href=\"https://developer.spotify.com\" target=\"_blank\" rel=\"noopener\">Spotify for Developers</a>にログインします。",
+		"step2": "<a href=\"https://developer.spotify.com/dashboard/create\" target=\"_blank\" rel=\"noopener\">アプリを作成</a>に移動します。",
+		"step3": "<code id=\"url\">http://127.0.0.1:<span class=\"port\"></span></code>を<b>\"Redirect URI\"</b>として設定します。",
+		"step4": "<b>\"Which API/SDKs are you planning to use?\"</b>で<b>\"Web API\"</b>にチェックを入れます。",
+		"step5": "残りのフォームはお好みで入力してください。<b>\"Website\"</b>は空欄のままで構いません。",
+		"step6": "アプリを作成し、アプリのダッシュボードに移動します。",
+		"step7": "アプリのダッシュボードで<b>\"Basic Information\"</b>をクリックします。",
+		"step8": "<b>\"Client ID\"</b>を下のフォームにコピーします。",
+		"step9": "<b>\"View client secret\"</b>をクリックし、<b>\"Client secret\"</b>を下のフォームにコピーします。",
+		"step10": "下のフォームを送信します。",
+		"error_title": "エラーが発生しました！",
+		"error_message": "アプリの情報を確認して、もう一度お試しください。",
+		"submit": "送信"
+	}
+}

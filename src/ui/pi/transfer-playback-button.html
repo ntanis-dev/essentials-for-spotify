@@ -3,6 +3,8 @@
     <head lang="en">
         <meta charset="utf-8" />
         <script src="sdpi-components.js"></script>
+        <script src="locales.js"></script>
+
         <style>
             body {
                 -webkit-user-select: none;
@@ -11,14 +13,15 @@
         </style>
     </head>
     <body>
-        <sdpi-item label="Device">
+        <sdpi-item label="__MSG_Device__">
             <sdpi-select
                 setting="spotify_device_id"
-                placeholder="Choose a Device"
+                placeholder="__MSG_Choose a Device__"
                 datasource="getDevices"
                 loading="⏳"
                 hot-reload>
             </sdpi-select>
         </sdpi-item>
+        <script src="localize.js"></script>
     </body>
 </html>

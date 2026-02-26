@@ -1,0 +1,229 @@
+{
+	"Name": "Essentials for Spotify",
+	"Description": "通过 Elgato Stream Deck 轻松控制您的 Spotify。需要 Spotify Premium 账户才能使用此插件的全部功能。",
+	"com.ntanis.essentials-for-spotify.setup-button": {
+		"Name": "设置",
+		"Tooltip": "从这里开始设置 Essentials for Spotify，还可以选择配置直播叠加层。"
+	},
+	"com.ntanis.essentials-for-spotify.play-pause-button": {
+		"Name": "播放 / 暂停",
+		"Tooltip": "切换当前歌曲的播放和暂停状态。"
+	},
+	"com.ntanis.essentials-for-spotify.previous-song-button": {
+		"Name": "上一首",
+		"Tooltip": "跳到上一首歌曲。长按可快退。"
+	},
+	"com.ntanis.essentials-for-spotify.next-song-button": {
+		"Name": "下一首",
+		"Tooltip": "跳到下一首歌曲。长按可快进。"
+	},
+	"com.ntanis.essentials-for-spotify.song-stack-button": {
+		"Name": "歌曲堆栈",
+		"Tooltip": "显示当前歌曲的信息，并提供多种控制操作。"
+	},
+	"com.ntanis.essentials-for-spotify.backward-seek-button": {
+		"Name": "快退",
+		"Tooltip": "在当前歌曲中快退。"
+	},
+	"com.ntanis.essentials-for-spotify.forward-seek-button": {
+		"Name": "快进",
+		"Tooltip": "在当前歌曲中快进。"
+	},
+	"com.ntanis.essentials-for-spotify.shuffle-button": {
+		"Name": "随机播放",
+		"Tooltip": "开启或关闭随机播放。"
+	},
+	"com.ntanis.essentials-for-spotify.loop-context-button": {
+		"Name": "循环播放列表",
+		"Tooltip": "循环播放当前播放列表或专辑。"
+	},
+	"com.ntanis.essentials-for-spotify.loop-song-button": {
+		"Name": "单曲循环",
+		"Tooltip": "单曲循环当前歌曲。"
+	},
+	"com.ntanis.essentials-for-spotify.mode-stack-button": {
+		"Name": "模式堆栈",
+		"Tooltip": "将随机播放、循环播放列表和单曲循环合为一个按钮。"
+	},
+	"com.ntanis.essentials-for-spotify.like-unlike-button": {
+		"Name": "喜欢 / 取消喜欢",
+		"Tooltip": "将当前歌曲添加到喜欢的歌曲中，如果已喜欢则移除。"
+	},
+	"com.ntanis.essentials-for-spotify.add-to-playlist-button": {
+		"Name": "添加到播放列表",
+		"Tooltip": "将当前播放的歌曲添加到您选择的播放列表中（不排他）。"
+	},
+	"com.ntanis.essentials-for-spotify.song-explicit-button": {
+		"Name": "显式内容标识",
+		"Tooltip": "显示当前歌曲是否包含显式内容"
+	},
+	"com.ntanis.essentials-for-spotify.volume-up-button": {
+		"Name": "增大音量",
+		"Tooltip": "增大播放音量。"
+	},
+	"com.ntanis.essentials-for-spotify.volume-down-button": {
+		"Name": "减小音量",
+		"Tooltip": "减小播放音量。"
+	},
+	"com.ntanis.essentials-for-spotify.volume-mute-unmute-button": {
+		"Name": "静音 / 取消静音",
+		"Tooltip": "切换静音和取消静音。"
+	},
+	"com.ntanis.essentials-for-spotify.volume-stack-button": {
+		"Name": "音量堆栈",
+		"Tooltip": "将增大音量、减小音量和静音/取消静音合为一个按钮。"
+	},
+	"com.ntanis.essentials-for-spotify.set-volume-button": {
+		"Name": "设定音量",
+		"Tooltip": "将播放音量设置为指定级别。"
+	},
+	"com.ntanis.essentials-for-spotify.play-context-button": {
+		"Name": "播放内容",
+		"Tooltip": "将此按钮映射到任意支持的 Spotify URL，按下即可开始播放。"
+	},
+	"com.ntanis.essentials-for-spotify.song-clipboard-button": {
+		"Name": "歌曲剪贴板",
+		"Tooltip": "将当前歌曲的信息复制到剪贴板。"
+	},
+	"com.ntanis.essentials-for-spotify.context-information-button": {
+		"Name": "上下文信息",
+		"Tooltip": "显示当前上下文的信息。"
+	},
+	"com.ntanis.essentials-for-spotify.transfer-playback-button": {
+		"Name": "转移播放",
+		"Tooltip": "允许您将播放转移到其他设备。"
+	},
+	"com.ntanis.essentials-for-spotify.user-information-button": {
+		"Name": "用户信息",
+		"Tooltip": "显示已连接用户的信息。"
+	},
+	"com.ntanis.essentials-for-spotify.playback-control-dial": {
+		"Name": "播放控制",
+		"Tooltip": "控制当前歌曲的播放。",
+		"Encoder": {
+			"TriggerDescription": {
+				"LongTouch": "喜欢 / 取消喜欢",
+				"Rotate": "上一首 / 下一首",
+				"Push": "播放 / 暂停 / 旋转快进快退",
+				"Touch": "播放 / 暂停"
+			}
+		}
+	},
+	"com.ntanis.essentials-for-spotify.volume-control-dial": {
+		"Name": "音量控制",
+		"Tooltip": "控制播放音量。",
+		"Encoder": {
+			"TriggerDescription": {
+				"Rotate": "调节音量",
+				"Push": "长按静音",
+				"Touch": "静音 / 取消静音"
+			}
+		}
+	},
+	"com.ntanis.essentials-for-spotify.my-playlists-dial": {
+		"Name": "我的播放列表",
+		"Tooltip": "浏览并播放您的播放列表。",
+		"Encoder": {
+			"TriggerDescription": {
+				"LongTouch": "刷新",
+				"Rotate": "浏览",
+				"Push": "播放",
+				"Touch": "播放"
+			}
+		}
+	},
+	"com.ntanis.essentials-for-spotify.my-liked-songs-dial": {
+		"Name": "我喜欢的歌曲",
+		"Tooltip": "浏览并播放您喜欢的歌曲。",
+		"Encoder": {
+			"TriggerDescription": {
+				"LongTouch": "刷新",
+				"Rotate": "浏览",
+				"Push": "播放",
+				"Touch": "播放"
+			}
+		}
+	},
+	"PropertyInspector": {
+		"Play / Pause": "播放 / 暂停",
+		"Previous Song": "上一首",
+		"Next Song": "下一首",
+		"Shuffle": "随机播放",
+		"Loop Context": "循环播放列表",
+		"Loop Song": "单曲循环",
+		"Like / Unlike": "喜欢 / 取消喜欢",
+		"Volume Up": "增大音量",
+		"Volume Down": "减小音量",
+		"Volume Mute / Unmute": "静音 / 取消静音",
+		"Play": "播放",
+		"Step %": "步进 %",
+		"Single Press": "单击",
+		"Double Press": "双击",
+		"Long Press": "长按",
+		"Volume %": "音量 %",
+		"Show": "显示",
+		"Device": "设备",
+		"Triple Press": "三击",
+		"Time Display": "时间显示",
+		"Seek Step (Seconds)": "快进快退步长（秒）",
+		"Action": "操作",
+		"Image Source": "图片来源",
+		"Spotify URL": "Spotify URL",
+		"Format:": "格式：",
+		"Separator:": "分隔符：",
+		"Preview:": "预览：",
+		"Setup Port": "设置端口",
+		"Layout": "布局",
+		"Background Opacity": "背景不透明度",
+		"Rounding": "圆角",
+		"URL": "URL",
+		"Size": "大小",
+		"Extra Playlists:": "额外播放列表：",
+		"Open in Spotify": "在 Spotify 中打开",
+		"Duration": "时长",
+		"Remaining": "剩余",
+		"Title": "标题",
+		"Artist(s)": "艺术家",
+		"Progress": "进度",
+		"Liked": "已喜欢",
+		"Reset All": "全部重置",
+		"Pause": "暂停",
+		"Name": "名称",
+		"Type": "类型",
+		"Active Border": "活动边框",
+		"Inactive Border": "非活动边框",
+		"Current Context (Playlist / Album)": "当前上下文（播放列表 / 专辑）",
+		"Current Song's Album": "当前歌曲的专辑",
+		"Horizontal Card": "横向卡片",
+		"Minimal Bar": "简约条",
+		"Vertical Panel": "纵向面板",
+		"Display Name": "显示名称",
+		"Artist(s) (Album / Track Context)": "艺术家（专辑 / 曲目上下文）",
+		"Stream Overlay Generator": "直播叠加层生成器",
+		"Choose a Device": "选择设备",
+		"Song Title": "歌曲标题",
+		"Song Artist(s)": "歌曲艺术家",
+		"Song Spotify Link": "歌曲 Spotify 链接",
+		"(nothing selected)": "（未选择）",
+		"Please fill in this field.": "请填写此字段。"
+	},
+	"Setup": {
+		"installation": "安装",
+		"success_message": "安装已<b>成功完成</b>！",
+		"close_message": "您现在可以关闭此页面。",
+		"vpn_warning": "如果您正在使用<b>VPN</b>，可能需要暂时禁用它。<br />之后可以重新启用。",
+		"step1": "使用您的 Spotify 帐户登录 <a href=\"https://developer.spotify.com\" target=\"_blank\" rel=\"noopener\">Spotify for Developers</a>。",
+		"step2": "前往<a href=\"https://developer.spotify.com/dashboard/create\" target=\"_blank\" rel=\"noopener\">创建应用</a>。",
+		"step3": "将 <code id=\"url\">http://127.0.0.1:<span class=\"port\"></span></code> 设置为 <b>\"Redirect URI\"</b>。",
+		"step4": "在 <b>\"Which API/SDKs are you planning to use?\"</b> 中勾选 <b>\"Web API\"</b>。",
+		"step5": "其余表单可按您的喜好填写，<b>\"Website\"</b> 可以留空。",
+		"step6": "创建应用并导航到应用的仪表板。",
+		"step7": "在应用的仪表板中点击 <b>\"Basic Information\"</b>。",
+		"step8": "将 <b>\"Client ID\"</b> 复制到下方表单中。",
+		"step9": "点击 <b>\"View client secret\"</b>，将 <b>\"Client secret\"</b> 复制到下方表单中。",
+		"step10": "提交下方的表单。",
+		"error_title": "出现错误！",
+		"error_message": "请仔细检查应用信息，然后重试。",
+		"submit": "提交"
+	}
+}

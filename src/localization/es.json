@@ -1,0 +1,229 @@
+{
+	"Name": "Essentials for Spotify",
+	"Description": "Controla tu Spotify sin esfuerzo a través de tu Elgato Stream Deck. Se requiere una cuenta de Spotify Premium para utilizar toda la funcionalidad de este plugin.",
+	"com.ntanis.essentials-for-spotify.setup-button": {
+		"Name": "Configuración",
+		"Tooltip": "Comienza aqui para configurar Essentials for Spotify y, opcionalmente, configurar una superposición de stream."
+	},
+	"com.ntanis.essentials-for-spotify.play-pause-button": {
+		"Name": "Reproducir / Pausar",
+		"Tooltip": "Alterna entre reproducir y pausar la canción actual."
+	},
+	"com.ntanis.essentials-for-spotify.previous-song-button": {
+		"Name": "Canción anterior",
+		"Tooltip": "Salta a la canción anterior. Manten presionado para retroceder."
+	},
+	"com.ntanis.essentials-for-spotify.next-song-button": {
+		"Name": "Siguiente canción",
+		"Tooltip": "Avanza a la siguiente canción. Manten presionado para avanzar."
+	},
+	"com.ntanis.essentials-for-spotify.song-stack-button": {
+		"Name": "Pila de canción",
+		"Tooltip": "Muestra la información de la canción actual y ofrece una variedad de acciones de control."
+	},
+	"com.ntanis.essentials-for-spotify.backward-seek-button": {
+		"Name": "Retroceder",
+		"Tooltip": "Retrocede en la canción actual."
+	},
+	"com.ntanis.essentials-for-spotify.forward-seek-button": {
+		"Name": "Avanzar",
+		"Tooltip": "Avanza en la canción actual."
+	},
+	"com.ntanis.essentials-for-spotify.shuffle-button": {
+		"Name": "Aleatorio",
+		"Tooltip": "Activa o desactiva la reproducción aleatoria."
+	},
+	"com.ntanis.essentials-for-spotify.loop-context-button": {
+		"Name": "Repetir contexto",
+		"Tooltip": "Repite la playlist o álbum actual."
+	},
+	"com.ntanis.essentials-for-spotify.loop-song-button": {
+		"Name": "Repetir canción",
+		"Tooltip": "Repite la canción actual."
+	},
+	"com.ntanis.essentials-for-spotify.mode-stack-button": {
+		"Name": "Pila de modos",
+		"Tooltip": "Un boton que combina aleatorio, repetir contexto y repetir canción en uno solo."
+	},
+	"com.ntanis.essentials-for-spotify.like-unlike-button": {
+		"Name": "Me gusta / No me gusta",
+		"Tooltip": "Agrega la canción actual a tus canciones favoritas o la elimina si ya esta marcada."
+	},
+	"com.ntanis.essentials-for-spotify.add-to-playlist-button": {
+		"Name": "Agregar a playlist",
+		"Tooltip": "Agrega la canción en reproducción a una playlist seleccionada de forma no exclusiva."
+	},
+	"com.ntanis.essentials-for-spotify.song-explicit-button": {
+		"Name": "Indicador de explícito",
+		"Tooltip": "Muestra si la canción actual es explícita o no"
+	},
+	"com.ntanis.essentials-for-spotify.volume-up-button": {
+		"Name": "Subir volumen",
+		"Tooltip": "Aumenta el volumen de reproducción."
+	},
+	"com.ntanis.essentials-for-spotify.volume-down-button": {
+		"Name": "Bajar volumen",
+		"Tooltip": "Disminuye el volumen de reproducción."
+	},
+	"com.ntanis.essentials-for-spotify.volume-mute-unmute-button": {
+		"Name": "Silenciar / Activar volumen",
+		"Tooltip": "Alterna entre silenciar y activar el volumen."
+	},
+	"com.ntanis.essentials-for-spotify.volume-stack-button": {
+		"Name": "Pila de volumen",
+		"Tooltip": "Un boton que combina subir volumen, bajar volumen y silenciar / activar volumen en uno solo."
+	},
+	"com.ntanis.essentials-for-spotify.set-volume-button": {
+		"Name": "Establecer volumen",
+		"Tooltip": "Establece el volumen de reproducción a un nivel especifico."
+	},
+	"com.ntanis.essentials-for-spotify.play-context-button": {
+		"Name": "Reproducir contexto",
+		"Tooltip": "Asigna este boton a cualquier Spotify URL compatible y presionalo para comenzar a reproducir."
+	},
+	"com.ntanis.essentials-for-spotify.song-clipboard-button": {
+		"Name": "Canción al portapapeles",
+		"Tooltip": "Copia la información de la canción actual al portapapeles."
+	},
+	"com.ntanis.essentials-for-spotify.context-information-button": {
+		"Name": "Información del contexto",
+		"Tooltip": "Muestra la información del contexto actual."
+	},
+	"com.ntanis.essentials-for-spotify.transfer-playback-button": {
+		"Name": "Transferir reproducción",
+		"Tooltip": "Permite transferir la reproducción a otro dispositivo."
+	},
+	"com.ntanis.essentials-for-spotify.user-information-button": {
+		"Name": "Información del usuario",
+		"Tooltip": "Muestra la información del usuario conectado."
+	},
+	"com.ntanis.essentials-for-spotify.playback-control-dial": {
+		"Name": "Control de reproducción",
+		"Tooltip": "Controla la reproducción de la canción actual.",
+		"Encoder": {
+			"TriggerDescription": {
+				"LongTouch": "Me gusta / No me gusta",
+				"Rotate": "Anterior / Siguiente",
+				"Push": "Reproducir / Pausar / Girar para buscar",
+				"Touch": "Reproducir / Pausar"
+			}
+		}
+	},
+	"com.ntanis.essentials-for-spotify.volume-control-dial": {
+		"Name": "Control de volumen",
+		"Tooltip": "Controla el volumen de reproducción.",
+		"Encoder": {
+			"TriggerDescription": {
+				"Rotate": "Ajustar volumen",
+				"Push": "Mantener para silenciar",
+				"Touch": "Silenciar / Activar"
+			}
+		}
+	},
+	"com.ntanis.essentials-for-spotify.my-playlists-dial": {
+		"Name": "Mis playlists",
+		"Tooltip": "Navega y reproduce tus playlists.",
+		"Encoder": {
+			"TriggerDescription": {
+				"LongTouch": "Actualizar",
+				"Rotate": "Navegar",
+				"Push": "Reproducir",
+				"Touch": "Reproducir"
+			}
+		}
+	},
+	"com.ntanis.essentials-for-spotify.my-liked-songs-dial": {
+		"Name": "Mis canciones favoritas",
+		"Tooltip": "Navega y reproduce tus canciones favoritas.",
+		"Encoder": {
+			"TriggerDescription": {
+				"LongTouch": "Actualizar",
+				"Rotate": "Navegar",
+				"Push": "Reproducir",
+				"Touch": "Reproducir"
+			}
+		}
+	},
+	"PropertyInspector": {
+		"Play / Pause": "Reproducir / Pausar",
+		"Previous Song": "Canción anterior",
+		"Next Song": "Siguiente canción",
+		"Shuffle": "Aleatorio",
+		"Loop Context": "Repetir contexto",
+		"Loop Song": "Repetir canción",
+		"Like / Unlike": "Me gusta / No me gusta",
+		"Volume Up": "Subir volumen",
+		"Volume Down": "Bajar volumen",
+		"Volume Mute / Unmute": "Silenciar / Activar volumen",
+		"Play": "Reproducir",
+		"Step %": "Paso %",
+		"Single Press": "Pulsación simple",
+		"Double Press": "Pulsación doble",
+		"Long Press": "Pulsación larga",
+		"Volume %": "Volumen %",
+		"Show": "Mostrar",
+		"Device": "Dispositivo",
+		"Triple Press": "Pulsación triple",
+		"Time Display": "Visualización de tiempo",
+		"Seek Step (Seconds)": "Paso de búsqueda (segundos)",
+		"Action": "Acción",
+		"Image Source": "Fuente de imagen",
+		"Spotify URL": "Spotify URL",
+		"Format:": "Formato:",
+		"Separator:": "Separador:",
+		"Preview:": "Vista previa:",
+		"Setup Port": "Puerto de configuración",
+		"Layout": "Diseño",
+		"Background Opacity": "Opacidad del fondo",
+		"Rounding": "Redondeo",
+		"URL": "URL",
+		"Size": "Tamaño",
+		"Extra Playlists:": "Playlists adicionales:",
+		"Open in Spotify": "Abrir en Spotify",
+		"Duration": "Duración",
+		"Remaining": "Restante",
+		"Title": "Título",
+		"Artist(s)": "Artista(s)",
+		"Progress": "Progreso",
+		"Liked": "Favorito",
+		"Reset All": "Restablecer todo",
+		"Pause": "Pausar",
+		"Name": "Nombre",
+		"Type": "Tipo",
+		"Active Border": "Borde activo",
+		"Inactive Border": "Borde inactivo",
+		"Current Context (Playlist / Album)": "Contexto actual (Playlist / Album)",
+		"Current Song's Album": "Álbum de la canción actual",
+		"Horizontal Card": "Tarjeta horizontal",
+		"Minimal Bar": "Barra minima",
+		"Vertical Panel": "Panel vertical",
+		"Display Name": "Nombre para mostrar",
+		"Artist(s) (Album / Track Context)": "Artista(s) (Contexto de álbum / pista)",
+		"Stream Overlay Generator": "Generador de superposición de stream",
+		"Choose a Device": "Elegir un dispositivo",
+		"Song Title": "Título de la canción",
+		"Song Artist(s)": "Artista(s) de la canción",
+		"Song Spotify Link": "Enlace de Spotify de la canción",
+		"(nothing selected)": "(nada seleccionado)",
+		"Please fill in this field.": "Por favor, completa este campo."
+	},
+	"Setup": {
+		"installation": "Instalación",
+		"success_message": "¡La instalación se ha <b>completado con éxito</b>!",
+		"close_message": "Ya puede cerrar esta página.",
+		"vpn_warning": "Si está usando una <b>VPN</b>, es posible que necesite desactivarla temporalmente.<br />Puede volver a activarla después.",
+		"step1": "Inicie sesión en <a href=\"https://developer.spotify.com\" target=\"_blank\" rel=\"noopener\">Spotify for Developers</a> con su cuenta de Spotify.",
+		"step2": "Vaya a <a href=\"https://developer.spotify.com/dashboard/create\" target=\"_blank\" rel=\"noopener\">Crear aplicación</a>.",
+		"step3": "Establezca <code id=\"url\">http://127.0.0.1:<span class=\"port\"></span></code> como <b>\"Redirect URI\"</b>.",
+		"step4": "Marque <b>\"Web API\"</b> en <b>\"Which API/SDKs are you planning to use?\"</b>.",
+		"step5": "Complete el resto del formulario a su gusto, <b>\"Website\"</b> puede dejarse vacío.",
+		"step6": "Cree la aplicación y navegue al panel de la aplicación.",
+		"step7": "Haga clic en <b>\"Basic Information\"</b> en el panel de la aplicación.",
+		"step8": "Copie el <b>\"Client ID\"</b> en el formulario de abajo.",
+		"step9": "Haga clic en <b>\"View client secret\"</b> y copie el <b>\"Client secret\"</b> en el formulario de abajo.",
+		"step10": "Envíe el formulario de abajo.",
+		"error_title": "¡Algo salió mal!",
+		"error_message": "Por favor, verifique la información de la aplicación e intente de nuevo.",
+		"submit": "Enviar"
+	}
+}

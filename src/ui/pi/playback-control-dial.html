@@ -3,6 +3,8 @@
     <head lang="en">
         <meta charset="utf-8" />
         <script src="sdpi-components.js"></script>
+        <script src="locales.js"></script>
+
         <style>
             body {
                 -webkit-user-select: none;
@@ -11,7 +13,7 @@
         </style>
     </head>
     <body>
-        <sdpi-item label="Seek Step (Seconds)">
+        <sdpi-item label="__MSG_Seek Step (Seconds)__">
             <sdpi-range
                 setting="step"
                 min="1"
@@ -21,21 +23,22 @@
             </sdpi-range>
         </sdpi-item>
 
-        <sdpi-item label="Time Display">
+        <sdpi-item label="__MSG_Time Display__">
             <sdpi-select setting="time_display">
-                <option value="duration">Duration</option>
-                <option value="remaining">Remaining</option>
+                <option value="duration">__MSG_Duration__</option>
+                <option value="remaining">__MSG_Remaining__</option>
             </sdpi-select>
         </sdpi-item>
 
-        <sdpi-item label="Show">
+        <sdpi-item label="__MSG_Show__">
             <sdpi-checkbox-list setting="show">
-                <option value="name">Title</option>
-                <option value="artists">Artist(s)</option>
-                <option value="progress">Progress</option>
-                <option value="duration">Time Display</option>
-                <option value="liked">Liked</option>
+                <option value="name">__MSG_Title__</option>
+                <option value="artists">__MSG_Artist(s)__</option>
+                <option value="progress">__MSG_Progress__</option>
+                <option value="duration">__MSG_Time Display__</option>
+                <option value="liked">__MSG_Liked__</option>
             </sdpi-checkbox-list>
         </sdpi-item>
+        <script src="localize.js"></script>
     </body>
 </html>

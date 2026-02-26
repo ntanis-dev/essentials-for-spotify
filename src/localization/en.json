@@ -1,0 +1,229 @@
+{
+	"Name": "Essentials for Spotify",
+	"Description": "Effortlessly control your Spotify through your Elgato Stream Deck. A Spotify Premium account is required to use the full functionality of this plugin.",
+	"com.ntanis.essentials-for-spotify.setup-button": {
+		"Name": "Setup",
+		"Tooltip": "Start here to setup Essentials for Spotify and optionally configure a stream overlay."
+	},
+	"com.ntanis.essentials-for-spotify.play-pause-button": {
+		"Name": "Play / Pause",
+		"Tooltip": "Toggles between playing and pausing the current song."
+	},
+	"com.ntanis.essentials-for-spotify.previous-song-button": {
+		"Name": "Previous Song",
+		"Tooltip": "Skips to the previous song. Hold for backward seek."
+	},
+	"com.ntanis.essentials-for-spotify.next-song-button": {
+		"Name": "Next Song",
+		"Tooltip": "Advances to the next song. Hold for forward seek."
+	},
+	"com.ntanis.essentials-for-spotify.song-stack-button": {
+		"Name": "Song Stack",
+		"Tooltip": "Displays the information of the current song and offers a variety of control actions."
+	},
+	"com.ntanis.essentials-for-spotify.backward-seek-button": {
+		"Name": "Backward Seek",
+		"Tooltip": "Seek backward in the current song."
+	},
+	"com.ntanis.essentials-for-spotify.forward-seek-button": {
+		"Name": "Forward Seek",
+		"Tooltip": "Seek forward in the current song."
+	},
+	"com.ntanis.essentials-for-spotify.shuffle-button": {
+		"Name": "Shuffle",
+		"Tooltip": "Activates or deactivates shuffle play."
+	},
+	"com.ntanis.essentials-for-spotify.loop-context-button": {
+		"Name": "Loop Context",
+		"Tooltip": "Repeats the current playlist or album."
+	},
+	"com.ntanis.essentials-for-spotify.loop-song-button": {
+		"Name": "Loop Song",
+		"Tooltip": "Repeats the current song."
+	},
+	"com.ntanis.essentials-for-spotify.mode-stack-button": {
+		"Name": "Mode Stack",
+		"Tooltip": "A button that combines shuffle, loop context and loop song into one."
+	},
+	"com.ntanis.essentials-for-spotify.like-unlike-button": {
+		"Name": "Like / Unlike",
+		"Tooltip": "Adds the current song to your liked songs or removes it if already liked."
+	},
+	"com.ntanis.essentials-for-spotify.add-to-playlist-button": {
+		"Name": "Add to Playlist",
+		"Tooltip": "Adds the currently playing song to a selected playlist of yours non-exclusively."
+	},
+	"com.ntanis.essentials-for-spotify.song-explicit-button": {
+		"Name": "Explicit Indicator",
+		"Tooltip": "Shows whether the current song is explicit or not"
+	},
+	"com.ntanis.essentials-for-spotify.volume-up-button": {
+		"Name": "Volume Up",
+		"Tooltip": "Increases the playback volume."
+	},
+	"com.ntanis.essentials-for-spotify.volume-down-button": {
+		"Name": "Volume Down",
+		"Tooltip": "Decreases the playback volume."
+	},
+	"com.ntanis.essentials-for-spotify.volume-mute-unmute-button": {
+		"Name": "Volume Mute / Unmute",
+		"Tooltip": "Toggles between muting and unmuting the volume."
+	},
+	"com.ntanis.essentials-for-spotify.volume-stack-button": {
+		"Name": "Volume Stack",
+		"Tooltip": "A button that combines volume up, volume down and volume mute / unmute into one."
+	},
+	"com.ntanis.essentials-for-spotify.set-volume-button": {
+		"Name": "Set Volume",
+		"Tooltip": "Sets the playback volume to a specific level."
+	},
+	"com.ntanis.essentials-for-spotify.play-context-button": {
+		"Name": "Play Context",
+		"Tooltip": "Map this button to any supported Spotify URL and press it to start playing."
+	},
+	"com.ntanis.essentials-for-spotify.song-clipboard-button": {
+		"Name": "Song Clipboard",
+		"Tooltip": "Copies the information of the current song to the clipboard."
+	},
+	"com.ntanis.essentials-for-spotify.context-information-button": {
+		"Name": "Context Information",
+		"Tooltip": "Displays the information of the current context."
+	},
+	"com.ntanis.essentials-for-spotify.transfer-playback-button": {
+		"Name": "Transfer Playback",
+		"Tooltip": "Allows you to transfer the playback to another device."
+	},
+	"com.ntanis.essentials-for-spotify.user-information-button": {
+		"Name": "User Information",
+		"Tooltip": "Displays the information of the connected user."
+	},
+	"com.ntanis.essentials-for-spotify.playback-control-dial": {
+		"Name": "Playback Control",
+		"Tooltip": "Controls the playback of the current song.",
+		"Encoder": {
+			"TriggerDescription": {
+				"LongTouch": "Like / Unlike",
+				"Rotate": "Previous / Next",
+				"Push": "Play / Pause / Rotate Seek",
+				"Touch": "Play / Pause"
+			}
+		}
+	},
+	"com.ntanis.essentials-for-spotify.volume-control-dial": {
+		"Name": "Volume Control",
+		"Tooltip": "Controls the playback volume.",
+		"Encoder": {
+			"TriggerDescription": {
+				"Rotate": "Adjust Volume",
+				"Push": "Hold Mute",
+				"Touch": "Mute / Unmute"
+			}
+		}
+	},
+	"com.ntanis.essentials-for-spotify.my-playlists-dial": {
+		"Name": "My Playlists",
+		"Tooltip": "Navigate and play through your playlists.",
+		"Encoder": {
+			"TriggerDescription": {
+				"LongTouch": "Refresh",
+				"Rotate": "Navigate",
+				"Push": "Play",
+				"Touch": "Play"
+			}
+		}
+	},
+	"com.ntanis.essentials-for-spotify.my-liked-songs-dial": {
+		"Name": "My Liked Songs",
+		"Tooltip": "Navigate and play through your liked songs.",
+		"Encoder": {
+			"TriggerDescription": {
+				"LongTouch": "Refresh",
+				"Rotate": "Navigate",
+				"Push": "Play",
+				"Touch": "Play"
+			}
+		}
+	},
+	"PropertyInspector": {
+		"Play / Pause": "Play / Pause",
+		"Previous Song": "Previous Song",
+		"Next Song": "Next Song",
+		"Shuffle": "Shuffle",
+		"Loop Context": "Loop Context",
+		"Loop Song": "Loop Song",
+		"Like / Unlike": "Like / Unlike",
+		"Volume Up": "Volume Up",
+		"Volume Down": "Volume Down",
+		"Volume Mute / Unmute": "Volume Mute / Unmute",
+		"Play": "Play",
+		"Step %": "Step %",
+		"Single Press": "Single Press",
+		"Double Press": "Double Press",
+		"Long Press": "Long Press",
+		"Volume %": "Volume %",
+		"Show": "Show",
+		"Device": "Device",
+		"Triple Press": "Triple Press",
+		"Time Display": "Time Display",
+		"Seek Step (Seconds)": "Seek Step (Seconds)",
+		"Action": "Action",
+		"Image Source": "Image Source",
+		"Spotify URL": "Spotify URL",
+		"Format:": "Format:",
+		"Separator:": "Separator:",
+		"Preview:": "Preview:",
+		"Setup Port": "Setup Port",
+		"Layout": "Layout",
+		"Background Opacity": "Background Opacity",
+		"Rounding": "Rounding",
+		"URL": "URL",
+		"Size": "Size",
+		"Extra Playlists:": "Extra Playlists:",
+		"Open in Spotify": "Open in Spotify",
+		"Duration": "Duration",
+		"Remaining": "Remaining",
+		"Title": "Title",
+		"Artist(s)": "Artist(s)",
+		"Progress": "Progress",
+		"Liked": "Liked",
+		"Reset All": "Reset All",
+		"Pause": "Pause",
+		"Name": "Name",
+		"Type": "Type",
+		"Active Border": "Active Border",
+		"Inactive Border": "Inactive Border",
+		"Current Context (Playlist / Album)": "Current Context (Playlist / Album)",
+		"Current Song's Album": "Current Song's Album",
+		"Horizontal Card": "Horizontal Card",
+		"Minimal Bar": "Minimal Bar",
+		"Vertical Panel": "Vertical Panel",
+		"Display Name": "Display Name",
+		"Artist(s) (Album / Track Context)": "Artist(s) (Album / Track Context)",
+		"Stream Overlay Generator": "Stream Overlay Generator",
+		"Choose a Device": "Choose a Device",
+		"Song Title": "Song Title",
+		"Song Artist(s)": "Song Artist(s)",
+		"Song Spotify Link": "Song Spotify Link",
+		"(nothing selected)": "(nothing selected)",
+		"Please fill in this field.": "Please fill in this field."
+	},
+	"Setup": {
+		"installation": "Installation",
+		"success_message": "The installation has been <b>completed successfully</b>!",
+		"close_message": "You may close this page now.",
+		"vpn_warning": "If you are using a <b>VPN</b>, you may need to temporarily disable it.<br />You can re-enable it afterwards.",
+		"step1": "Login to <a href=\"https://developer.spotify.com\" target=\"_blank\" rel=\"noopener\">Spotify for Developers</a> with your Spotify account.",
+		"step2": "Go to <a href=\"https://developer.spotify.com/dashboard/create\" target=\"_blank\" rel=\"noopener\">Create app</a>.",
+		"step3": "Set <code id=\"url\">http://127.0.0.1:<span class=\"port\"></span></code> as <b>\"Redirect URI\"</b>.",
+		"step4": "Check <b>\"Web API\"</b> in <b>\"Which API/SDKs are you planning to use?\"</b>.",
+		"step5": "Fill the rest of the form to your liking, <b>\"Website\"</b> can be left empty.",
+		"step6": "Create the app and navigate to the app's dashboard.",
+		"step7": "Click <b>\"Basic Information\"</b> in the app's dashboard.",
+		"step8": "Copy the <b>\"Client ID\"</b> to the form below.",
+		"step9": "Click <b>\"View client secret\"</b> and copy the <b>\"Client secret\"</b> to the form below.",
+		"step10": "Submit the form below.",
+		"error_title": "Something went wrong!",
+		"error_message": "Please double-check the app information and try again.",
+		"submit": "Submit"
+	}
+}

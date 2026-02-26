@@ -102,6 +102,8 @@ class Connector extends EventEmitter {
 
 		if (this.#staticHandler(pathname, res))
 			return
+		else if (req.method === 'GET' && /^\/[a-z]{2}(_[A-Z]{2})?\.json$/.test(pathname))
+			return sendFile(res, `.${pathname}`)
 		else if (req.method === 'GET' && pathname === '/port')
 			return send(res, 200, this.#port.toString())
 		else if (req.method === 'POST' && pathname === '/') {

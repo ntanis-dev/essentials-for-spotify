@@ -3,6 +3,8 @@
     <head lang="en">
         <meta charset="utf-8" />
         <script src="sdpi-components.js"></script>
+        <script src="locales.js"></script>
+
         <style>
             body {
                 -webkit-user-select: none;
@@ -11,7 +13,7 @@
         </style>
     </head>
     <body>
-        <sdpi-item label="Spotify URL">
+        <sdpi-item label="__MSG_Spotify URL__">
             <sdpi-textfield
                 setting="spotify_url"
                 pattern="/^https?:\/\/open\.spotify\.com\/(?:intl-[a-z]{2}\/)?(?:(?:album|artist|track|playlist)\/[A-Za-z0-9]{22}|collection\/tracks)(?:\/)?(?:\?.*)?$/i"
@@ -20,14 +22,15 @@
             </sdpi-textfield>
         </sdpi-item>
         
-        <sdpi-item label="Show">
+        <sdpi-item label="__MSG_Show__">
             <sdpi-checkbox-list setting="show">
-                <option value="title">Name</option>
-                <option value="subtitle">Artist(s) (Album / Track Context)</option>
-                <option value="extra">Type</option>
-                <option value="active_border">Active Border</option>
-                <option value="inactive_border">Inactive Border</option>
+                <option value="title">__MSG_Name__</option>
+                <option value="subtitle">__MSG_Artist(s) (Album / Track Context)__</option>
+                <option value="extra">__MSG_Type__</option>
+                <option value="active_border">__MSG_Active Border__</option>
+                <option value="inactive_border">__MSG_Inactive Border__</option>
             </sdpi-checkbox-list>
         </sdpi-item>
+        <script src="localize.js"></script>
     </body>
 </html>

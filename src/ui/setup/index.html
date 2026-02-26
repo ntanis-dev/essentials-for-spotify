@@ -12,39 +12,39 @@
 	<div class="form-container">
 		<div class="header">
 			<img alt="Essentials for Spotify" src="logo.png" />
-			<h1>Essentials for Spotify <span>Installation</span></h1>
+			<h1>Essentials for Spotify <span data-localize="installation">Installation</span></h1>
 		</div>
 
 		<div class="instructions">
 			<span id="success">
-				<span>The installation has been <b>completed successfully</b>!</span>
+				<span data-localize-html="success_message">The installation has been <b>completed successfully</b>!</span>
 				<br />
-				You may close this page now.
+				<span data-localize="close_message">You may close this page now.</span>
 			</span>
 
-			<span id="note" class="main">
+			<span id="note" class="main" data-localize-html="vpn_warning">
 				If you are using a <b>VPN</b>, you may need to temporarily disable it.<br />You can re-enable it afterwards.
 			</span>
 
 			<ol class="main">
-				<li>Login to <a href="https://developer.spotify.com" target="_blank" rel="noopener">Spotify for Developers</a> with your Spotify account.</li>
-				<li>Go to <a href="https://developer.spotify.com/dashboard/create" target="_blank" rel="noopener">Create app</a>.</li>
-				<li>Set <code id="url">http://127.0.0.1:<span class="port"></span></code> as <b>"Redirect URI"</b>.</li>
-				<li>Check <b>"Web API"</b> in <b>"Which API/SDKs are you planning to use?"</b>.</li>
-				<li>Fill the rest of the form to your liking, <b>"Website"</b> can be left empty.</li>
-				<li>Create the app and navigate to the app's dashboard.</li>
-				<li>Click <b>"Basic Information"</b> in the app's dashboard.</li>
-				<li>Copy the <b>"Client ID"</b> to the form below.</li>
-				<li>Click <b>"View client secret"</b> and copy the <b>"Client secret"</b> to the form below.</li>
-				<li>Submit the form below.</li>
+				<li data-localize-html="step1">Login to <a href="https://developer.spotify.com" target="_blank" rel="noopener">Spotify for Developers</a> with your Spotify account.</li>
+				<li data-localize-html="step2">Go to <a href="https://developer.spotify.com/dashboard/create" target="_blank" rel="noopener">Create app</a>.</li>
+				<li data-localize-html="step3">Set <code id="url">http://127.0.0.1:<span class="port"></span></code> as <b>"Redirect URI"</b>.</li>
+				<li data-localize-html="step4">Check <b>"Web API"</b> in <b>"Which API/SDKs are you planning to use?"</b>.</li>
+				<li data-localize-html="step5">Fill the rest of the form to your liking, <b>"Website"</b> can be left empty.</li>
+				<li data-localize-html="step6">Create the app and navigate to the app's dashboard.</li>
+				<li data-localize-html="step7">Click <b>"Basic Information"</b> in the app's dashboard.</li>
+				<li data-localize-html="step8">Copy the <b>"Client ID"</b> to the form below.</li>
+				<li data-localize-html="step9">Click <b>"View client secret"</b> and copy the <b>"Client secret"</b> to the form below.</li>
+				<li data-localize-html="step10">Submit the form below.</li>
 			</ol>
 		</div>
 
 		<form action="/" method="POST" class="main">
 			<div id="error">
-				<span>Something went wrong!</span>
+				<span data-localize="error_title">Something went wrong!</span>
 				<br />
-				<small>Please double-check the app information and try again.</small>
+				<small data-localize="error_message">Please double-check the app information and try again.</small>
 			</div>
 
 			<input type="text" id="clientId" name="clientId" placeholder="Client ID" required />

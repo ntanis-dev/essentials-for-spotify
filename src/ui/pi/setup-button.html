@@ -3,6 +3,8 @@
     <head lang="en">
         <meta charset="utf-8" />
         <script src="sdpi-components.js"></script>
+        <script src="locales.js"></script>
+
 
         <style>
             body {
@@ -93,36 +95,36 @@
         </style>
     </head>
     <body>
-        <sdpi-item label="Setup Port">
+        <sdpi-item label="__MSG_Setup Port__">
             <sdpi-textfield id="connectorPort" placeholder="" disabled></sdpi-textfield>
         </sdpi-item>
 
         <div class="section-heading">Stream Overlay Generator</div>
 
-        <sdpi-item label="Layout">
+        <sdpi-item label="__MSG_Layout__">
             <sdpi-select id="overlayLayout">
-                <option value="horizontal">Horizontal Card</option>
-                <option value="minimal">Minimal Bar</option>
-                <option value="vertical">Vertical Panel</option>
+                <option value="horizontal">__MSG_Horizontal Card__</option>
+                <option value="minimal">__MSG_Minimal Bar__</option>
+                <option value="vertical">__MSG_Vertical Panel__</option>
             </sdpi-select>
         </sdpi-item>
 
-        <sdpi-item label="Background Opacity">
+        <sdpi-item label="__MSG_Background Opacity__">
             <sdpi-range id="overlayOpacity" min="25" max="100" step="5" default="100" showlabels></sdpi-range>
         </sdpi-item>
 
-        <sdpi-item label="Rounding">
+        <sdpi-item label="__MSG_Rounding__">
             <sdpi-range id="overlayRounding" min="0" max="100" step="1" default="0" showlabels></sdpi-range>
         </sdpi-item>
 
-        <sdpi-item label="Time Display">
+        <sdpi-item label="__MSG_Time Display__">
             <sdpi-select id="overlayTimeDisplay">
-                <option value="progress">Progress</option>
-                <option value="duration">Duration</option>
+                <option value="progress">__MSG_Progress__</option>
+                <option value="duration">__MSG_Duration__</option>
             </sdpi-select>
         </sdpi-item>
 
-        <sdpi-item label="URL">
+        <sdpi-item label="__MSG_URL__">
             <div class="url-field">
                 <input type="text" id="overlayUrl" readonly />
 
@@ -139,7 +141,7 @@
             </div>
         </sdpi-item>
 
-        <sdpi-item label="Size">
+        <sdpi-item label="__MSG_Size__">
             <sdpi-textfield id="overlaySize" placeholder="" disabled></sdpi-textfield>
         </sdpi-item>
 
@@ -300,5 +302,6 @@
                 })
             })
         </script>
+        <script src="localize.js"></script>
     </body>
 </html>

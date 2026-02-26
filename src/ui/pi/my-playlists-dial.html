@@ -61,10 +61,10 @@
                 color: var(--label-color);
                 font-size: var(--font-size);
                 min-height: var(--input-height);
-                display: flex;
-                align-items: center;
-                justify-content: flex-end;
+                line-height: 1.3;
+                text-align: right;
                 padding-right: 2px;
+                padding-top: 4px;
             }
 
             .sdpi-item-value {
@@ -272,7 +272,7 @@
 
                 nameInput.type = 'text'
                 nameInput.className = 'playlist-name'
-                nameInput.placeholder = 'Name'
+                nameInput.placeholder = t('Name')
                 nameInput.value = name
                 nameInput.spellcheck = false
                 nameInput.addEventListener('input', debouncedSave)
@@ -281,11 +281,11 @@
 
                 urlInput.type = 'text'
                 urlInput.className = 'playlist-url'
-                urlInput.placeholder = 'Spotify URL'
+                urlInput.placeholder = t('Spotify URL')
                 urlInput.value = url
                 urlInput.spellcheck = false
                 urlInput.required = true
-                urlInput.title = 'Please fill in this field.'
+                urlInput.title = t('Please fill in this field.')
 
                 urlInput.addEventListener('input', debouncedSave)
                 urlInput.addEventListener('paste', () => setTimeout(debouncedSave, 0))
@@ -347,6 +347,10 @@
                 updateAddButton()
                 updateRemoveButtons()
             })
+
+            document.addEventListener('localized', () => renderList(currentSettings.extra_playlists || []))
         </script>
+
+        <script src="localize.js"></script>
     </body>
 </html>

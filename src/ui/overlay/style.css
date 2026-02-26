@@ -44,6 +44,27 @@ body {
 	opacity: 0.4;
 }
 
+#overlay.song-exit #album-art-container,
+#overlay.song-exit #song-name,
+#overlay.song-exit #artist-name,
+#overlay.song-exit #progress-container {
+	filter: blur(6px);
+	opacity: 0;
+}
+
+@keyframes song-reveal {
+	from { filter: blur(6px); opacity: 0; }
+	to { filter: none; opacity: 1; }
+}
+
+#overlay.song-reveal #album-art-container,
+#overlay.song-reveal #song-name,
+#overlay.song-reveal #artist-name,
+#overlay.song-reveal #progress-container {
+	animation: song-reveal 0.25s ease both;
+	transition: none;
+}
+
 /* ---------- Album Art ---------- */
 
 #album-art-container {
@@ -79,6 +100,7 @@ body {
 	flex: 1;
 	min-width: 0;
 	overflow: hidden;
+	padding-right: 44px;
 }
 
 #song-name {
@@ -189,7 +211,7 @@ body {
 
 #overlay.idle #info,
 #overlay.idle #album-art-container {
-	visibility: hidden;
+	opacity: 0;
 }
 
 #overlay.idle #idle-message {
@@ -231,6 +253,7 @@ body.layout-minimal #info {
 	align-items: baseline;
 	gap: 6px;
 	flex-wrap: nowrap;
+	padding-right: 5px;
 }
 
 body.layout-minimal #progress-container {
@@ -295,6 +318,7 @@ body.layout-vertical #album-art-container {
 
 body.layout-vertical #info {
 	text-align: center;
+	padding-right: 0;
 }
 
 body.layout-vertical #song-name {

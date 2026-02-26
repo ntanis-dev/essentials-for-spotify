@@ -1,0 +1,229 @@
+{
+	"Name": "Essentials for Spotify",
+	"Description": "Elgato Stream Deck을 통해 Spotify를 간편하게 제어하세요. 이 플러그인의 모든 기능을 사용하려면 Spotify Premium 계정이 필요합니다.",
+	"com.ntanis.essentials-for-spotify.setup-button": {
+		"Name": "설정",
+		"Tooltip": "Essentials for Spotify를 설정하고 선택적으로 스트림 오버레이를 구성하려면 여기에서 시작하세요."
+	},
+	"com.ntanis.essentials-for-spotify.play-pause-button": {
+		"Name": "재생 / 일시정지",
+		"Tooltip": "현재 곡의 재생과 일시정지를 전환합니다."
+	},
+	"com.ntanis.essentials-for-spotify.previous-song-button": {
+		"Name": "이전 곡",
+		"Tooltip": "이전 곡으로 건너뜁니다. 길게 누르면 뒤로 탐색합니다."
+	},
+	"com.ntanis.essentials-for-spotify.next-song-button": {
+		"Name": "다음 곡",
+		"Tooltip": "다음 곡으로 넘어갑니다. 길게 누르면 앞으로 탐색합니다."
+	},
+	"com.ntanis.essentials-for-spotify.song-stack-button": {
+		"Name": "곡 스택",
+		"Tooltip": "현재 곡의 정보를 표시하고 다양한 제어 기능을 제공합니다."
+	},
+	"com.ntanis.essentials-for-spotify.backward-seek-button": {
+		"Name": "뒤로 탐색",
+		"Tooltip": "현재 곡에서 뒤로 탐색합니다."
+	},
+	"com.ntanis.essentials-for-spotify.forward-seek-button": {
+		"Name": "앞으로 탐색",
+		"Tooltip": "현재 곡에서 앞으로 탐색합니다."
+	},
+	"com.ntanis.essentials-for-spotify.shuffle-button": {
+		"Name": "셔플",
+		"Tooltip": "셔플 재생을 활성화하거나 비활성화합니다."
+	},
+	"com.ntanis.essentials-for-spotify.loop-context-button": {
+		"Name": "컨텍스트 반복",
+		"Tooltip": "현재 재생목록 또는 앨범을 반복합니다."
+	},
+	"com.ntanis.essentials-for-spotify.loop-song-button": {
+		"Name": "곡 반복",
+		"Tooltip": "현재 곡을 반복합니다."
+	},
+	"com.ntanis.essentials-for-spotify.mode-stack-button": {
+		"Name": "모드 스택",
+		"Tooltip": "셔플, 컨텍스트 반복, 곡 반복을 하나로 결합한 버튼입니다."
+	},
+	"com.ntanis.essentials-for-spotify.like-unlike-button": {
+		"Name": "좋아요 / 좋아요 취소",
+		"Tooltip": "현재 곡을 좋아요 표시한 곡에 추가하거나, 이미 추가된 경우 제거합니다."
+	},
+	"com.ntanis.essentials-for-spotify.add-to-playlist-button": {
+		"Name": "재생목록에 추가",
+		"Tooltip": "현재 재생 중인 곡을 선택한 재생목록에 추가합니다."
+	},
+	"com.ntanis.essentials-for-spotify.song-explicit-button": {
+		"Name": "성인 콘텐츠 표시",
+		"Tooltip": "현재 곡의 성인 콘텐츠 여부를 표시합니다"
+	},
+	"com.ntanis.essentials-for-spotify.volume-up-button": {
+		"Name": "볼륨 높이기",
+		"Tooltip": "재생 볼륨을 높입니다."
+	},
+	"com.ntanis.essentials-for-spotify.volume-down-button": {
+		"Name": "볼륨 낮추기",
+		"Tooltip": "재생 볼륨을 낮춥니다."
+	},
+	"com.ntanis.essentials-for-spotify.volume-mute-unmute-button": {
+		"Name": "음소거 / 음소거 해제",
+		"Tooltip": "음소거와 음소거 해제를 전환합니다."
+	},
+	"com.ntanis.essentials-for-spotify.volume-stack-button": {
+		"Name": "볼륨 스택",
+		"Tooltip": "볼륨 높이기, 볼륨 낮추기, 음소거 / 음소거 해제를 하나로 결합한 버튼입니다."
+	},
+	"com.ntanis.essentials-for-spotify.set-volume-button": {
+		"Name": "볼륨 설정",
+		"Tooltip": "재생 볼륨을 특정 수준으로 설정합니다."
+	},
+	"com.ntanis.essentials-for-spotify.play-context-button": {
+		"Name": "컨텍스트 재생",
+		"Tooltip": "이 버튼에 지원되는 Spotify URL을 매핑하고 눌러서 재생을 시작하세요."
+	},
+	"com.ntanis.essentials-for-spotify.song-clipboard-button": {
+		"Name": "곡 클립보드",
+		"Tooltip": "현재 곡의 정보를 클립보드에 복사합니다."
+	},
+	"com.ntanis.essentials-for-spotify.context-information-button": {
+		"Name": "컨텍스트 정보",
+		"Tooltip": "현재 컨텍스트의 정보를 표시합니다."
+	},
+	"com.ntanis.essentials-for-spotify.transfer-playback-button": {
+		"Name": "재생 장치 전환",
+		"Tooltip": "재생을 다른 장치로 전환할 수 있습니다."
+	},
+	"com.ntanis.essentials-for-spotify.user-information-button": {
+		"Name": "사용자 정보",
+		"Tooltip": "연결된 사용자의 정보를 표시합니다."
+	},
+	"com.ntanis.essentials-for-spotify.playback-control-dial": {
+		"Name": "재생 제어",
+		"Tooltip": "현재 곡의 재생을 제어합니다.",
+		"Encoder": {
+			"TriggerDescription": {
+				"LongTouch": "좋아요 / 좋아요 취소",
+				"Rotate": "이전 / 다음",
+				"Push": "재생 / 일시정지 / 다이얼 탐색",
+				"Touch": "재생 / 일시정지"
+			}
+		}
+	},
+	"com.ntanis.essentials-for-spotify.volume-control-dial": {
+		"Name": "볼륨 제어",
+		"Tooltip": "재생 볼륨을 제어합니다.",
+		"Encoder": {
+			"TriggerDescription": {
+				"Rotate": "볼륨 조절",
+				"Push": "길게 눌러 음소거",
+				"Touch": "음소거 / 음소거 해제"
+			}
+		}
+	},
+	"com.ntanis.essentials-for-spotify.my-playlists-dial": {
+		"Name": "내 재생목록",
+		"Tooltip": "재생목록을 탐색하고 재생합니다.",
+		"Encoder": {
+			"TriggerDescription": {
+				"LongTouch": "새로고침",
+				"Rotate": "탐색",
+				"Push": "재생",
+				"Touch": "재생"
+			}
+		}
+	},
+	"com.ntanis.essentials-for-spotify.my-liked-songs-dial": {
+		"Name": "좋아요 표시한 곡",
+		"Tooltip": "좋아요 표시한 곡을 탐색하고 재생합니다.",
+		"Encoder": {
+			"TriggerDescription": {
+				"LongTouch": "새로고침",
+				"Rotate": "탐색",
+				"Push": "재생",
+				"Touch": "재생"
+			}
+		}
+	},
+	"PropertyInspector": {
+		"Play / Pause": "재생 / 일시정지",
+		"Previous Song": "이전 곡",
+		"Next Song": "다음 곡",
+		"Shuffle": "셔플",
+		"Loop Context": "컨텍스트 반복",
+		"Loop Song": "곡 반복",
+		"Like / Unlike": "좋아요 / 좋아요 취소",
+		"Volume Up": "볼륨 높이기",
+		"Volume Down": "볼륨 낮추기",
+		"Volume Mute / Unmute": "음소거 / 음소거 해제",
+		"Play": "재생",
+		"Step %": "단계 %",
+		"Single Press": "한 번 누르기",
+		"Double Press": "두 번 누르기",
+		"Long Press": "길게 누르기",
+		"Volume %": "볼륨 %",
+		"Show": "표시",
+		"Device": "장치",
+		"Triple Press": "세 번 누르기",
+		"Time Display": "시간 표시",
+		"Seek Step (Seconds)": "탐색 간격 (초)",
+		"Action": "동작",
+		"Image Source": "이미지 소스",
+		"Spotify URL": "Spotify URL",
+		"Format:": "형식:",
+		"Separator:": "구분자:",
+		"Preview:": "미리보기:",
+		"Setup Port": "포트 설정",
+		"Layout": "레이아웃",
+		"Background Opacity": "배경 불투명도",
+		"Rounding": "모서리 둥글기",
+		"URL": "URL",
+		"Size": "크기",
+		"Extra Playlists:": "추가 재생목록:",
+		"Open in Spotify": "Spotify에서 열기",
+		"Duration": "재생 시간",
+		"Remaining": "남은 시간",
+		"Title": "제목",
+		"Artist(s)": "아티스트",
+		"Progress": "진행률",
+		"Liked": "좋아요",
+		"Reset All": "전체 초기화",
+		"Pause": "일시정지",
+		"Name": "이름",
+		"Type": "유형",
+		"Active Border": "활성 테두리",
+		"Inactive Border": "비활성 테두리",
+		"Current Context (Playlist / Album)": "현재 컨텍스트 (재생목록 / 앨범)",
+		"Current Song's Album": "현재 곡의 앨범",
+		"Horizontal Card": "가로 카드",
+		"Minimal Bar": "미니멀 바",
+		"Vertical Panel": "세로 패널",
+		"Display Name": "표시 이름",
+		"Artist(s) (Album / Track Context)": "아티스트 (앨범 / 트랙 컨텍스트)",
+		"Stream Overlay Generator": "스트림 오버레이 생성기",
+		"Choose a Device": "장치 선택",
+		"Song Title": "곡 제목",
+		"Song Artist(s)": "곡 아티스트",
+		"Song Spotify Link": "곡 Spotify 링크",
+		"(nothing selected)": "(선택된 항목 없음)",
+		"Please fill in this field.": "이 필드를 입력해 주세요."
+	},
+	"Setup": {
+		"installation": "설치",
+		"success_message": "설치가 <b>성공적으로 완료</b>되었습니다!",
+		"close_message": "이제 이 페이지를 닫으셔도 됩니다.",
+		"vpn_warning": "<b>VPN</b>을 사용 중인 경우 일시적으로 비활성화해야 할 수 있습니다.<br />이후 다시 활성화할 수 있습니다.",
+		"step1": "Spotify 계정으로 <a href=\"https://developer.spotify.com\" target=\"_blank\" rel=\"noopener\">Spotify for Developers</a>에 로그인합니다.",
+		"step2": "<a href=\"https://developer.spotify.com/dashboard/create\" target=\"_blank\" rel=\"noopener\">앱 만들기</a>로 이동합니다.",
+		"step3": "<code id=\"url\">http://127.0.0.1:<span class=\"port\"></span></code>을 <b>\"Redirect URI\"</b>로 설정합니다.",
+		"step4": "<b>\"Which API/SDKs are you planning to use?\"</b>에서 <b>\"Web API\"</b>를 선택합니다.",
+		"step5": "나머지 양식은 원하는 대로 작성하세요. <b>\"Website\"</b>는 비워 둘 수 있습니다.",
+		"step6": "앱을 만들고 앱의 대시보드로 이동합니다.",
+		"step7": "앱의 대시보드에서 <b>\"Basic Information\"</b>을 클릭합니다.",
+		"step8": "<b>\"Client ID\"</b>를 아래 양식에 복사합니다.",
+		"step9": "<b>\"View client secret\"</b>을 클릭하고 <b>\"Client secret\"</b>을 아래 양식에 복사합니다.",
+		"step10": "아래 양식을 제출합니다.",
+		"error_title": "문제가 발생했습니다!",
+		"error_message": "앱 정보를 다시 확인하고 다시 시도해 주세요.",
+		"submit": "제출"
+	}
+}

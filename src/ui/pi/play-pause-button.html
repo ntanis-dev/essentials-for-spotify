@@ -3,6 +3,8 @@
     <head lang="en">
         <meta charset="utf-8" />
         <script src="sdpi-components.js"></script>
+        <script src="locales.js"></script>
+
         <style>
             body {
                 -webkit-user-select: none;
@@ -11,12 +13,13 @@
         </style>
     </head>
     <body>
-        <sdpi-item label="Action">
+        <sdpi-item label="__MSG_Action__">
             <sdpi-select setting="action">
-                <option value="play_pause">Play / Pause</option>
-                <option value="play">Play</option>
-                <option value="pause">Pause</option>
+                <option value="play_pause">__MSG_Play / Pause__</option>
+                <option value="play">__MSG_Play__</option>
+                <option value="pause">__MSG_Pause__</option>
             </sdpi-select>
         </sdpi-item>
+        <script src="localize.js"></script>
     </body>
 </html>

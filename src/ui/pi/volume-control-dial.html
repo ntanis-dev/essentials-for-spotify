@@ -3,6 +3,8 @@
     <head lang="en">
         <meta charset="utf-8" />
         <script src="sdpi-components.js"></script>
+        <script src="locales.js"></script>
+
         <style>
             body {
                 -webkit-user-select: none;
@@ -11,7 +13,7 @@
         </style>
     </head>
     <body>
-        <sdpi-item label="Step %">
+        <sdpi-item label="__MSG_Step %__">
             <sdpi-range
                 setting="step"
                 min="1"
@@ -20,5 +22,6 @@
                 showlabels>
             </sdpi-range>
         </sdpi-item>
+        <script src="localize.js"></script>
     </body>
 </html>

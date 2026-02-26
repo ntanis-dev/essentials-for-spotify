@@ -52,6 +52,7 @@ const config = {
 
 			buildStart() {
 				this.addWatchFile('src/ui')
+				this.addWatchFile('src/localization')
 				this.addWatchFile('com.ntanis.essentials-for-spotify.sdPlugin/manifest.json')
 			}
 		},
@@ -85,9 +86,27 @@ const config = {
 						recursive: true
 					})
 
-				if (fs.existsSync('src/localization'))
-					for (const file of fs.readdirSync('src/localization'))
+				if (fs.existsSync('src/localization')) {
+					const piLocales = {}
+
+					for (const file of fs.readdirSync('src/localization')) {
 						fs.copyFileSync(path.join('src/localization', file), path.join('com.ntanis.essentials-for-spotify.sdPlugin', file))
+
+						if (file.endsWith('.json')) {
+							const lang = file.replace('.json', '')
+							const data = JSON.parse(fs.readFileSync(path.join('src/localization', file), 'utf-8'))
+
+							if (data.PropertyInspector)
+								piLocales[lang] = data.PropertyInspector
+						}
+					}
+
+					if (Object.keys(piLocales).length > 0)
+						fs.writeFileSync(
+							path.join('com.ntanis.essentials-for-spotify.sdPlugin', 'pi', 'locales.js'),
+							`SDPIComponents.i18n.locales=${JSON.stringify(piLocales)};`
+						)
+				}
 			}
 		}
 	]

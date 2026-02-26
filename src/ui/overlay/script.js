@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	let currentDuration = 0
 	let isPlaying = false
 	let lastTimeUpdate = Date.now()
-	let animationFrame = null
 	let currentSongKey = null
+	let activeSince = 0
 
 	const params = new URLSearchParams(window.location.search)
 	const layout = params.get('layout') || 'horizontal'
@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	if (rounding !== null)
 		overlay.style.borderRadius = `${(rounding / 100) * 45}px`
+
 	overlay.classList.add('idle')
 
 	const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
@@ -45,10 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			handleMessage(data)
 		}
 
-		ws.onclose = () => {
-			reconnectTimeout = setTimeout(connect, 3000)
-		}
-
+		ws.onclose = () => reconnectTimeout = setTimeout(connect, 3000)
 		ws.onerror = () => {}
 	}
 
@@ -57,20 +55,24 @@ document.addEventListener('DOMContentLoaded', () => {
 			case 'fullState':
 				updateSong(data.song)
 				updatePlayState(data.playing)
+
 				if (data.song) {
 					currentProgress = data.song.progress
 					currentDuration = data.song.duration
 					lastTimeUpdate = Date.now()
 				}
+
 				break
 
 			case 'songChanged':
 				updateSong(data.song, data.pending)
+
 				if (data.song) {
 					currentProgress = data.song.progress
 					currentDuration = data.song.duration
 					lastTimeUpdate = Date.now()
 				}
+
 				break
 
 			case 'songTimeChanged':
@@ -88,23 +90,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	function checkMarquee(container) {
 		const span = container.querySelector('span')
-		if (!span) return
+
+		if (!span)
+			return
 
 		container.classList.remove('marquee')
+
 		span.style.animation = 'none'
-		if (span.dataset.original) span.textContent = span.dataset.original
+
+		if (span.dataset.original)
+			span.textContent = span.dataset.original
 
 		requestAnimationFrame(() => {
 			span.style.animation = ''
 
 			if (container.scrollWidth > container.clientWidth) {
 				const text = span.textContent
+
 				span.dataset.original = text
+
 				const textWidth = span.scrollWidth
 				const spacer = '\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0'
+
 				span.textContent = text + spacer + text
+
 				const cycleWidth = span.scrollWidth - textWidth
 				const duration = cycleWidth / 30
+
 				container.style.setProperty('--marquee-offset', `-${cycleWidth}px`)
 				container.style.setProperty('--marquee-duration', `${duration}s`)
 				container.classList.add('marquee')
@@ -115,35 +127,55 @@ document.addEventListener('DOMContentLoaded', () => {
 	function updateSong(song, pending) {
 		if (!song) {
 			if (pending) {
+				if (Date.now() - activeSince < 500) return
 				overlay.classList.add('song-transition')
 				return
 			}
-			overlay.classList.add('idle')
-			overlay.classList.remove('active')
-			currentSongKey = null
+
+			if (overlay.classList.contains('active')) {
+				overlay.classList.add('song-exit')
+
+				setTimeout(() => {
+					overlay.classList.add('idle')
+					overlay.classList.remove('active')
+					overlay.classList.remove('song-exit')
+					currentSongKey = null
+				}, 250)
+			} else {
+				overlay.classList.add('idle')
+				currentSongKey = null
+			}
+
 			return
 		}
 
-		overlay.classList.remove('idle')
-		overlay.classList.add('active')
-
+		const wasIdle = overlay.classList.contains('idle')
 		const songKey = song.name + '|' + (song.artists?.join(',') || '')
 		const wasTransitioning = overlay.classList.contains('song-transition')
 		const isNewSong = currentSongKey !== null && currentSongKey !== songKey
+
 		currentSongKey = songKey
 
-		if (wasTransitioning) {
+		if (wasIdle) {
+			activeSince = Date.now()
+			overlay.classList.remove('song-transition')
+			applySongData(song)
+			overlay.classList.add('song-reveal')
+			overlay.classList.remove('idle')
+			overlay.classList.add('active')
+			setTimeout(() => overlay.classList.remove('song-reveal'), 300)
+		} else if (wasTransitioning) {
 			applySongData(song)
 			overlay.classList.remove('song-transition')
 		} else if (isNewSong) {
 			overlay.classList.add('song-transition')
+
 			setTimeout(() => {
 				applySongData(song)
 				overlay.classList.remove('song-transition')
 			}, 250)
-		} else {
+		} else
 			applySongData(song)
-		}
 	}
 
 	function applySongData(song) {
@@ -152,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		delete songSpan.dataset.original
 		delete artistSpan.dataset.original
+
 		songSpan.textContent = song.name || 'Unknown'
 		artistSpan.textContent = song.artists?.join(', ') || 'Unknown Artist'
 
@@ -160,11 +193,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		if (song.albumArt && albumArt.src !== song.albumArt) {
 			albumArt.style.opacity = '0'
+
 			const img = new Image()
+
 			img.onload = () => {
 				albumArt.src = song.albumArt
 				albumArt.style.opacity = '1'
 			}
+
 			img.src = song.albumArt
 		} else if (!song.albumArt) {
 			albumArt.src = ''
@@ -185,6 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const totalSeconds = Math.max(0, Math.floor(ms / 1000))
 		const minutes = Math.floor(totalSeconds / 60)
 		const seconds = totalSeconds % 60
+
 		return `${minutes}:${seconds.toString().padStart(2, '0')}`
 	}
 
@@ -193,6 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		if (isPlaying) {
 			const elapsed = Date.now() - lastTimeUpdate
+
 			displayProgress = Math.min(currentProgress + elapsed, currentDuration)
 		} else {
 			displayProgress = currentProgress
@@ -204,10 +242,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		if (timeDisplay === 'duration') {
 			const remaining = Math.max(0, currentDuration - displayProgress)
+
 			timeCurrent.textContent = `-${formatTime(remaining)}`
 		} else {
 			timeCurrent.textContent = formatTime(displayProgress)
 		}
+		
 		timeTotal.textContent = formatTime(currentDuration)
 
 		animationFrame = requestAnimationFrame(tick)

@@ -3,6 +3,8 @@
     <head lang="en">
         <meta charset="utf-8" />
         <script src="sdpi-components.js"></script>
+        <script src="locales.js"></script>
+
         <style>
             body {
                 -webkit-user-select: none;
@@ -11,10 +13,11 @@
         </style>
     </head>
     <body>
-        <sdpi-item label="Show">
+        <sdpi-item label="__MSG_Show__">
             <sdpi-checkbox-list setting="show">
-                <option value="display_name">Display Name</option>
+                <option value="display_name">__MSG_Display Name__</option>
             </sdpi-checkbox-list>
         </sdpi-item>
+        <script src="localize.js"></script>
     </body>
 </html>
