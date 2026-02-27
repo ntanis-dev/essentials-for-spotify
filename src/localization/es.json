@@ -205,7 +205,8 @@
 		"Song Artist(s)": "Artista(s) de la canción",
 		"Song Spotify Link": "Enlace de Spotify de la canción",
 		"(nothing selected)": "(nada seleccionado)",
-		"Please fill in this field.": "Por favor, completa este campo."
+		"Please fill in this field.": "Por favor, completa este campo.",
+		"Artist 1, Artist 2": "Artista 1, Artista 2"
 	},
 	"Setup": {
 		"installation": "Instalación",

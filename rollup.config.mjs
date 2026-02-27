@@ -102,10 +102,7 @@ const config = {
 					}
 
 					if (Object.keys(piLocales).length > 0)
-						fs.writeFileSync(
-							path.join('com.ntanis.essentials-for-spotify.sdPlugin', 'pi', 'locales.js'),
-							`SDPIComponents.i18n.locales=${JSON.stringify(piLocales)};`
-						)
+						fs.writeFileSync(path.join('com.ntanis.essentials-for-spotify.sdPlugin', 'pi', 'locales.js'), `window.__PI_LOCALES__=${JSON.stringify(piLocales)};if(window.SDPIComponents&&SDPIComponents.i18n)SDPIComponents.i18n.locales=window.__PI_LOCALES__;`)
 				}
 			}
 		}

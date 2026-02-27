@@ -47,23 +47,12 @@
 		if (originalConnect)
 			originalConnect(port, uuid, event, info, actionInfo)
 
-		const locales = window.SDPIComponents?.i18n?.locales
+		const locales = window.__PI_LOCALES__ || window.SDPIComponents?.i18n?.locales
 
-		if (locales) {
+		if (locales)
 			strings = locales[lang] || locales['en'] || {}
-			localizePI()
-		} else {
-			fetch(`../${lang}.json`).then(r => r.ok ? r.json() : Promise.reject()).then(data => {
-				strings = data.PropertyInspector || {}
-				localizePI()
-			}).catch(() => {
-				if (lang !== 'en')
-					fetch('../en.json').then(r => r.ok ? r.json() : Promise.reject()).then(data => {
-						strings = data.PropertyInspector || {}
-						localizePI()
-					}).catch(() => {})
-			})
-		}
+
+		localizePI()
 	}
 
 	const localizePI = () => {
@@ -79,13 +68,6 @@
 
 		document.querySelectorAll('.sdpi-item-label').forEach(el => {
 			const key = el.textContent.trim()
-
-			if (strings[key])
-				el.textContent = strings[key]
-		})
-
-		document.querySelectorAll('[data-localize]').forEach(el => {
-			const key = el.getAttribute('data-localize')
 
 			if (strings[key])
 				el.textContent = strings[key]

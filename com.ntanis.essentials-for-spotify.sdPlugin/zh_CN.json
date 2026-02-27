@@ -205,7 +205,8 @@
 		"Song Artist(s)": "歌曲艺术家",
 		"Song Spotify Link": "歌曲 Spotify 链接",
 		"(nothing selected)": "（未选择）",
-		"Please fill in this field.": "请填写此字段。"
+		"Please fill in this field.": "请填写此字段。",
+		"Artist 1, Artist 2": "艺术家 1, 艺术家 2"
 	},
 	"Setup": {
 		"installation": "安装",

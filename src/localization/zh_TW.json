@@ -205,7 +205,8 @@
 		"Song Artist(s)": "歌曲演出者",
 		"Song Spotify Link": "歌曲 Spotify 連結",
 		"(nothing selected)": "（未選擇）",
-		"Please fill in this field.": "請填寫此欄位。"
+		"Please fill in this field.": "請填寫此欄位。",
+		"Artist 1, Artist 2": "演出者 1, 演出者 2"
 	},
 	"Setup": {
 		"installation": "安裝",

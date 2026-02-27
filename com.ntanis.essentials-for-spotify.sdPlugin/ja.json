@@ -205,7 +205,8 @@
 		"Song Artist(s)": "曲のアーティスト",
 		"Song Spotify Link": "曲のSpotifyリンク",
 		"(nothing selected)": "（未選択）",
-		"Please fill in this field.": "この項目を入力してください。"
+		"Please fill in this field.": "この項目を入力してください。",
+		"Artist 1, Artist 2": "アーティスト 1, アーティスト 2"
 	},
 	"Setup": {
 		"installation": "インストール",

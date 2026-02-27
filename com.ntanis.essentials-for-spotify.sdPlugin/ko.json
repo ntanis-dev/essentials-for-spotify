@@ -205,7 +205,8 @@
 		"Song Artist(s)": "곡 아티스트",
 		"Song Spotify Link": "곡 Spotify 링크",
 		"(nothing selected)": "(선택된 항목 없음)",
-		"Please fill in this field.": "이 필드를 입력해 주세요."
+		"Please fill in this field.": "이 필드를 입력해 주세요.",
+		"Artist 1, Artist 2": "아티스트 1, 아티스트 2"
 	},
 	"Setup": {
 		"installation": "설치",
