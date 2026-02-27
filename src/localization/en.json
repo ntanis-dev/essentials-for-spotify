@@ -226,5 +226,19 @@
 		"error_title": "Something went wrong!",
 		"error_message": "Please double-check the app information and try again.",
 		"submit": "Submit"
+	},
+	"Localization": {
+		"Playback Control": "Playback Control",
+		"Volume Control": "Volume Control",
+		"Songs": "Songs",
+		"Liked Songs": "Liked Songs",
+		"Unknown": "Unknown",
+		"Track": "Track",
+		"Artist": "Artist",
+		"Album": "Album",
+		"Compilation": "Compilation",
+		"Playlist": "Playlist",
+		"Show": "Show",
+		"Collection": "Collection"
 	}
 }

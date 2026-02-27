@@ -226,5 +226,19 @@
 		"error_title": "發生錯誤！",
 		"error_message": "請仔細檢查應用程式資訊，然後重試。",
 		"submit": "提交"
+	},
+	"Localization": {
+		"Playback Control": "播放控制",
+		"Volume Control": "音量控制",
+		"Songs": "歌曲",
+		"Liked Songs": "喜歡的歌曲",
+		"Unknown": "未知",
+		"Track": "曲目",
+		"Artist": "演出者",
+		"Album": "專輯",
+		"Compilation": "合輯",
+		"Playlist": "播放清單",
+		"Show": "Podcast",
+		"Collection": "收藏"
 	}
 }

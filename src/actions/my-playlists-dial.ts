@@ -1,4 +1,4 @@
-import {
+import StreamDeck, {
 	action
 } from '@elgato/streamdeck'
 
@@ -38,7 +38,7 @@ export default class MyPlaylistsDial extends ItemsDial {
 				return {
 					id: `${wrapper.user.id}:collection`,
 					type: 'user',
-					name: entry.name || 'Liked Songs',
+					name: entry.name || StreamDeck.i18n.translate('Liked Songs'),
 
 					images: [{
 						width: 64,

@@ -226,5 +226,19 @@
 		"error_title": "エラーが発生しました！",
 		"error_message": "アプリの情報を確認して、もう一度お試しください。",
 		"submit": "送信"
+	},
+	"Localization": {
+		"Playback Control": "再生コントロール",
+		"Volume Control": "音量コントロール",
+		"Songs": "曲",
+		"Liked Songs": "お気に入りの曲",
+		"Unknown": "不明",
+		"Track": "トラック",
+		"Artist": "アーティスト",
+		"Album": "アルバム",
+		"Compilation": "コンピレーション",
+		"Playlist": "プレイリスト",
+		"Show": "ポッドキャスト",
+		"Collection": "コレクション"
 	}
 }

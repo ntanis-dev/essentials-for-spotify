@@ -2,10 +2,13 @@ import {
 	EventEmitter
 } from 'node:events'
 
+import StreamDeck from '@elgato/streamdeck'
 import connector from './connector'
 import constants from './constants'
 import logger from './logger'
 import images from './images'
+
+const t = key => StreamDeck.i18n.translate(key)
 
 class Wrapper extends EventEmitter {
 	#pendingWrappedCall = false
@@ -231,9 +234,9 @@ class Wrapper extends EventEmitter {
 	}
 
 	async #getTypeData(type, uri, nullOnFailure = false) {
-		let title = 'Unknown ❓'
+		let title = `${t('Unknown')} ❓`
 		let subtitle = null
-		let extra = 'Unknown ❓'
+		let extra = `${t('Unknown')} ❓`
 		let images = []
 
 		const id = uri.split(':')[2]
@@ -245,9 +248,9 @@ class Wrapper extends EventEmitter {
 				if ((!track) && nullOnFailure)
 					return null
 
-				title = track?.name ?? 'Unknown ❓'
+				title = track?.name ?? `${t('Unknown')} ❓`
 				subtitle = track?.artists?.map(artist => artist.name).join(', ') ?? null
-				extra = 'Track 🎵'
+				extra = `${t('Track')} 🎵`
 				images = track?.album?.images ?? []
 
 				break
@@ -257,8 +260,8 @@ class Wrapper extends EventEmitter {
 				if ((!artist) && nullOnFailure)
 					return null
 
-				title = artist?.name ?? 'Unknown ❓'
-				extra = 'Artist 👤'
+				title = artist?.name ?? `${t('Unknown')} ❓`
+				extra = `${t('Artist')} 👤`
 				images = artist?.images ?? []
 
 				break
@@ -271,17 +274,17 @@ class Wrapper extends EventEmitter {
 
 				switch (album.album_type) {
 					case 'compilation':
-						extra = 'Compilation 🗂️'
+						extra = `${t('Compilation')} 🗂️`
 						break
 
 					default:
-						extra = 'Album 💿'
+						extra = `${t('Album')} 💿`
 						break
 				}
 
-				title = album?.name ?? 'Unknown ❓'
+				title = album?.name ?? `${t('Unknown')} ❓`
 				subtitle = album?.artists?.map(artist => artist.name).join(', ') ?? null
-				extra = 'Album 💿'
+				extra = `${t('Album')} 💿`
 				images = album?.images ?? []
 
 				break
@@ -289,7 +292,7 @@ class Wrapper extends EventEmitter {
 			case 'playlist':
 				if (this.#knownPlaylists.has(id)) {
 					title = this.#knownPlaylists.get(id)
-					extra = 'Playlist 📃'
+					extra = `${t('Playlist')} 📃`
 					break
 				}
 
@@ -298,8 +301,8 @@ class Wrapper extends EventEmitter {
 				if ((!playlist) && nullOnFailure)
 					return null
 
-				title = playlist?.name ?? 'Unknown ❓'
-				extra = 'Playlist 📃'
+				title = playlist?.name ?? `${t('Unknown')} ❓`
+				extra = `${t('Playlist')} 📃`
 				images = playlist?.images ?? []
 
 				break
@@ -310,15 +313,15 @@ class Wrapper extends EventEmitter {
 				if ((!show) && nullOnFailure)
 					return null
 
-				title = show?.name ?? 'Unknown ❓'
-				extra = 'Show 🎙️'
+				title = show?.name ?? `${t('Unknown')} ❓`
+				extra = `${t('Show')} 🎙️`
 				images = show?.images ?? []
 
 				break
 
 			case 'collection':
-				title = uri.includes('user:') ? 'Liked Songs' : 'Unknown ❓'
-				extra = 'Collection 📚'
+				title = uri.includes('user:') ? t('Liked Songs') : `${t('Unknown')} ❓`
+				extra = `${t('Collection')} 📚`
 
 				images = [{
 					width: 64,

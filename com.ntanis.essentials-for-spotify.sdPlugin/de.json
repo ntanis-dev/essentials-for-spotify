@@ -226,5 +226,19 @@
 		"error_title": "Etwas ist schiefgelaufen!",
 		"error_message": "Bitte überprüfen Sie die App-Informationen und versuchen Sie es erneut.",
 		"submit": "Absenden"
+	},
+	"Localization": {
+		"Playback Control": "Wiedergabesteuerung",
+		"Volume Control": "Lautstärkeregelung",
+		"Songs": "Songs",
+		"Liked Songs": "Lieblingssongs",
+		"Unknown": "Unbekannt",
+		"Track": "Titel",
+		"Artist": "Künstler",
+		"Album": "Album",
+		"Compilation": "Zusammenstellung",
+		"Playlist": "Playlist",
+		"Show": "Sendung",
+		"Collection": "Sammlung"
 	}
 }

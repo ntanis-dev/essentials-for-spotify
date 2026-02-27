@@ -226,5 +226,19 @@
 		"error_title": "Quelque chose s'est mal passé !",
 		"error_message": "Veuillez vérifier les informations de l'application et réessayer.",
 		"submit": "Soumettre"
+	},
+	"Localization": {
+		"Playback Control": "Contrôle de lecture",
+		"Volume Control": "Contrôle du volume",
+		"Songs": "Chansons",
+		"Liked Songs": "Titres likés",
+		"Unknown": "Inconnu",
+		"Track": "Titre",
+		"Artist": "Artiste",
+		"Album": "Album",
+		"Compilation": "Compilation",
+		"Playlist": "Playlist",
+		"Show": "Podcast",
+		"Collection": "Collection"
 	}
 }

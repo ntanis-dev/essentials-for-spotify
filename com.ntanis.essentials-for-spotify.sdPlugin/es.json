@@ -226,5 +226,19 @@
 		"error_title": "¡Algo salió mal!",
 		"error_message": "Por favor, verifique la información de la aplicación e intente de nuevo.",
 		"submit": "Enviar"
+	},
+	"Localization": {
+		"Playback Control": "Control de reproducción",
+		"Volume Control": "Control de volumen",
+		"Songs": "Canciones",
+		"Liked Songs": "Canciones favoritas",
+		"Unknown": "Desconocido",
+		"Track": "Pista",
+		"Artist": "Artista",
+		"Album": "Álbum",
+		"Compilation": "Compilación",
+		"Playlist": "Playlist",
+		"Show": "Podcast",
+		"Collection": "Colección"
 	}
 }

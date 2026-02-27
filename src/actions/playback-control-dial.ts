@@ -1,4 +1,4 @@
-import {
+import StreamDeck, {
 	action,
 	WillDisappearEvent
 } from '@elgato/streamdeck'
@@ -35,7 +35,7 @@ export default class PlaybackControlDial extends Dial {
 			const timeMarquee = this.getMarquee(context, 'time')
 
 			this.setFeedback(context, {
-				title: titleMarquee ? titleMarquee.last : 'Playback Control',
+				title: titleMarquee ? titleMarquee.last : StreamDeck.i18n.translate('Playback Control'),
 
 				indicator: {
 					value: wrapper.song ? Math.round((wrapper.song.progress / wrapper.song.item.duration_ms) * 100) : 0,
@@ -79,7 +79,7 @@ export default class PlaybackControlDial extends Dial {
 
 					if ((!force) || (!song))
 						await this.setFeedback(context, {
-							title: 'Playback Control',
+							title: StreamDeck.i18n.translate('Playback Control'),
 
 							text: {
 								value: '??:?? / ??:??',
@@ -236,7 +236,7 @@ export default class PlaybackControlDial extends Dial {
 
 	async resetFeedbackLayout(context: string): Promise<void> {
 		await super.resetFeedbackLayout(context, {
-			title: 'Playback Control',
+			title: StreamDeck.i18n.translate('Playback Control'),
 			icon: this.originalIcon
 		})
 	}
