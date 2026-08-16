@@ -12,5 +12,5 @@ jobs:
     with:
       project: essentials-for-spotify
       build-matrix: >-
-        [{"os":"ubuntu-latest","script":"release:build","artifactDirectory":".","includeExtensions":"streamdeckplugin","platform":"stream-deck","architecture":"any","platformSigned":false,"install":true}]
+        [{"os":"ubuntu-latest","script":"release:build","artifactDirectory":".","includeExtensions":"streamdeckplugin","includeFiles":"com.ntanis.essentials-for-spotify.streamDeckPlugin","platform":"stream-deck","architecture":"any","platformSigned":false,"install":true}]
 
