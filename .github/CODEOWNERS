@@ -1,0 +1,9 @@
+* @ntanis-dev
+
+package.json @ntanis-dev
+pnpm-lock.yaml @ntanis-dev
+pnpm-workspace.yaml @ntanis-dev
+.npmrc @ntanis-dev
+.github/workflows/ @ntanis-dev
+renovate.json @ntanis-dev
+SECURITY.md @ntanis-dev

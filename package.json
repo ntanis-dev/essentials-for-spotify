@@ -1,30 +1,34 @@
 {
 	"name": "essentials-for-spotify",
 	"version": "1.2.0.0",
+	"packageManager": "pnpm@11.15.1",
 	"description": "Effortlessly control your Spotify through your Elgato Stream Deck.",
 	"author": "https://github.com/ntanis-dev",
 	"license": "ISC",
 	"main": "index.js",
 	"type": "module",
 	"scripts": {
-		"build": "rollup -c",
-		"watch": "rollup -c -w --watch.onEnd=\"streamdeck restart com.ntanis.essentials-for-spotify\""
+		"build": "pnpm run notices && pnpm run stage:legal && rollup -c",
+		"release:build": "pnpm run build && streamdeck pack com.ntanis.essentials-for-spotify.sdPlugin",
+		"watch": "rollup -c -w --watch.onEnd=\"streamdeck restart com.ntanis.essentials-for-spotify\"",
+		"notices": "node scripts/generate-third-party-notices.mjs",
+		"stage:legal": "node scripts/stage-plugin-legal.mjs"
 	},
 	"devDependencies": {
-		"@elgato/cli": "^1.7.1",
-		"@rollup/plugin-commonjs": "^29.0.0",
-		"@rollup/plugin-json": "^6.1.0",
-		"@rollup/plugin-node-resolve": "^16.0.3",
-		"@rollup/plugin-terser": "^1.0.0",
-		"@rollup/plugin-typescript": "^12.3.0",
-		"@tsconfig/node20": "^20.1.9",
-		"@types/node": "^20.0.0",
-		"rollup": "^4.57.1",
-		"tslib": "^2.6.2",
-		"typescript": "^5.9.3"
+		"@elgato/cli": "1.7.3",
+		"@rollup/plugin-commonjs": "29.0.2",
+		"@rollup/plugin-json": "6.1.0",
+		"@rollup/plugin-node-resolve": "16.0.3",
+		"@rollup/plugin-terser": "1.0.0",
+		"@rollup/plugin-typescript": "12.3.0",
+		"@tsconfig/node20": "20.1.9",
+		"@types/node": "20.19.37",
+		"rollup": "4.60.1",
+		"tslib": "2.8.1",
+		"typescript": "5.9.3"
 	},
 	"dependencies": {
-		"@elgato/streamdeck": "^2.0.1",
-		"ws": "^8.19.0"
+		"@elgato/streamdeck": "2.0.4",
+		"ws": "8.20.0"
 	}
 }

@@ -1,0 +1,36 @@
+ISC License
+
+Copyright (c) 2026 Ntanis (ntanis.dev) and contributors
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+
+
+SCOPE OF THIS LICENSE
+
+The licence above covers the source code of this project. It does not, and
+cannot, cover material that is not ours to license:
+
+  Icons. The action and category icons under
+  com.ntanis.essentials-for-spotify.sdPlugin/images/ are licensed from Icons8
+  under the Universal Multimedia License Agreement (https://icons8.com/license)
+  and remain subject to those terms. They are not redistributable under the ISC
+  licence above. See THIRD-PARTY-ASSETS.md.
+
+  Bundled dependencies. The packaged plugin includes third-party code compiled
+  into bin/plugin.js. Each dependency keeps its own licence, reproduced in
+  THIRD-PARTY-NOTICES.md.
+
+  Trademarks. Spotify is a trademark of Spotify AB and Stream Deck is a
+  trademark of Elgato Systems GmbH. No right to either mark is granted here.
+  This project is not affiliated with, endorsed, sponsored, or approved by
+  Spotify AB or Elgato Systems GmbH.

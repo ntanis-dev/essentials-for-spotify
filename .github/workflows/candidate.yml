@@ -1,0 +1,16 @@
+name: Build candidate
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  candidate:
+    uses: ntanis-dev/ci/.github/workflows/project-candidate.yml@689ac2c05a917e765ceee08d9936a6c4b39419c1
+    with:
+      project: essentials-for-spotify
+      build-matrix: >-
+        [{"os":"ubuntu-latest","script":"release:build","artifactDirectory":".","includeExtensions":"streamdeckplugin","platform":"stream-deck","architecture":"any","platformSigned":false,"install":true}]
+

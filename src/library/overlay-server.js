@@ -74,7 +74,7 @@ class OverlayServer {
 				logger.error(`Failed to start overlay server: "${err.message || 'No message.'}"`)
 		})
 
-		this.#server.listen(port, () => {
+		this.#server.listen(port, '127.0.0.1', () => {
 			this.#port = port
 			logger.info(`Overlay server listening on port "${port}".`)
 

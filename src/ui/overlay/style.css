@@ -192,6 +192,7 @@ body {
     right: 36px;
     width: 16px;
     height: 16px;
+	object-fit: contain;
 }
 
 /* ---------- Idle State ---------- */

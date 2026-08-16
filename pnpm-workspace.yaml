@@ -1,0 +1,18 @@
+packages: []
+
+# New direct and transitive versions must mature for two weeks before they can
+# enter the lockfile. Emergency exceptions must name one exact locked version.
+minimumReleaseAge: 20160
+minimumReleaseAgeIgnoreMissingTime: false
+minimumReleaseAgeStrict: true
+minimumReleaseAgeExclude: []
+trustLockfile: false
+blockExoticSubdeps: true
+saveExact: true
+injectWorkspacePackages: true
+
+# Lifecycle scripts fail closed. Replace the empty map only with reviewed,
+# exact-version package selectors and document why execution is required.
+strictDepBuilds: true
+verifyDepsBeforeRun: error
+allowBuilds: {}

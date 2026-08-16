@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 3,
+  "project": {
+    "id": "essentials-for-spotify",
+    "displayName": "Essentials for Spotify"
+  },
+  "presentation": {
+    "status": "live",
+    "category": "Stream Deck plugin",
+    "tagline": "Spotify on physical keys.",
+    "description": "A Stream Deck plugin that puts playback controls and track information on real buttons without making you find another window.",
+    "icon": "spotify",
+    "accent": "#1ed760",
+    "downloadLabel": "Download",
+    "releaseNote": "",
+    "features": [
+      { "title": "Playback where your hands are", "description": "Transport controls live on dedicated keys." },
+      { "title": "Track info at a glance", "description": "Keys show what is playing without switching applications." }
+    ],
+    "technologies": ["Stream Deck SDK", "JavaScript"],
+    "gallery": []
+  },
+  "hosting": {
+    "modes": [
+      "placeholder",
+      "external"
+    ],
+    "components": []
+  },
+  "artifacts": [
+    {
+      "id": "plugin",
+      "publication": "manual",
+      "platform": "stream-deck",
+      "architecture": "any",
+      "formats": [
+        "streamdeckplugin"
+      ]
+    }
+  ],
+  "applications": [],
+  "capabilities": {
+    "identity": false,
+    "data": false,
+    "billing": false,
+    "realtime": false,
+    "releases": true
+  },
+  "secrets": []
+}
+

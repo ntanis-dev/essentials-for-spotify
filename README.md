@@ -205,3 +205,13 @@ Icons integrated into this project must **not** be extracted or re-used as stand
 **Stream Deck** is a trademark of **Elgato Systems GmbH**.\
 \
 This project is not affiliated with, endorsed, sponsored, or approved by **Spotify AB** or **Elgato Systems GmbH**.
+
+## License
+
+The source code is [ISC licensed](LICENSE). That licence covers the code only:
+the Icons8 artwork and the trademarks referenced above are not ours to license,
+and the scope section of the LICENSE says so explicitly. Bundled dependencies
+keep their own licences, inventoried in
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md); bundled assets are listed in
+[THIRD-PARTY-ASSETS.md](THIRD-PARTY-ASSETS.md). All three ship inside the packed
+plugin, since the repository is not what a user installs.
