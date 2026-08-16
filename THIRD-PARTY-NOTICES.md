@@ -65,7 +65,7 @@ SOFTWARE.
 
 ## MIT (1 package)
 
-- **ws** 8.20.0: Copyright (c) 2011 Einar Otto Stangvik <einaros@gmail.com> / Copyright (c) 2013 Arnout Kazemier and contributors / Copyright (c) 2016 Luigi Pinca and contributors, https://github.com/websockets/ws
+- **ws** 8.21.0: Copyright (c) 2011 Einar Otto Stangvik <einaros@gmail.com> / Copyright (c) 2013 Arnout Kazemier and contributors / Copyright (c) 2016 Luigi Pinca and contributors, https://github.com/websockets/ws
 
 ```
 Permission is hereby granted, free of charge, to any person obtaining a copy of

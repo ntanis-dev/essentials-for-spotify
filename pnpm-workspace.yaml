@@ -1,11 +1,22 @@
 packages: []
 
+overrides:
+  lodash: 4.18.1
+  brace-expansion: 2.1.4
+  fast-uri: 3.1.5
+
 # New direct and transitive versions must mature for two weeks before they can
 # enter the lockfile. Emergency exceptions must name one exact locked version.
 minimumReleaseAge: 20160
 minimumReleaseAgeIgnoreMissingTime: false
 minimumReleaseAgeStrict: true
-minimumReleaseAgeExclude: []
+# Security updates required to clear the locked dependency audit.
+minimumReleaseAgeExclude:
+  - '@elgato/cli@1.8.1'
+  - 'ws@8.21.0'
+  - 'lodash@4.18.1'
+  - 'brace-expansion@2.1.4'
+  - 'fast-uri@3.1.5'
 trustLockfile: false
 blockExoticSubdeps: true
 saveExact: true

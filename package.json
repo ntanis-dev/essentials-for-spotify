@@ -15,7 +15,7 @@
 		"stage:legal": "node scripts/stage-plugin-legal.mjs"
 	},
 	"devDependencies": {
-		"@elgato/cli": "1.7.3",
+		"@elgato/cli": "1.8.1",
 		"@rollup/plugin-commonjs": "29.0.2",
 		"@rollup/plugin-json": "6.1.0",
 		"@rollup/plugin-node-resolve": "16.0.3",
@@ -29,6 +29,6 @@
 	},
 	"dependencies": {
 		"@elgato/streamdeck": "2.0.4",
-		"ws": "8.20.0"
+		"ws": "8.21.0"
 	}
 }
