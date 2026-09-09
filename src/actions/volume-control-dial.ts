@@ -106,7 +106,8 @@ export default class VolumeControlDial extends Dial {
 
 	async resetFeedbackLayout(context: string): Promise<void> {
 		await super.resetFeedbackLayout(context, {
-			icon: this.originalIcon
+			icon: this.getConfiguredIcon(context),
+			title: this.getConfiguredName(context, '')
 		})
 	}
 
