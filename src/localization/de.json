@@ -115,7 +115,7 @@
 		"Encoder": {
 			"TriggerDescription": {
 				"Rotate": "Lautstärke anpassen",
-				"Push": "Stummschaltung halten",
+				"Push": "Wiedergabe / Pause oder Stumm / Laut",
 				"Touch": "Stumm / Laut"
 			}
 		}

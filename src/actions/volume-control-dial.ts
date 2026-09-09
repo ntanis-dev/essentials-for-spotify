@@ -96,7 +96,9 @@ export default class VolumeControlDial extends Dial {
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 			else
 				return wrapper.volumeDown(this.settings[context].step)
-		else if (type === Dial.TYPES.DOWN || type === Dial.TYPES.TAP)
+		else if (type === Dial.TYPES.DOWN)
+			return this.settings[context].push_action === 'play_pause' ? wrapper.togglePlayback() : wrapper.toggleVolumeMute()
+		else if (type === Dial.TYPES.TAP)
 			return wrapper.toggleVolumeMute()
 		else
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
@@ -114,6 +116,11 @@ export default class VolumeControlDial extends Dial {
 		if (!this.settings[context].step)
 			await this.setSettings(context, {
 				step: constants.DEFAULT_VOLUME_STEP
+			})
+
+		if (!this.settings[context].push_action)
+			await this.setSettings(context, {
+				push_action: 'mute'
 			})
 	}
 

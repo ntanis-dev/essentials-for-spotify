@@ -115,7 +115,7 @@
 		"Encoder": {
 			"TriggerDescription": {
 				"Rotate": "Ajuster le volume",
-				"Push": "Maintenir pour couper le son",
+				"Push": "Lecture / Pause ou Volume muet / Rétablir",
 				"Touch": "Couper / Rétablir le son"
 			}
 		}
