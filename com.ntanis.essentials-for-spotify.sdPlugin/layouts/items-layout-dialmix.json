@@ -1,0 +1,33 @@
+{
+	"id": "com.ntanis.essentials-for-spotify.layouts.items-dialmix",
+	"items": [
+		{
+			"key": "icon",
+			"type": "pixmap",
+			"rect": [8, 8, 36, 36],
+			"value": "images/icons/items.png"
+		},
+		{
+			"key": "name",
+			"type": "text",
+			"rect": [50, 8, 142, 28],
+			"font": { "size": 16, "weight": 600 },
+			"alignment": "left",
+			"text-overflow": "ellipsis"
+		},
+		{
+			"key": "extra",
+			"type": "text",
+			"rect": [50, 38, 142, 27],
+			"font": { "size": 23, "weight": 700 },
+			"alignment": "left"
+		},
+		{
+			"key": "count",
+			"type": "text",
+			"rect": [8, 76, 184, 14],
+			"font": { "size": 13, "weight": 600 },
+			"alignment": "left"
+		}
+	]
+}

@@ -115,7 +115,7 @@
 		"Encoder": {
 			"TriggerDescription": {
 				"Rotate": "音量調整",
-				"Push": "長押しミュート",
+				"Push": "再生 / 一時停止 または ミュート / ミュート解除",
 				"Touch": "ミュート / ミュート解除"
 			}
 		}

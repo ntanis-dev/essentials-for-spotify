@@ -30,11 +30,12 @@ export default class LikeUnlikeButton extends Button {
 				await this.setImage(context, pending ? 'images/states/pending' : undefined)
 
 				if (!pending) {
-					if (wrapper.song) {
+					if (wrapper.song && typeof liked === 'boolean') {
 						await this.setImage(context)
 						await this.setState(context, liked ? 1 : 0)
-					} else
+					} else {
 						await this.setImage(context, 'images/states/like-unknown')
+					}
 
 					this.setUnpressable(context, false)
 				}

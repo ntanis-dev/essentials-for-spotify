@@ -140,7 +140,8 @@ export default class ItemsDial extends Dial {
 
 		await this.setFeedback(context, {
 			name: {
-				opacity: 1.0
+				opacity: 1.0,
+				value: this.getConfiguredName(context, this.#items.items[this.#currentItems[context]].name)
 			},
 
 			extra: {
@@ -159,7 +160,14 @@ export default class ItemsDial extends Dial {
 
 		await this.#refreshCount(context)
 
-		if (nameMarquee) {
+		if (this.settings[context].dial_style === 'dialmix' && this.settings[context].dialmix_name) {
+			this.clearMarquee(context, 'name')
+			await this.setFeedback(context, {
+				name: {
+					value: this.settings[context].dialmix_name
+				}
+			})
+		} else if (nameMarquee) {
 			if (nameMarquee.original !== this.#items.items[this.#currentItems[context]].name)
 				this.updateMarquee(context, 'name', this.#items.items[this.#currentItems[context]].name, this.#items.items[this.#currentItems[context]].name)
 
@@ -283,7 +291,7 @@ export default class ItemsDial extends Dial {
 
 	async resetFeedbackLayout(context: string, feedback = {}): Promise<void> {
 		await super.resetFeedbackLayout(context, Object.assign({
-			icon: this.originalIcon
+			icon: this.getConfiguredIcon(context)
 		}, feedback))
 	}
 

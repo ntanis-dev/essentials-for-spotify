@@ -173,6 +173,26 @@
     </head>
     <body>
         <div class="sdpi-item">
+            <div class="sdpi-item-label">Display Style:</div>
+            <div class="sdpi-item-value">
+                <select id="dial_style" setting="dial_style">
+                    <option value="spotify">Orignal</option>
+                    <option value="dialmix">DialMix</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="sdpi-item">
+            <div class="sdpi-item-label">DialMix Name:</div>
+            <div class="sdpi-item-value"><input id="dialmix_name" type="text" maxlength="80" placeholder="Optional custom name"></div>
+        </div>
+
+        <div class="sdpi-item">
+            <div class="sdpi-item-label">DialMix Icon:</div>
+            <div class="sdpi-item-value"><input id="dialmix_icon_file" type="file" accept=".svg,.png,image/svg+xml,image/png"></div>
+        </div>
+
+        <div class="sdpi-item">
             <div class="sdpi-item-label">Extra Playlists:</div>
             <div class="sdpi-item-value">
                 <div id="playlist-list"></div>
@@ -203,6 +223,8 @@
                         uuid: uuid
                     }))
 
+                    document.getElementById('dial_style').value = currentSettings.dial_style || 'spotify'
+                    document.getElementById('dialmix_name').value = currentSettings.dialmix_name || ''
                     renderList(currentSettings.extra_playlists || [])
                 }
 
@@ -211,10 +233,55 @@
 
                     if (data.event === 'didReceiveSettings') {
                         currentSettings = data.payload.settings || {}
+                        document.getElementById('dial_style').value = currentSettings.dial_style || 'spotify'
+                        document.getElementById('dialmix_name').value = currentSettings.dialmix_name || ''
                         renderList(currentSettings.extra_playlists || [])
                     }
                 }
             }
+
+            document.getElementById('dial_style').addEventListener('change', event => {
+                currentSettings = Object.assign({}, currentSettings, {
+                    dial_style: event.target.value
+                })
+
+                if (ws && ws.readyState === 1)
+                    ws.send(JSON.stringify({
+                        event: 'setSettings',
+                        context: piUUID,
+                        payload: currentSettings
+                    }))
+            })
+
+            const saveDialMixSettings = settings => {
+                currentSettings = Object.assign({}, currentSettings, settings)
+
+                if (ws && ws.readyState === 1)
+                    ws.send(JSON.stringify({
+                        event: 'setSettings',
+                        context: piUUID,
+                        payload: currentSettings
+                    }))
+            }
+
+            document.getElementById('dialmix_name').addEventListener('change', event => {
+                saveDialMixSettings({ dialmix_name: event.target.value.trim() })
+            })
+
+            document.getElementById('dialmix_icon_file').addEventListener('change', event => {
+                const file = event.target.files[0]
+
+                if (!file || (!['image/svg+xml', 'image/png'].includes(file.type) && !/\.(svg|png)$/i.test(file.name)))
+                    return
+
+                const reader = new FileReader()
+
+                reader.addEventListener('load', () => saveDialMixSettings({
+                    dialmix_icon: String(reader.result || '')
+                }))
+
+                reader.readAsDataURL(file)
+            })
 
             const saveSettings = () => {
                 if ((!ws) || ws.readyState !== 1)
@@ -354,5 +421,6 @@
         </script>
 
         <script src="localize.js"></script>
+        <script src="dialmix-settings.js"></script>
     </body>
 </html>
