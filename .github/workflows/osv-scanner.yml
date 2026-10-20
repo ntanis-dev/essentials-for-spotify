@@ -1,12 +1,22 @@
 name: Dependency Vulnerability Scan
 
 on:
+  # Pushes and pull requests scan when a lockfile changes; the weekly run catches advisories published since for
+  # dependencies that did not change.
   pull_request:
     branches: [main]
+    paths:
+      - "**/pnpm-lock.yaml"
+      - "**/osv-scanner.toml"
+      - ".github/workflows/osv-scanner.yml"
   push:
     branches: [main]
+    paths:
+      - "**/pnpm-lock.yaml"
+      - "**/osv-scanner.toml"
+      - ".github/workflows/osv-scanner.yml"
   schedule:
-    - cron: '41 4 * * *'
+    - cron: '41 4 * * 1'
   workflow_dispatch:
 
 permissions:
