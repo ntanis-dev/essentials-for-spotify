@@ -2,8 +2,10 @@ packages: []
 
 overrides:
   lodash: 4.18.1
-  brace-expansion: 2.1.4
-  fast-uri: 3.1.6
+  # GHSA-6j4f-fj2g-mc7p, GHSA-qhr7-859c-m2p7, GHSA-q2hr-2g5m-vwhr: all fixed in 2.1.7.
+  brace-expansion: 2.1.7
+  # GHSA-58mr-gqgx-xq4g, GHSA-qw65-cvwx-89v3, GHSA-hrr3-gc8f-f4qj: all fixed in 3.1.8.
+  fast-uri: 3.1.8
 
 # New direct and transitive versions must mature for two weeks before they can
 # enter the lockfile. Emergency exceptions must name one exact locked version.
@@ -15,7 +17,6 @@ minimumReleaseAgeExclude:
   - '@elgato/cli@1.8.1'
   - 'ws@8.21.0'
   - 'lodash@4.18.1'
-  - 'brace-expansion@2.1.4'
 trustLockfile: false
 blockExoticSubdeps: true
 saveExact: true
