@@ -23,6 +23,9 @@ class OverlayServer {
 	#subscribed = false
 
 	start() {
+		if (this.#server)
+			return
+
 		if (!this.#subscribed) {
 			this.#subscribeToEvents()
 			this.#subscribed = true
@@ -50,15 +53,20 @@ class OverlayServer {
 	}
 
 	#listenWithRetry(attempt = 0) {
+		if (this.#server)
+			return
+
 		const port = constants.OVERLAY_DEFAULT_PORT + attempt
 
-		this.#server = http.createServer((req, res) => this.#handleRequest(req, res))
+		const server = http.createServer((req, res) => this.#handleRequest(req, res))
+		this.#server = server
 
-		this.#wss = new WebSocketServer({
-			server: this.#server
+		const wss = new WebSocketServer({
+			server
 		})
+		this.#wss = wss
 
-		this.#wss.on('connection', ws => {
+		wss.on('connection', ws => {
 			logger.info('Overlay server: new WebSocket client connected.')
 
 			ws.send(JSON.stringify(this.#buildFullState()))
@@ -66,15 +74,29 @@ class OverlayServer {
 			ws.on('error', (err) => logger.error(`Overlay server WebSocket error: "${err.message}"`))
 		})
 
-		this.#server.on('error', err => {
+		// ws re-emits HTTP server errors. Without a listener, an occupied
+		// port becomes an uncaught exception before the retry handler runs.
+		wss.on('error', err => {
+			if (err.code !== 'EADDRINUSE')
+				logger.error(`Overlay server error: "${err.message || 'No message.'}"`)
+		})
+
+		server.on('error', err => {
 			if (err.code === 'EADDRINUSE' && attempt < constants.PORT_RETRY_RANGE) {
 				logger.warn(`Port "${port}" in use, trying "${port + 1}".`)
-				this.#listenWithRetry(attempt + 1)
+				wss.close()
+				server.close(() => {
+					if (this.#server === server) {
+						this.#server = null
+						this.#wss = null
+						this.#listenWithRetry(attempt + 1)
+					}
+				})
 			} else
 				logger.error(`Failed to start overlay server: "${err.message || 'No message.'}"`)
 		})
 
-		this.#server.listen(port, '127.0.0.1', () => {
+		server.listen(port, '127.0.0.1', () => {
 			this.#port = port
 			logger.info(`Overlay server listening on port "${port}".`)
 
