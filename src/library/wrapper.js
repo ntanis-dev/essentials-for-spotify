@@ -32,6 +32,7 @@ class Wrapper extends EventEmitter {
 	#songChangeForceUpdatePlaybackStateTimeout = null
 	#lastDevices = []
 	#lastDisallowFlags = []
+	#likedStateCheckedSongId = null
 	#updatePlaybackStateStatus = 'idle'
 	#knownPlaylists = new Map()
 	#oembedCache = new Map()
@@ -216,9 +217,28 @@ class Wrapper extends EventEmitter {
 			this.#setShuffleState(response?.shuffle_state || false)
 			this.#setVolumePercent(response?.device.supports_volume ? (typeof response?.device.volume_percent !== 'number' ? 100 : response.device.volume_percent) : null)
 
+			let liked = this.#lastSong?.item?.id === response?.item?.id ? this.#lastSong.liked : undefined
+			const shouldCheckLikedState = response?.item?.id && response.item.id !== this.#likedStateCheckedSongId
+
+			if (shouldCheckLikedState)
+				try {
+					// Mark it before the request so concurrent playback refreshes
+					// cannot issue a second check for the same song.
+					this.#likedStateCheckedSongId = response.item.id
+					liked = (await connector.callSpotifyApi(`me/library/contains?uris=${encodeURIComponent(response.item.uri)}`))[0]
+				} catch (e) {
+					if (e instanceof constants.ApiError && e.status === 429) {
+						// Keep playback updates working when Spotify quota-limits
+						// this optional request. The icon will show an unknown state.
+						logger.warn('Spotify rate-limited the liked-state check for the current song.')
+					} else {
+						throw e
+					}
+				}
+
 			this.#setSong(response?.item ? {
 				item: response.item,
-				liked: response.item.id && (this.#lastSong?.liked === undefined || response.item.id !== this.#lastSong?.item?.id) ? (await connector.callSpotifyApi(`me/library/contains?uris=${encodeURIComponent(response.item.uri)}`))[0] : this.#lastSong?.liked,
+				liked,
 				progress: response.progress_ms
 			} : null)
 
