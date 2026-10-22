@@ -12,11 +12,6 @@ overrides:
 minimumReleaseAge: 20160
 minimumReleaseAgeIgnoreMissingTime: false
 minimumReleaseAgeStrict: true
-# Security updates required to clear the locked dependency audit.
-minimumReleaseAgeExclude:
-  - '@elgato/cli@1.8.1'
-  - 'ws@8.21.0'
-  - 'lodash@4.18.1'
 trustLockfile: false
 blockExoticSubdeps: true
 saveExact: true
