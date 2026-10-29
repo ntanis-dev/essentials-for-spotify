@@ -9,6 +9,7 @@ overrides:
   lodash: 4.18.1
   brace-expansion: 2.1.7
   fast-uri: 3.1.8
+  zod: 4.6.6
 
 importers:
 
@@ -741,8 +742,8 @@ packages:
     resolution: {integrity: sha512-CzhO+pFNo8ajLM2d2IW/R93ipy99LWjtwblvC1RsoSUMZgyLbYFr221TnSNT7GjGdYui6P459mw9JH/g/zW2ug==}
     engines: {node: '>=18'}
 
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+  zod@4.6.6:
+    resolution: {integrity: sha512-4UmzQUF5fxvfcYHlbjBmejU+w+hbDnWFx4aS8kBx7nPBHcO2SqPbpAG8snbdg+Xse4pRefR98hgjFgIMCI/UhA==}
 
 snapshots:
 
@@ -779,7 +780,7 @@ snapshots:
 
   '@elgato/utils@0.4.4':
     dependencies:
-      zod: 3.25.76
+      zod: 4.6.6
 
   '@humanwhocodes/momoa@3.3.10': {}
 
@@ -1328,4 +1329,4 @@ snapshots:
 
   yoctocolors@2.1.2: {}
 
-  zod@3.25.76: {}
+  zod@4.6.6: {}

@@ -11,7 +11,7 @@ text. Every copyright holder is still listed individually.
 
 - **@elgato/schemas** 0.4.14: Copyright (c) 2023 Corsair Memory Inc., https://github.com/elgatosf/schemas#readme
 - **@elgato/utils** 0.4.4: Copyright (c) Corsair Memory Inc., https://github.com/elgatosf/js-utils#readme
-- **zod** 3.25.76: Copyright (c) 2025 Colin McDonnell, https://zod.dev
+- **zod** 4.6.6: Copyright (c) 2025 Colin McDonnell, https://zod.dev
 
 ```
 MIT License
