@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    paths:
+      - .npmrc
+      - assets/**
+      - com.ntanis.essentials-for-spotify.sdPlugin/**
+      - ntanis.project.json
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - rollup.config.mjs
+      - scripts/**
+      - src/**
+      - THIRD-PARTY-ASSETS.md
+      - tsconfig.json
+      - LICENSE
+      - THIRD-PARTY-NOTICES.md
+      - .github/workflows/**
+      - .github/CODEOWNERS
+      - SECURITY.md
+  pull_request:
+    paths:
+      - .npmrc
+      - assets/**
+      - com.ntanis.essentials-for-spotify.sdPlugin/**
+      - ntanis.project.json
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - rollup.config.mjs
+      - scripts/**
+      - src/**
+      - THIRD-PARTY-ASSETS.md
+      - tsconfig.json
+      - LICENSE
+      - THIRD-PARTY-NOTICES.md
+      - .github/workflows/**
+      - .github/CODEOWNERS
+      - SECURITY.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    uses: ntanis-dev/ci/.github/workflows/project-validate.yml@b8e3a954214f0d3a180473937d0548619227232a
+    with:
+      project: essentials-for-spotify
