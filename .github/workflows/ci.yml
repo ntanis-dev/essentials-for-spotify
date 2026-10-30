@@ -19,7 +19,6 @@ on:
       - THIRD-PARTY-NOTICES.md
       - .github/workflows/**
       - .github/CODEOWNERS
-      - renovate.json
       - SECURITY.md
   pull_request:
     paths:
@@ -39,7 +38,6 @@ on:
       - THIRD-PARTY-NOTICES.md
       - .github/workflows/**
       - .github/CODEOWNERS
-      - renovate.json
       - SECURITY.md
   workflow_dispatch:
 
