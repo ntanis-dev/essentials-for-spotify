@@ -1,0 +1,11 @@
+# Advisories the dependency scan accepts, each with its reason and an expiry so it is looked at again.
+
+[[IgnoredVulns]]
+id = "GHSA-g3hv-75wg-m249"
+ignoreUntil = 2026-12-07
+reason = "minimatch is fixed only in 11.0.1, a major version outside the ranges declared by the packages that bring in 5.x here, and versions are not forced outside declared ranges. Re-check when they move to minimatch 11"
+
+[[IgnoredVulns]]
+id = "GHSA-gcqx-w48m-w2h4"
+ignoreUntil = 2026-12-07
+reason = "deepmerge has no fixed release (4.3.1 is the latest); it comes in through build tooling. Re-check when a fix or a replacement lands"
