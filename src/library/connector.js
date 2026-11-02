@@ -29,6 +29,13 @@ class Connector extends EventEmitter {
 	#error = false
 	#state = null
 
+	constructor() {
+		super()
+
+		// One setup-state listener is registered per action by design.
+		this.setMaxListeners(0)
+	}
+
 	#setSetup(state) {
 		this.#setup = state
 		this.emit('setupStateChanged', state)
@@ -238,11 +245,15 @@ class Connector extends EventEmitter {
 	}
 
 	#listenWithRetry(attempt = 0) {
+		if (this.#server)
+			return
+
 		const port = constants.CONNECTOR_DEFAULT_PORT + attempt
 
-		this.#server = http.createServer((req, res) => this.#handleRequest(req, res))
+		const server = http.createServer((req, res) => this.#handleRequest(req, res))
+		this.#server = server
 
-		this.#server.on('listening', () => {
+		server.on('listening', () => {
 			this.#port = port
 
 			logger.info(`Connector setup server listening on port "${port}".`)
@@ -255,15 +266,20 @@ class Connector extends EventEmitter {
 			}).catch(e => logger.error(`An error occured while updating connector port in global settings: "${e.message || 'No message.'}".`))
 		})
 
-		this.#server.on('error', err => {
+		server.on('error', err => {
 			if (err.code === 'EADDRINUSE' && attempt < constants.PORT_RETRY_RANGE) {
 				logger.warn(`Port "${port}" in use, trying "${port + 1}".`)
-				this.#listenWithRetry(attempt + 1)
+				server.close(() => {
+					if (this.#server === server) {
+						this.#server = null
+						this.#listenWithRetry(attempt + 1)
+					}
+				})
 			} else
 				logger.error(`Failed to start connector setup server: "${err.message || 'No message.'}"`)
 		})
 
-		this.#server.listen(port)
+		server.listen(port)
 	}
 
 	#saveGlobalSettings(credentials) {

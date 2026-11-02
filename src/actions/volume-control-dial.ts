@@ -11,7 +11,7 @@ import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.volume-control-dial' })
 export default class VolumeControlDial extends Dial {
-	static readonly HOLDABLE = true
+	static readonly HOLDABLE = false
 
 	constructor() {
 		super('layouts/volume-control-layout.json', 'images/icons/volume-control.png')
@@ -96,33 +96,18 @@ export default class VolumeControlDial extends Dial {
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 			else
 				return wrapper.volumeDown(this.settings[context].step)
+		else if (type === Dial.TYPES.DOWN)
+			return this.settings[context].push_action === 'play_pause' ? wrapper.togglePlayback() : wrapper.toggleVolumeMute()
 		else if (type === Dial.TYPES.TAP)
 			return wrapper.toggleVolumeMute()
 		else
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 	}
 
-	async invokeHoldWrapperAction(context: string) {
-		if (wrapper.volumePercent === null)
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-		else if (!wrapper.muted)
-			return wrapper.muteVolume()
-		else
-			return constants.WRAPPER_RESPONSE_SUCCESS
-	}
-
-	async invokeHoldReleaseWrapperAction(context: string) {
-		if (wrapper.volumePercent === null)
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-		else if (wrapper.muted)
-			return wrapper.unmuteVolume()
-		else
-			return constants.WRAPPER_RESPONSE_SUCCESS
-	}
-
 	async resetFeedbackLayout(context: string): Promise<void> {
 		await super.resetFeedbackLayout(context, {
-			icon: this.originalIcon
+			icon: this.getConfiguredIcon(context),
+			title: this.getConfiguredName(context, '')
 		})
 	}
 
@@ -132,6 +117,11 @@ export default class VolumeControlDial extends Dial {
 		if (!this.settings[context].step)
 			await this.setSettings(context, {
 				step: constants.DEFAULT_VOLUME_STEP
+			})
+
+		if (!this.settings[context].push_action)
+			await this.setSettings(context, {
+				push_action: 'mute'
 			})
 	}
 

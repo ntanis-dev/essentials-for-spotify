@@ -115,7 +115,7 @@
 		"Encoder": {
 			"TriggerDescription": {
 				"Rotate": "Ajustar volumen",
-				"Push": "Mantener para silenciar",
+				"Push": "Reproducir / Pausar o Silenciar / Activar volumen",
 				"Touch": "Silenciar / Activar"
 			}
 		}

@@ -136,7 +136,7 @@ export class Dial extends Action {
 			await new Promise(resolve => setTimeout(resolve, duration))
 
 			await this.setFeedback(context, {
-				icon: connector.set ? this.icon : this.originalIcon
+				icon: connector.set ? this.getConfiguredIcon(context, this.icon) : this.originalIcon
 			}, true).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 			if (i + 1 < times)
@@ -263,7 +263,7 @@ export class Dial extends Action {
 		this.icon = icon
 
 		await this.actionObjects.get(context)?.setFeedback({
-			icon
+			icon: this.getConfiguredIcon(context, icon)
 		}).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 	}
 
@@ -271,10 +271,32 @@ export class Dial extends Action {
 		for (const key in this.#marquees)
 			this.pauseMarquee(context, this.#marquees[key].key)
 
-		await this.actionObjects.get(context)?.setFeedbackLayout(this.layout).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback layout of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+		await this.actionObjects.get(context)?.setFeedbackLayout(this.getFeedbackLayout(context)).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback layout of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 		if (feedback)
 			await this.actionObjects.get(context)?.setFeedback(feedback).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+	}
+
+	getFeedbackLayout(context: string) {
+		if (this.settings[context]?.dial_style === 'dialmix')
+			return this.layout.replace('.json', '-dialmix.json')
+
+		return this.layout
+	}
+
+	getConfiguredIcon(context: string, fallback = this.originalIcon) {
+		return this.settings[context]?.dial_style === 'dialmix' && this.settings[context]?.dialmix_icon ? this.settings[context].dialmix_icon : fallback
+	}
+
+	getConfiguredName(context: string, fallback: string) {
+		return this.settings[context]?.dial_style === 'dialmix' && this.settings[context]?.dialmix_name ? this.settings[context].dialmix_name : fallback
+	}
+
+	async onSettingsUpdated(context: string, oldSettings: any) {
+		if (oldSettings?.dial_style !== this.settings[context]?.dial_style || oldSettings?.dialmix_icon !== this.settings[context]?.dialmix_icon || oldSettings?.dialmix_name !== this.settings[context]?.dialmix_name) {
+			await this.resetFeedbackLayout(context)
+			await this.updateFeedback(context)
+		}
 	}
 
 	isHolding(context: string) {
