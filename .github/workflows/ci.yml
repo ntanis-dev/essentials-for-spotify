@@ -46,6 +46,6 @@ permissions:
 
 jobs:
   validate:
-    uses: ntanis-dev/ci/.github/workflows/project-validate.yml@8eddb78e4bb7da81fd9b34b863ced0e6661dfc1e
+    uses: ntanis-dev/ci/.github/workflows/project-validate.yml@c3b93e68f9698f2a349f18656c97efe645fba5fe
     with:
       project: essentials-for-spotify
