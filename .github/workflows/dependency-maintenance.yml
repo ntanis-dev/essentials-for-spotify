@@ -12,6 +12,6 @@ permissions:
 
 jobs:
   maintain:
-    uses: ntanis-dev/ci/.github/workflows/dependency-maintenance.yml@c3b93e68f9698f2a349f18656c97efe645fba5fe
+    uses: ntanis-dev/ci/.github/workflows/dependency-maintenance.yml@65465031a9a04f473847d0b2e6dd58de3880af00
     with:
       build-script: build
