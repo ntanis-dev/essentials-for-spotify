@@ -1,0 +1,17 @@
+name: Dependency maintenance
+
+# Weekly, before the dependency scan: applies mature in-range fixes and drops matured release-age exceptions,
+# verified and pushed to main by the shared workflow (ntanis-dev/ci README, "Dependency scan and maintenance").
+on:
+  schedule:
+    - cron: '47 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  maintain:
+    uses: ntanis-dev/ci/.github/workflows/dependency-maintenance.yml@8eddb78e4bb7da81fd9b34b863ced0e6661dfc1e
+    with:
+      build-script: build

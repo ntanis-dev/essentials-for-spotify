@@ -6,7 +6,7 @@ permissions:
   id-token: write
 jobs:
   candidate:
-    uses: ntanis-dev/ci/.github/workflows/project-candidate.yml@b8e3a954214f0d3a180473937d0548619227232a
+    uses: ntanis-dev/ci/.github/workflows/project-candidate.yml@8eddb78e4bb7da81fd9b34b863ced0e6661dfc1e
     with:
       project: essentials-for-spotify
       build-matrix: >-
