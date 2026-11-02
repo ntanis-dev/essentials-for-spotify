@@ -173,6 +173,16 @@
     </head>
     <body>
         <div class="sdpi-item">
+            <div class="sdpi-item-label">Display Style:</div>
+            <div class="sdpi-item-value">
+                <select id="dial_style" setting="dial_style">
+                    <option value="spotify">Orignal</option>
+                    <option value="dialmix">DialMix</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="sdpi-item">
             <div class="sdpi-item-label">Extra Playlists:</div>
             <div class="sdpi-item-value">
                 <div id="playlist-list"></div>
@@ -203,6 +213,7 @@
                         uuid: uuid
                     }))
 
+                    document.getElementById('dial_style').value = currentSettings.dial_style || 'spotify'
                     renderList(currentSettings.extra_playlists || [])
                 }
 
@@ -211,10 +222,24 @@
 
                     if (data.event === 'didReceiveSettings') {
                         currentSettings = data.payload.settings || {}
+                        document.getElementById('dial_style').value = currentSettings.dial_style || 'spotify'
                         renderList(currentSettings.extra_playlists || [])
                     }
                 }
             }
+
+            document.getElementById('dial_style').addEventListener('change', event => {
+                currentSettings = Object.assign({}, currentSettings, {
+                    dial_style: event.target.value
+                })
+
+                if (ws && ws.readyState === 1)
+                    ws.send(JSON.stringify({
+                        event: 'setSettings',
+                        context: piUUID,
+                        payload: currentSettings
+                    }))
+            })
 
             const saveSettings = () => {
                 if ((!ws) || ws.readyState !== 1)
