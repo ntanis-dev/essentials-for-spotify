@@ -5,7 +5,7 @@ overrides:
   # GHSA-6j4f-fj2g-mc7p, GHSA-qhr7-859c-m2p7, GHSA-q2hr-2g5m-vwhr: all fixed in 2.1.7.
   brace-expansion: 2.1.7
   # GHSA-58mr-gqgx-xq4g, GHSA-qw65-cvwx-89v3, GHSA-hrr3-gc8f-f4qj: all fixed in 3.1.8.
-  fast-uri: 3.1.8
+  fast-uri: 3.1.9
   # GHSA-mrhx-c7xc-m3w5: fixed in 4.6.6. @elgato/utils reaches zod through zod/v4-mini, which 4.x also ships.
   zod: 4.6.6
 
