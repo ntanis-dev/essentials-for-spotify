@@ -115,7 +115,7 @@
 		"Encoder": {
 			"TriggerDescription": {
 				"Rotate": "Adjust Volume",
-				"Push": "Hold Mute",
+				"Push": "Play / Pause or Mute / Unmute",
 				"Touch": "Mute / Unmute"
 			}
 		}

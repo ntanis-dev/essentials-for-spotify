@@ -115,7 +115,7 @@
 		"Encoder": {
 			"TriggerDescription": {
 				"Rotate": "볼륨 조절",
-				"Push": "길게 눌러 음소거",
+				"Push": "재생 / 일시정지 또는 음소거 / 음소거 해제",
 				"Touch": "음소거 / 음소거 해제"
 			}
 		}

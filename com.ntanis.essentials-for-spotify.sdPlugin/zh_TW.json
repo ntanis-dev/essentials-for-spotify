@@ -115,7 +115,7 @@
 		"Encoder": {
 			"TriggerDescription": {
 				"Rotate": "調整音量",
-				"Push": "長按靜音",
+				"Push": "播放 / 暫停或靜音 / 取消靜音",
 				"Touch": "靜音 / 取消靜音"
 			}
 		}

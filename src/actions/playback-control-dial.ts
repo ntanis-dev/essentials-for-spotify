@@ -35,7 +35,7 @@ export default class PlaybackControlDial extends Dial {
 			const timeMarquee = this.getMarquee(context, 'time')
 
 			this.setFeedback(context, {
-				title: titleMarquee ? titleMarquee.last : StreamDeck.i18n.translate('Playback Control'),
+				title: this.getConfiguredName(context, titleMarquee ? titleMarquee.last : StreamDeck.i18n.translate('Playback Control')),
 
 				indicator: {
 					value: wrapper.song ? Math.round((wrapper.song.progress / wrapper.song.item.duration_ms) * 100) : 0,
@@ -79,7 +79,7 @@ export default class PlaybackControlDial extends Dial {
 
 					if ((!force) || (!song))
 						await this.setFeedback(context, {
-							title: StreamDeck.i18n.translate('Playback Control'),
+							title: this.getConfiguredName(context, StreamDeck.i18n.translate('Playback Control')),
 
 							text: {
 								value: '??:?? / ??:??',
@@ -101,7 +101,12 @@ export default class PlaybackControlDial extends Dial {
 						}
 					})
 
-					if ((!titleMarquee) || titleMarquee.id !== song.item.id || force) {
+					if (this.settings[context].dial_style === 'dialmix' && this.settings[context].dialmix_name) {
+						this.clearMarquee(context, 'title')
+						await this.setFeedback(context, {
+							title: this.settings[context].dialmix_name
+						})
+					} else if ((!titleMarquee) || titleMarquee.id !== song.item.id || force) {
 						const title = `${this.settings[context].show.includes('name') ? song.item.name : ''}${this.settings[context].show.includes('name') && this.settings[context].show.includes('artists') ? ' - ' : ''}${this.settings[context].show.includes('artists') ? song.item.artists.map((artist: any) => artist.name).join(', ') : ''}`
 						await this.marquee(undefined, 'title', title, title, 16, context)
 					} else
@@ -236,8 +241,8 @@ export default class PlaybackControlDial extends Dial {
 
 	async resetFeedbackLayout(context: string): Promise<void> {
 		await super.resetFeedbackLayout(context, {
-			title: StreamDeck.i18n.translate('Playback Control'),
-			icon: this.originalIcon
+			title: this.getConfiguredName(context, StreamDeck.i18n.translate('Playback Control')),
+			icon: this.getConfiguredIcon(context)
 		})
 	}
 
