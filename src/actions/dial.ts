@@ -271,10 +271,24 @@ export class Dial extends Action {
 		for (const key in this.#marquees)
 			this.pauseMarquee(context, this.#marquees[key].key)
 
-		await this.actionObjects.get(context)?.setFeedbackLayout(this.layout).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback layout of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+		await this.actionObjects.get(context)?.setFeedbackLayout(this.getFeedbackLayout(context)).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback layout of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
 
 		if (feedback)
 			await this.actionObjects.get(context)?.setFeedback(feedback).catch((e: any) => logger.error(`An error occurred while setting the Stream Deck feedback of "${this.manifestId}": "${e.message || 'No message.'}" @ "${e.stack || 'No stack trace.'}".`))
+	}
+
+	getFeedbackLayout(context: string) {
+		if (this.settings[context]?.dial_style === 'dialmix')
+			return this.layout.replace('.json', '-dialmix.json')
+
+		return this.layout
+	}
+
+	async onSettingsUpdated(context: string, oldSettings: any) {
+		if (oldSettings?.dial_style !== this.settings[context]?.dial_style) {
+			await this.resetFeedbackLayout(context)
+			await this.updateFeedback(context)
+		}
 	}
 
 	isHolding(context: string) {
