@@ -11,7 +11,7 @@ import wrapper from './../library/wrapper.js'
 
 @action({ UUID: 'com.ntanis.essentials-for-spotify.volume-control-dial' })
 export default class VolumeControlDial extends Dial {
-	static readonly HOLDABLE = true
+	static readonly HOLDABLE = false
 
 	constructor() {
 		super('layouts/volume-control-layout.json', 'images/icons/volume-control.png')
@@ -96,28 +96,10 @@ export default class VolumeControlDial extends Dial {
 				return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
 			else
 				return wrapper.volumeDown(this.settings[context].step)
-		else if (type === Dial.TYPES.TAP)
+		else if (type === Dial.TYPES.DOWN || type === Dial.TYPES.TAP)
 			return wrapper.toggleVolumeMute()
 		else
 			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-	}
-
-	async invokeHoldWrapperAction(context: string) {
-		if (wrapper.volumePercent === null)
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-		else if (!wrapper.muted)
-			return wrapper.muteVolume()
-		else
-			return constants.WRAPPER_RESPONSE_SUCCESS
-	}
-
-	async invokeHoldReleaseWrapperAction(context: string) {
-		if (wrapper.volumePercent === null)
-			return constants.WRAPPER_RESPONSE_NOT_AVAILABLE
-		else if (wrapper.muted)
-			return wrapper.unmuteVolume()
-		else
-			return constants.WRAPPER_RESPONSE_SUCCESS
 	}
 
 	async resetFeedbackLayout(context: string): Promise<void> {
